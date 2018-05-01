@@ -96,6 +96,10 @@ public class List extends javax.swing.JFrame {
                 setTitle("List Billing");
                 jCheckBoxF1.setVisible(true);
                 break;
+            case "Permintaan Stok":
+                setTitle("List Permintaan Stok");
+                jCheckBoxF1.setVisible(true);
+                break;
             default:
                 throw new AssertionError();
         }
@@ -372,6 +376,9 @@ public class List extends javax.swing.JFrame {
             case "Billing":
                 listBilling = null;
                 break;
+            case "Permintaan Stok":
+                listPermintaanStok = null;
+                break;
             default:
                 throw new AssertionError();
         }
@@ -561,6 +568,13 @@ public class List extends javax.swing.JFrame {
                 break;
             case "Billing":
                 break;
+            case "Permintaan Stok":
+                if (tambahPermintaanStok == null) {
+                    tambahPermintaanStok = new PermintaanStok();
+                } else {
+                    tambahPermintaanStok.setState(NORMAL);
+                    tambahPermintaanStok.toFront();
+                }
             default:
                 throw new AssertionError();
         }
@@ -600,7 +614,7 @@ public class List extends javax.swing.JFrame {
                 case "Barang Masuk":
                     berhasil = delete.Hapus("ID " + jcomCari1.GetIDTable(), "DELETE FROM `tbbarangmasuk` WHERE `IdBarangMasuk` = " + jcomCari1.GetIDTable(), "Barang Masuk", this);
                     break;
-                case "Penysuaian Stok":
+                case "Penyesuaian Stok":
                     break;
                 case "Perawatan":
                     berhasil = delete.Hapus("ID " + jcomCari1.GetIDTable(), "DELETE FROM `tbperawatan` WHERE `IdPerawatan` = " + jcomCari1.GetIDTable(), "Perawatan", this);
@@ -609,6 +623,9 @@ public class List extends javax.swing.JFrame {
                     break;
                 case "Billing":
                     berhasil = delete.Hapus("ID " + jcomCari1.GetIDTable(), "DELETE FROM `tbbilling` WHERE `IdBilling` = " + jcomCari1.GetIDTable(), "Perawatan", this);
+                    break;
+                case "Permintaan Stok":
+                    berhasil = delete.Hapus("ID " + jcomCari1.GetIDTable(), "DELETE FROM `tbpermintaanstok` WHERE `Idpermintaanstok` = " + jcomCari1.GetIDTable(), "Permintaan Stok", this);
                     break;
                 default:
                     throw new AssertionError();
@@ -790,6 +807,10 @@ public class List extends javax.swing.JFrame {
                     jcomCari1.setQuery("SELECT `IdBilling` as 'ID', `NoBilling` as 'No. Billing', DATE_FORMAT(`Tanggal`,'%d-%m-%Y') as 'Tanggal', `NoInvoice` as 'No. Invoice', FORMAT(`Bayar`,0) as 'Jumlah Bayar' FROM `tbbilling` WHERE 1");
                     jcomCari1.setOrder(" ORDER BY `NoBilling` DESC ");
                 }
+                break;
+            case "Permintaan Stok":
+                jcomCari1.setQuery("SELECT `IdPermintaan` as 'ID', `NoPermintaan` as 'No. Permintaan', DATE_FORMAT(`Tanggal`,'%d-%m-%Y') as 'Tanggal', IFNULL(`NamaBarang`,'-') as 'Nama Barang', `Jumlah`, a.`Keterangan` FROM `tbpermintaanstok`a LEFT JOIN `tbmbarang`b ON a.`IdBarang`=b.`IdBarang` WHERE 1");
+                jcomCari1.setOrder(" ORDER BY `NoPermintaan` DESC ");
                 break;
             default:
                 throw new AssertionError();

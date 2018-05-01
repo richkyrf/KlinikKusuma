@@ -76,12 +76,14 @@ public class MenuUtama extends javax.swing.JFrame {
         jMenuItem9 = new javax.swing.JMenuItem();
         jMenuItem5 = new javax.swing.JMenuItem();
         jMenuItem7 = new javax.swing.JMenuItem();
+        jMenuItem11 = new javax.swing.JMenuItem();
         JMList = new javax.swing.JMenu();
         JMIListPacking = new javax.swing.JMenuItem();
         JMIListPerawatan = new javax.swing.JMenuItem();
         jMenuItem10 = new javax.swing.JMenuItem();
         jMenuItem6 = new javax.swing.JMenuItem();
         jMenuItem8 = new javax.swing.JMenuItem();
+        jMenuItem12 = new javax.swing.JMenuItem();
         JMLaporan = new javax.swing.JMenu();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -306,7 +308,7 @@ public class MenuUtama extends javax.swing.JFrame {
         });
         JMProses.add(jMenuItem9);
 
-        jMenuItem5.setText("3. Barang Masuk");
+        jMenuItem5.setText("4. Barang Masuk");
         jMenuItem5.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItem5ActionPerformed(evt);
@@ -314,13 +316,21 @@ public class MenuUtama extends javax.swing.JFrame {
         });
         JMProses.add(jMenuItem5);
 
-        jMenuItem7.setText("4. Penyesuaian Stok");
+        jMenuItem7.setText("5. Penyesuaian Stok");
         jMenuItem7.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItem7ActionPerformed(evt);
             }
         });
         JMProses.add(jMenuItem7);
+
+        jMenuItem11.setText("6. Permintaan Stok");
+        jMenuItem11.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem11ActionPerformed(evt);
+            }
+        });
+        JMProses.add(jMenuItem11);
 
         JMenuBar.add(JMProses);
 
@@ -365,6 +375,14 @@ public class MenuUtama extends javax.swing.JFrame {
             }
         });
         JMList.add(jMenuItem8);
+
+        jMenuItem12.setText("6. List Permintaan Stok");
+        jMenuItem12.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem12ActionPerformed(evt);
+            }
+        });
+        JMList.add(jMenuItem12);
 
         JMenuBar.add(JMList);
 
@@ -618,6 +636,24 @@ public class MenuUtama extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_jMenuItem10ActionPerformed
 
+    private void jMenuItem12ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem12ActionPerformed
+        if (listPermintaanStok == null) {
+            listPermintaanStok = new List("Permintaan Stok");
+        } else {
+            listPermintaanStok.setState(NORMAL);
+            listPermintaanStok.toFront();
+        }
+    }//GEN-LAST:event_jMenuItem12ActionPerformed
+
+    private void jMenuItem11ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem11ActionPerformed
+        if (tambahPermintaanStok == null) {
+            tambahPermintaanStok = new PermintaanStok();
+        } else {
+            tambahPermintaanStok.setState(NORMAL);
+            tambahPermintaanStok.toFront();
+        }
+    }//GEN-LAST:event_jMenuItem11ActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -673,6 +709,8 @@ public class MenuUtama extends javax.swing.JFrame {
     private javax.swing.JPopupMenu.Separator SFile;
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JMenuItem jMenuItem10;
+    private javax.swing.JMenuItem jMenuItem11;
+    private javax.swing.JMenuItem jMenuItem12;
     private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JMenuItem jMenuItem3;
     private javax.swing.JMenuItem jMenuItem4;
