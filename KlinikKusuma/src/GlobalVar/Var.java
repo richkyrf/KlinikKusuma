@@ -31,7 +31,7 @@ public class Var {
     public static MasterBeautician tambahMasterBeautician, ubahMasterBeautician;
     public static MasterTindakan tambahMasterTindakan, ubahMasterTindakan;
 
-    public static List listMasterBarang, listMasterDokter, listMasterPasien, listPenjualan, listMasterBeautician, listMasterTindakan, listAntrian, listMasterPemasok, listBarangMasuk, listPenyesuaianStok, listPerawatan, listAntrianBilling, listBilling;
+    public static List listMasterBarang, listMasterDokter, listMasterPasien, listPenjualan, listMasterBeautician, listMasterTindakan, listAntrian, listMasterPemasok, listBarangMasuk, listPenyesuaianStok, listPerawatan, listAntrianBilling, listBilling, listPermintaanStok;
 
     public static Jcari jcari;
     public static Penjualan tambahPenjualan, ubahPenjualan;
@@ -39,4 +39,5 @@ public class Var {
     public static Perawatan tambahPerawatan, ubahPerawatan;
     public static PenyesuaianStok tambahPenyesuaianStok;
     public static Billing tambahBilling, ubahBilling;
+    public static PermintaanStok tambahPermintaanStok, ubahPermintaanStok;
 }
