@@ -21,7 +21,9 @@ import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import FunctionGUI.JOptionPaneF;
+import GlobalVar.Var;
 import static javax.swing.WindowConstants.DISPOSE_ON_CLOSE;
+import static GlobalVar.Var.*;
 
 /**
  *
@@ -29,7 +31,7 @@ import static javax.swing.WindowConstants.DISPOSE_ON_CLOSE;
  */
 public class PermintaanStok extends javax.swing.JFrame {
 
-    public String IdPenyesuaian;
+    public String IdEdit;
 
     /**
      * Creates new form PenyesuaianStok
@@ -43,6 +45,23 @@ public class PermintaanStok extends javax.swing.JFrame {
         setLocationRelativeTo(null);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         //setStok();
+    }
+
+    public PermintaanStok(Object idEdit) {
+        IdEdit = idEdit.toString();
+        initComponents();
+        JTNoPermintaan.setText(getNoPermintaanStok());
+        JCNamaBarang.requestFocus();
+        setVisible(true);
+        setTitle("Pemintaan Stok");
+        setLocationRelativeTo(null);
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        loadData(idEdit);
+        //setStok();
+    }
+
+    void loadData(Object idEdit) {
+
     }
 
     boolean checkInput() {
@@ -261,7 +280,11 @@ public class PermintaanStok extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void formWindowClosed(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosed
-        GlobalVar.Var.tambahPenyesuaianStok = null;
+        if (IdEdit == null) {
+            tambahPermintaanStok = null;
+        } else {
+            ubahPermintaanStok = null;
+        }
     }//GEN-LAST:event_formWindowClosed
 
     private void jbuttonF2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbuttonF2ActionPerformed
@@ -328,19 +351,6 @@ public class PermintaanStok extends javax.swing.JFrame {
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
             java.util.logging.Logger.getLogger(PermintaanStok.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
         //</editor-fold>
         //</editor-fold>
         //</editor-fold>
@@ -466,5 +476,9 @@ public class PermintaanStok extends javax.swing.JFrame {
                 JCNamaBarang.requestFocus();
             }
         }
+    }
+
+    void ubah() {
+
     }
 }

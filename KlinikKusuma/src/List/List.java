@@ -727,6 +727,14 @@ public class List extends javax.swing.JFrame {
                         ubahBilling.toFront();
                     }
                     break;
+                case "Permintaan Stok":
+                    if (ubahPermintaanStok == null) {
+                        ubahPermintaanStok = new PermintaanStok(jcomCari1.GetIDTable());
+                    } else {
+                        ubahPermintaanStok.setState(NORMAL);
+                        ubahPermintaanStok.toFront();
+                    }
+                    break;
                 default:
                     throw new AssertionError();
             }
@@ -809,7 +817,7 @@ public class List extends javax.swing.JFrame {
                 }
                 break;
             case "Permintaan Stok":
-                jcomCari1.setQuery("SELECT `IdPermintaan` as 'ID', `NoPermintaan` as 'No. Permintaan', DATE_FORMAT(`Tanggal`,'%d-%m-%Y') as 'Tanggal', IFNULL(`NamaBarang`,'-') as 'Nama Barang', `Jumlah`, a.`Keterangan` FROM `tbpermintaanstok`a LEFT JOIN `tbmbarang`b ON a.`IdBarang`=b.`IdBarang` WHERE 1");
+                jcomCari1.setQuery("SELECT `IdPermintaan` as 'ID', `NoPermintaan` as 'No. Permintaan', DATE_FORMAT(`Tanggal`,'%d-%m-%Y') as 'Tanggal', IFNULL(`NamaBarang`,'-') as 'Nama Barang', `Jumlah`, a.`Keterangan` FROM `tbpermintaanstok`a JOIN `tbmbarang`b ON a.`IdBarang`=b.`IdBarang` WHERE 1");
                 jcomCari1.setOrder(" ORDER BY `NoPermintaan` DESC ");
                 break;
             default:
