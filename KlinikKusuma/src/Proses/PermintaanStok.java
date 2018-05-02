@@ -24,6 +24,7 @@ import FunctionGUI.JOptionPaneF;
 import GlobalVar.Var;
 import static javax.swing.WindowConstants.DISPOSE_ON_CLOSE;
 import static GlobalVar.Var.*;
+import LSubProces.MultiInsert;
 
 /**
  *
@@ -43,6 +44,7 @@ public class PermintaanStok extends javax.swing.JFrame {
         setVisible(true);
         setTitle("Pemintaan Stok");
         setLocationRelativeTo(null);
+        jbuttonF3.setVisible(true);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         //setStok();
     }
@@ -56,6 +58,7 @@ public class PermintaanStok extends javax.swing.JFrame {
         setTitle("Pemintaan Stok");
         setLocationRelativeTo(null);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        jbuttonF1.setVisible(true);
         loadData(idEdit);
         //setStok();
     }
@@ -185,7 +188,7 @@ public class PermintaanStok extends javax.swing.JFrame {
             }
         });
 
-        jbuttonF3.setText("UBAH");
+        jbuttonF3.setText("UBAH + TUTUP");
         jbuttonF3.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jbuttonF3ActionPerformed(evt);
@@ -323,7 +326,8 @@ public class PermintaanStok extends javax.swing.JFrame {
     }//GEN-LAST:event_JDTanggalPenyesuaianPropertyChange
 
     private void jbuttonF3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbuttonF3ActionPerformed
-        // TODO add your handling code here:
+        ubah();
+        dispose();
     }//GEN-LAST:event_jbuttonF3ActionPerformed
 
     /**
@@ -479,6 +483,31 @@ public class PermintaanStok extends javax.swing.JFrame {
     }
 
     void ubah() {
-
+        if (checkInput()) {
+            boolean Berhasil;
+            MultiInsert multiInsert = new MultiInsert();
+            Berhasil = multiInsert.OpenConnection();
+            if (Berhasil) {
+                Berhasil = multiInsert.setautocomit(false);
+                if (Berhasil) {
+                    Berhasil = multiInsert.Excute("UPDATE `tbpermintaanstok` SET `NoPermintaan`='" + JTNoPermintaan.getText() + "',`Tanggal`='" + FDateF.datetostr(JDTanggalPenyesuaian.getDate(), "yyyy-MM-dd") + "',`IdBarang`=(SELECT `IdBarang` FROM `tbmbarang` WHERE `NamaBarang` = '" + JCNamaBarang.getSelectedItem() + "'),`Jumlah`+'"+ JTStok.getText() +"'`Keterangan`='" + JTAKeterangan.getText() + "' WHERE `IdBarangMasuk` = '" + IdEdit + "'", null);
+                }
+            }
+            if (Berhasil == false) {
+                multiInsert.rollback();
+                multiInsert.closecon();
+                JOptionPaneF.showMessageDialog(this, "Gagal Ubah Data Barang Masuk");
+            }
+            if (Berhasil == true) {
+                JOptionPaneF.showMessageDialog(this, "Berhasil Ubah Data Barang Masuk");
+                multiInsert.Commit();
+                multiInsert.closecon();
+                dispose();
+                ubahBarangMasuk = null;
+                if (listBarangMasuk != null) {
+                    listBarangMasuk.load();
+                }
+            }
+        }
     }
 }
