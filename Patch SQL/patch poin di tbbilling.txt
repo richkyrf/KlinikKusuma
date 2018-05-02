@@ -1,0 +1,1 @@
+ALTER TABLE `tbbilling` ADD `StatusPoin` BOOLEAN NOT NULL DEFAULT FALSE AFTER `Bayar`, ADD `Poin` INT NOT NULL DEFAULT '0' AFTER `StatusPoin`;
