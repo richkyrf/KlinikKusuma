@@ -163,8 +163,8 @@
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="jlableF18" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="JTNoTelpon" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="jlableF17" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="JTNoTelpon" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
@@ -354,12 +354,6 @@
         <Property name="text" type="java.lang.String" value=":"/>
       </Properties>
     </Component>
-    <Component class="KomponenGUI.JtextF" name="JTNoTelpon">
-      <Events>
-        <EventHandler event="keyPressed" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="JTNoTelponKeyPressed"/>
-        <EventHandler event="keyReleased" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="JTNoTelponKeyReleased"/>
-      </Events>
-    </Component>
     <Component class="KomponenGUI.JlableF" name="jlableF19">
       <Properties>
         <Property name="text" type="java.lang.String" value="Email"/>
@@ -424,6 +418,8 @@
       <Events>
         <EventHandler event="keyPressed" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="JTNoKartuKeyPressed"/>
       </Events>
+    </Component>
+    <Component class="KomponenGUI.JNumberOnly" name="JTNoTelpon">
     </Component>
   </SubComponents>
 </Form>

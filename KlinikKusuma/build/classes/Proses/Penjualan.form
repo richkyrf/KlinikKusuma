@@ -480,7 +480,7 @@
     <Component class="KomponenGUI.JtextF" name="JTStock">
       <Properties>
         <Property name="horizontalAlignment" type="int" value="4"/>
-        <Property name="text" type="java.lang.String" value="100,00"/>
+        <Property name="text" type="java.lang.String" value="0"/>
         <Property name="enabled" type="boolean" value="false"/>
       </Properties>
     </Component>
@@ -519,7 +519,7 @@
         <EventHandler event="keyPressed" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="JCPasienKeyPressed"/>
       </Events>
       <AuxValues>
-        <AuxValue name="JavaCodeGenerator_InitCodePre" type="java.lang.String" value="JCPasien.load(&quot;SELECT &apos;-&apos; as &apos;NamaPasien&apos; UNION ALL SELECT `NamaPasien` FROM `tbmpasien` &quot;);"/>
+        <AuxValue name="JavaCodeGenerator_InitCodePre" type="java.lang.String" value="JCPasien.load(&quot;SELECT &apos;-&apos; as &apos;NamaPasien&apos; UNION ALL SELECT `NamaPasien` FROM `tbmpasien` ORDER BY `NamaPasien` &quot;);"/>
         <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="9"/>
       </AuxValues>
     </Component>
@@ -577,6 +577,7 @@
     </Component>
     <Component class="KomponenGUI.JtextF" name="JTNamaBarang">
       <Events>
+        <EventHandler event="focusLost" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="JTNamaBarangFocusLost"/>
         <EventHandler event="keyPressed" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="JTNamaBarangKeyPressed"/>
         <EventHandler event="keyReleased" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="JTNamaBarangKeyReleased"/>
       </Events>
@@ -596,6 +597,7 @@
         </Property>
       </Properties>
       <Events>
+        <EventHandler event="focusLost" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="JBSearchNamaBarangFocusLost"/>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="JBSearchNamaBarangActionPerformed"/>
         <EventHandler event="keyPressed" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="JBSearchNamaBarangKeyPressed"/>
       </Events>

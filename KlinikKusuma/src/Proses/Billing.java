@@ -121,7 +121,7 @@ public class Billing extends javax.swing.JFrame {
             runSelct2.closecon();
         }
         setGrandTotal();
-        JTSetelahPotong.setText(String.valueOf(JTGrandTotal.getInt() - Integer.valueOf(list.get(10))*5000));
+        JTSetelahPotong.setText(String.valueOf(JTGrandTotal.getInt() - Integer.valueOf(list.get(10)) * 5000));
     }
 
     void loadPerawatan(Object noInvoice) {
@@ -259,9 +259,22 @@ public class Billing extends javax.swing.JFrame {
         } else if (JTHargaTindakan.getNumberFormattedText().replace("0", "").isEmpty()) {
             JOptionPaneF.showMessageDialog(this, "Gagal. Sub Total Tidak Boleh Kosong.");
             return false;
+        } else if (cekDoubleTindakan(JCTindakan.getSelectedItem().toString()) && JBTambahTindakan.isEnabled()) {
+            JOptionPaneF.showMessageDialog(this, "Gagal. Tidak Bisa Input Tindakan Yang Sama.");
+            JCTindakan.requestFocus();
+            return false;
         } else {
             return true;
         }
+    }
+
+    boolean cekDoubleTindakan(String item) {
+        for (int i = 0; i < JTableTindakan.getRowCount(); i++) {
+            if (item.equals(JTableTindakan.getValueAt(i, 1))) {
+                return true;
+            }
+        }
+        return false;
     }
 
     boolean checkTableObat() {
@@ -277,9 +290,22 @@ public class Billing extends javax.swing.JFrame {
         } else if (JTSubTotalObat.getNumberFormattedText().replace("0", "").isEmpty()) {
             JOptionPaneF.showMessageDialog(this, "Gagal. Sub Total Tidak Boleh Kosong.");
             return false;
+        } else if (cekDoubleObat(JCObat.getSelectedItem().toString()) && JBTambahObat.isEnabled()) {
+            JOptionPaneF.showMessageDialog(this, "Gagal. Tidak Bisa Input Obat Yang Sama.");
+            JCObat.requestFocus();
+            return false;
         } else {
             return true;
         }
+    }
+
+    boolean cekDoubleObat(String item) {
+        for (int i = 0; i < JTableObat.getRowCount(); i++) {
+            if (item.equals(JTableObat.getValueAt(i, 1))) {
+                return true;
+            }
+        }
+        return false;
     }
 
     void setSubTotalTindakan() {
@@ -309,6 +335,30 @@ public class Billing extends javax.swing.JFrame {
         JLPoin.setText("Poin (" + list.get(1) + ")");
         if (list.get(1).equals("0")) {
             JCBPakaiPoin.setEnabled(false);
+        }
+    }
+
+    void setHargaTindakan() {
+        if (JCTindakan.getSelectedIndex() != 0) {
+            DRunSelctOne dRunSelctOne = new DRunSelctOne();
+            dRunSelctOne.seterorm("Gagal Panggil Data Harga Tindakan");
+            dRunSelctOne.setQuery("SELECT `Harga` FROM `tbmtindakan` WHERE `NamaTindakan`= '" + JCTindakan.getSelectedItem() + "'");
+            ArrayList<String> list = dRunSelctOne.excute();
+            JTHargaTindakan.setText(list.get(0));
+        } else {
+            JTHargaTindakan.setText("0");
+        }
+    }
+
+    void setHargaObat() {
+        if (JCObat.getSelectedIndex() != 0) {
+            DRunSelctOne dRunSelctOne = new DRunSelctOne();
+            dRunSelctOne.seterorm("Gagal Panggil Data Harga Obat");
+            dRunSelctOne.setQuery("SELECT `Harga` FROM `tbmbarang` WHERE `NamaBarang`= '" + JCObat.getSelectedItem() + "'");
+            ArrayList<String> list = dRunSelctOne.excute();
+            JTHargaObat.setText(list.get(0));
+        } else {
+            JTHargaObat.setText("0");
         }
     }
 
@@ -1069,11 +1119,11 @@ public class Billing extends javax.swing.JFrame {
     }//GEN-LAST:event_JBUbahActionPerformed
 
     private void JCTindakanItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_JCTindakanItemStateChanged
-
+        setHargaTindakan();
     }//GEN-LAST:event_JCTindakanItemStateChanged
 
     private void JCObatItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_JCObatItemStateChanged
-
+        setHargaObat();
     }//GEN-LAST:event_JCObatItemStateChanged
     private void JBKembaliActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBKembaliActionPerformed
         dispose();
@@ -1123,7 +1173,7 @@ public class Billing extends javax.swing.JFrame {
 
     private void JTHargaObatKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_JTHargaObatKeyReleased
         if (evt.getKeyCode() != KeyEvent.VK_ENTER) {
-            setSubTotalTindakan();
+            setSubTotalObat();
         }
     }//GEN-LAST:event_JTHargaObatKeyReleased
 
@@ -1319,7 +1369,6 @@ public class Billing extends javax.swing.JFrame {
             } else {
                 JOptionPaneF.showMessageDialog(this, "Gagal. Silahkan Pilih Obat Terlebih Dahulu");
             }
-
         }
     }
 
@@ -1350,6 +1399,7 @@ public class Billing extends javax.swing.JFrame {
                 JTHargaTindakan.setText("");
                 JTSubTotalTindakan.setText("");
                 JTableTindakan.clearSelection();
+                setGrandTotal();
             }
         }
     }
@@ -1367,6 +1417,7 @@ public class Billing extends javax.swing.JFrame {
                 JTHargaObat.setText("");
                 JTSubTotalObat.setText("");
                 JTableObat.clearSelection();
+                setGrandTotal();
             }
         }
     }

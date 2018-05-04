@@ -309,9 +309,9 @@ public class MasterTindakan extends javax.swing.JFrame {
 
     private void formWindowClosed(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosed
         if (IdEdit == null) {
-            tambahMasterDokter = null;
+            tambahMasterTindakan = null;
         } else {
-            ubahMasterDokter = null;
+            ubahMasterTindakan = null;
         }
     }//GEN-LAST:event_formWindowClosed
 
@@ -391,7 +391,7 @@ public class MasterTindakan extends javax.swing.JFrame {
     void tambahData(Boolean tutup) {
         if (checkInput()) {
             Insert insert = new Insert();
-                Boolean berhasil = insert.simpan("INSERT INTO `tbmtindakan`(`NamaTindakan`, `IdTipeTindakan`, `Harga`, `Keterangan`, `Status`) VALUES ('" + JTNamaTindakan.getText() + "',(SELECT `IdTipeTindakan` FROM `tbsmtipetindakan` WHERE `TipeTindakan` = '"+JCTipeTindakan.getSelectedItem()+"'),'" + JTHarga.getText() + "','" + JTAKeterangan.getText() + "'," + JCBStatus.isSelected() + ")", "Tindakan", this);
+                Boolean berhasil = insert.simpan("INSERT INTO `tbmtindakan`(`NamaTindakan`, `IdTipeTindakan`, `Harga`, `Keterangan`, `Status`) VALUES ('" + JTNamaTindakan.getText() + "',(SELECT `IdTipeTindakan` FROM `tbsmtipetindakan` WHERE `TipeTindakan` = '"+JCTipeTindakan.getSelectedItem()+"'),'" + JTHarga.getInt() + "','" + JTAKeterangan.getText() + "'," + JCBStatus.isSelected() + ")", "Tindakan", this);
             if (berhasil) {
                 if (listMasterTindakan != null) {
                     listMasterTindakan.load();
@@ -411,7 +411,7 @@ public class MasterTindakan extends javax.swing.JFrame {
     void ubahData() {
         if (checkInput()) {
             Update update = new Update();
-            Boolean berhasil = update.Ubah("UPDATE `tbmtindakan` SET `NamaTindakan`='" + JTNamaTindakan.getText() + "',`IdTipeTindakan`=(SELECT `IdTipeTindakan` FROM `tbsmtipetindakan` WHERE `TipeTindakan` = '"+JCTipeTindakan.getSelectedItem()+"'),`Harga`='" + JTHarga.getText() + "',`Keterangan`='" + JTAKeterangan.getText() + "',`Status`=" + JCBStatus.isSelected() + " WHERE `IdTindakan` = " + IdEdit, "Tindakan", this);
+            Boolean berhasil = update.Ubah("UPDATE `tbmtindakan` SET `NamaTindakan`='" + JTNamaTindakan.getText() + "',`IdTipeTindakan`=(SELECT `IdTipeTindakan` FROM `tbsmtipetindakan` WHERE `TipeTindakan` = '"+JCTipeTindakan.getSelectedItem()+"'),`Harga`='" + JTHarga.getInt() + "',`Keterangan`='" + JTAKeterangan.getText() + "',`Status`=" + JCBStatus.isSelected() + " WHERE `IdTindakan` = " + IdEdit, "Tindakan", this);
             if (berhasil) {
                 dispose();
                 if (listMasterTindakan != null) {

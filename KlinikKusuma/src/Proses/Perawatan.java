@@ -181,9 +181,22 @@ public class Perawatan extends javax.swing.JFrame {
         } else if (JTJumlahTindakan.getNumberFormattedText().replace("0", "").isEmpty()) {
             JOptionPaneF.showMessageDialog(this, "Gagal. Jumlah Tidak Boleh Kosong.");
             return false;
+        } else if (cekDoubleTindakan(JCTindakan.getSelectedItem().toString()) && JBTambahTindakan.isEnabled()) {
+            JOptionPaneF.showMessageDialog(this, "Gagal. Tidak Bisa Input Tindakan Yang Sama.");
+            JCTindakan.requestFocus();
+            return false;
         } else {
             return true;
         }
+    }
+
+    boolean cekDoubleTindakan(String item) {
+        for (int i = 0; i < JTableTindakan.getRowCount(); i++) {
+            if (item.equals(JTableTindakan.getValueAt(i, 1))) {
+                return true;
+            }
+        }
+        return false;
     }
 
     boolean checkTableObat() {
@@ -193,9 +206,22 @@ public class Perawatan extends javax.swing.JFrame {
         } else if (JTJumlahObat.getNumberFormattedText().replace("0", "").isEmpty()) {
             JOptionPaneF.showMessageDialog(this, "Gagal. Jumlah Tidak Boleh Kosong.");
             return false;
+        } else if (cekDoubleObat(JCObat.getSelectedItem().toString()) && JBTambahObat.isEnabled()) {
+            JOptionPaneF.showMessageDialog(this, "Gagal. Tidak Bisa Input Obat Yang Sama.");
+            JCObat.requestFocus();
+            return false;
         } else {
             return true;
         }
+    }
+
+    boolean cekDoubleObat(String item) {
+        for (int i = 0; i < JTableObat.getRowCount(); i++) {
+            if (item.equals(JTableObat.getValueAt(i, 1))) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**

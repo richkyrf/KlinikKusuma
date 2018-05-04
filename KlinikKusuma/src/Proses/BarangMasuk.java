@@ -196,10 +196,6 @@ public class BarangMasuk extends javax.swing.JFrame {
         } else if (JTable.getRowCount() > 10) {
             JOptionPaneF.showMessageDialog(this, "Gagal. Jenis Barang Yang Diinput Tidak Bisa Lebih Dari 10");
             return false;
-        } else if (JTJumlah.getInt() > Float.parseFloat(JTStock.getText().replace(".", "").replace(",", "."))) {
-            JOptionPaneF.showMessageDialog(this, "Gagal. Jumlah Permintaan Tidak Bisa Melebihi Stok");
-            JTJumlah.requestFocus();
-            return false;
         } else if (cekdoubleitem(JTNamaBarang.getText()) && tambahtable.isEnabled()) {
             JOptionPaneF.showMessageDialog(this, "Gagal. Tidak Bisa Input Barang Yang Sama");
             JTNamaBarang.requestFocus();
@@ -541,6 +537,11 @@ public class BarangMasuk extends javax.swing.JFrame {
         jlableF29.setText("Barang Masuk");
         jlableF29.setFont(new java.awt.Font("Tahoma", 0, 24)); // NOI18N
 
+        JTNamaBarang.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                JTNamaBarangFocusLost(evt);
+            }
+        });
         JTNamaBarang.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
                 JTNamaBarangKeyPressed(evt);
@@ -558,6 +559,11 @@ public class BarangMasuk extends javax.swing.JFrame {
         });
 
         JBSearchNamaBarang.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Resource/Search.png"))); // NOI18N
+        JBSearchNamaBarang.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                JBSearchNamaBarangFocusLost(evt);
+            }
+        });
         JBSearchNamaBarang.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 JBSearchNamaBarangActionPerformed(evt);
@@ -894,6 +900,16 @@ public class BarangMasuk extends javax.swing.JFrame {
             }
         }
     }//GEN-LAST:event_JTHargaSatuanKeyPressed
+
+    private void JTNamaBarangFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_JTNamaBarangFocusLost
+        setHarga();
+        setStok();
+    }//GEN-LAST:event_JTNamaBarangFocusLost
+
+    private void JBSearchNamaBarangFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_JBSearchNamaBarangFocusLost
+        setHarga();
+        setStok();
+    }//GEN-LAST:event_JBSearchNamaBarangFocusLost
 
     /**
      * @param args the command line arguments
@@ -1383,17 +1399,14 @@ public class BarangMasuk extends javax.swing.JFrame {
     }
 
     void setStok() {
-//        if (!JTJenisBarang.getText().isEmpty() && !JTKategoriBarang.getText().isEmpty() && !JTNamaBarang.getText().isEmpty()) {
-//            DRunSelctOne dRunSelctOne = new DRunSelctOne();
-//            dRunSelctOne.seterorm("Gagal Menampilkan Data Stok Barang");
-//            dRunSelctOne.setQuery("SELECT SUM(`Stok`) AS 'Stok' FROM (SELECT IFNULL(SUM(`JumlahBarang`),0) AS 'Stok' FROM `tbbarangmasukdetail` WHERE `IdBarang`=(SELECT `IdBarang` FROM `tbmbarang` AS A JOIN `tbmkategoribarang` AS B ON A.`IdKategoriBarang`=B.`IdKategoriBarang` JOIN `tbmjenisbarang` AS C ON B.`IdJenisBarang`=C.`IdJenisBarang` WHERE `JenisBarang`='" + JTJenisBarang.getText() + "' AND `KategoriBarang`='" + JTKategoriBarang.getText() + "' AND `NamaBarang`='" + JTNamaBarang.getText() + "') UNION SELECT IFNULL(SUM(`JumlahBarang`)*-1,0) AS 'Stok' FROM `tbbarangkeluar` WHERE `IdBarang`=(SELECT `IdBarang` FROM `tbmbarang` AS A JOIN `tbmkategoribarang` AS B ON A.`IdKategoriBarang`=B.`IdKategoriBarang` JOIN `tbmjenisbarang` AS C ON B.`IdJenisBarang`=C.`IdJenisBarang` WHERE `JenisBarang`='" + JTJenisBarang.getText() + "' AND `KategoriBarang`='" + JTKategoriBarang.getText() + "' AND `NamaBarang`='" + JTNamaBarang.getText() + "') UNION SELECT IFNULL(SUM(`PenyesuaianStok`),0) AS 'Stok' FROM `tbpenyesuaianstok` WHERE `IdBarang`=(SELECT `IdBarang` FROM `tbmbarang` AS A JOIN `tbmkategoribarang` AS B ON A.`IdKategoriBarang`=B.`IdKategoriBarang` JOIN `tbmjenisbarang` AS C ON B.`IdJenisBarang`=C.`IdJenisBarang` WHERE `JenisBarang`='" + JTJenisBarang.getText() + "' AND `KategoriBarang`='" + JTKategoriBarang.getText() + "' AND `NamaBarang`='" + JTNamaBarang.getText() + "')) AS `stok`");
-//            ArrayList<String> list = dRunSelctOne.excute();
-//            String Stok = list.get(0);
-//            if (!idEdit.equals("0") && JTJenisBarang.getText().equals(jenisBarang) && JTKategoriBarang.getText().equals(kategoriBarang) && JTNamaBarang.getText().equals(namaBarang)) {
-//                Stok = String.valueOf(Integer.parseInt(Stok) + Integer.parseInt(jumlahBarangKeluar));
-//            }
-//            JRStokBarang.setText(Stok);
-//        }
+        if (!JTNamaBarang.getText().replace(" ", "").equals("")) {
+            DRunSelctOne dRunSelctOne = new DRunSelctOne();
+            dRunSelctOne.seterorm("Gagal Menampilkan Data Stok Barang");
+            dRunSelctOne.setQuery("SELECT `IdBarang`, IFNULL(SUM(`Jumlah`),0) as 'Stok' FROM( SELECT `IdBarang`, 0 as 'Jumlah' FROM `tbmbarang` WHERE 1 UNION ALL SELECT `IdBarang`, `Jumlah` FROM `tbbarangmasukdetail` WHERE 1 UNION ALL SELECT `IdBarang`, `Jumlah` FROM `tbpenjualandetail` WHERE 1 UNION ALL SELECT `IdBarang`, `Jumlah` FROM `tbpenyesuaianstok` WHERE 1) t1 WHERE `IdBarang` = (SELECT `IdBarang` FROM `tbmbarang` WHERE `NamaBarang` = '" + JTNamaBarang.getText() + "') GROUP BY `IdBarang`");
+            ArrayList<String> list = dRunSelctOne.excute();
+            String Stok = list.get(1);
+            JTStock.setText(Stok);
+        }
     }
 
 }

@@ -127,7 +127,6 @@ public class MasterPasien extends javax.swing.JFrame {
         JDTanggalLahir = new KomponenGUI.JdateCF();
         jlableF17 = new KomponenGUI.JlableF();
         jlableF18 = new KomponenGUI.JlableF();
-        JTNoTelpon = new KomponenGUI.JtextF();
         jlableF19 = new KomponenGUI.JlableF();
         jlableF20 = new KomponenGUI.JlableF();
         jlableF21 = new KomponenGUI.JlableF();
@@ -141,6 +140,7 @@ public class MasterPasien extends javax.swing.JFrame {
         jlableF25 = new KomponenGUI.JlableF();
         jlableF26 = new KomponenGUI.JlableF();
         JTNoKartu = new KomponenGUI.JtextF();
+        JTNoTelpon = new KomponenGUI.JNumberOnly();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
@@ -231,15 +231,6 @@ public class MasterPasien extends javax.swing.JFrame {
         jlableF17.setText("No. Telpon");
 
         jlableF18.setText(":");
-
-        JTNoTelpon.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyPressed(java.awt.event.KeyEvent evt) {
-                JTNoTelponKeyPressed(evt);
-            }
-            public void keyReleased(java.awt.event.KeyEvent evt) {
-                JTNoTelponKeyReleased(evt);
-            }
-        });
 
         jlableF19.setText("Email");
 
@@ -403,8 +394,8 @@ public class MasterPasien extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jlableF18, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(JTNoTelpon, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jlableF17, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jlableF17, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(JTNoTelpon, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jlableF10, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -478,12 +469,6 @@ public class MasterPasien extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_formWindowClosed
 
-    private void JTNoTelponKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_JTNoTelponKeyPressed
-        if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
-            JTPekerjaan.requestFocus();
-        }
-    }//GEN-LAST:event_JTNoTelponKeyPressed
-
     private void JTPekerjaanKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_JTPekerjaanKeyPressed
         if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
             JTEmail.requestFocus();
@@ -501,10 +486,6 @@ public class MasterPasien extends javax.swing.JFrame {
             JTCatatan.requestFocus();
         }
     }//GEN-LAST:event_JTAlamatKeyPressed
-
-    private void JTNoTelponKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_JTNoTelponKeyReleased
-
-    }//GEN-LAST:event_JTNoTelponKeyReleased
 
     private void JTNamaPasienFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_JTNamaPasienFocusLost
         getKodePasien();
@@ -574,7 +555,7 @@ public class MasterPasien extends javax.swing.JFrame {
     private KomponenGUI.JtextF JTKodePasien;
     private KomponenGUI.JtextF JTNamaPasien;
     private KomponenGUI.JtextF JTNoKartu;
-    private KomponenGUI.JtextF JTNoTelpon;
+    private KomponenGUI.JNumberOnly JTNoTelpon;
     private KomponenGUI.JtextF JTPekerjaan;
     private KomponenGUI.JbuttonF jbuttonF1;
     private KomponenGUI.JbuttonF jbuttonF2;

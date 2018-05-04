@@ -222,11 +222,6 @@
         <Property name="text" type="java.lang.String" value=":"/>
       </Properties>
     </Component>
-    <Component class="KomponenGUI.JtextF" name="JTNoTelpon">
-      <Events>
-        <EventHandler event="keyPressed" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="JTNoTelponKeyPressed"/>
-      </Events>
-    </Component>
     <Component class="KomponenGUI.JtextF" name="JTAlamat">
       <Events>
         <EventHandler event="keyPressed" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="JTAlamatKeyPressed"/>
@@ -246,6 +241,8 @@
       <Properties>
         <Property name="text" type="java.lang.String" value="Aktif"/>
       </Properties>
+    </Component>
+    <Component class="KomponenGUI.JNumberOnly" name="JTNoTelpon">
     </Component>
   </SubComponents>
 </Form>

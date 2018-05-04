@@ -390,7 +390,7 @@ public class MasterBarang extends javax.swing.JFrame {
     void tambahData(Boolean tutup) {
         if (checkInput()) {
             Insert insert = new Insert();
-            Boolean berhasil = insert.simpan("INSERT INTO `tbmbarang`(`NamaBarang`, `IdJenisBarang`, `Harga`, `Keterangan`, `Status`) VALUES ('" + JTNamaBarang.getText() + "',(SELECT `IdJenisBarang` FROM `tbsmjenisbarang` WHERE `JenisBarang` = '" + JTJenisBarang.getSelectedItem() + "'),'" + JTHarga.getText() + "','" + JTAKeterangan.getText() + "', " + JCBStatus.isSelected() + ")", "Barang", this);
+            Boolean berhasil = insert.simpan("INSERT INTO `tbmbarang`(`NamaBarang`, `IdJenisBarang`, `Harga`, `Keterangan`, `Status`) VALUES ('" + JTNamaBarang.getText() + "',(SELECT `IdJenisBarang` FROM `tbsmjenisbarang` WHERE `JenisBarang` = '" + JTJenisBarang.getSelectedItem() + "'),'" + JTHarga.getInt() + "','" + JTAKeterangan.getText() + "', " + JCBStatus.isSelected() + ")", "Barang", this);
             if (berhasil) {
                 if (listMasterBarang != null) {
                     listMasterBarang.load();
@@ -410,7 +410,7 @@ public class MasterBarang extends javax.swing.JFrame {
     void ubahData() {
         if (checkInput()) {
             Update update = new Update();
-            Boolean berhasil = update.Ubah("UPDATE `tbmbarang` SET `NamaBarang`='" + JTNamaBarang.getText() + "',`IdJenisBarang`=(SELECT `IdJenisBarang` FROM `tbsmjenisbarang` WHERE `JenisBarang` = '" + JTJenisBarang.getSelectedItem() + "'),`Harga`='" + JTHarga.getText() + "',`Keterangan`='" + JTAKeterangan.getText() + "', `Status` = " + JCBStatus.isSelected() + " WHERE `IdBarang` = " + IdEdit, "Barang", this);
+            Boolean berhasil = update.Ubah("UPDATE `tbmbarang` SET `NamaBarang`='" + JTNamaBarang.getText() + "',`IdJenisBarang`=(SELECT `IdJenisBarang` FROM `tbsmjenisbarang` WHERE `JenisBarang` = '" + JTJenisBarang.getSelectedItem() + "'),`Harga`='" + JTHarga.getInt() + "',`Keterangan`='" + JTAKeterangan.getText() + "', `Status` = " + JCBStatus.isSelected() + " WHERE `IdBarang` = " + IdEdit, "Barang", this);
             if (berhasil) {
                 dispose();
                 if (listMasterBarang != null) {

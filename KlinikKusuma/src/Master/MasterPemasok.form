@@ -56,7 +56,7 @@
                                   <Group type="103" groupAlignment="0" max="-2" attributes="0">
                                       <Component id="JTNamaBarang" max="32767" attributes="0"/>
                                       <Component id="jScrollPane1" alignment="0" max="32767" attributes="0"/>
-                                      <Component id="JTNoTelpon" alignment="0" max="32767" attributes="0"/>
+                                      <Component id="JTNoTelpon" max="32767" attributes="0"/>
                                   </Group>
                               </Group>
                           </Group>
@@ -72,7 +72,7 @@
                   </Group>
                   <Group type="102" attributes="0">
                       <Component id="jbuttonF4" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace max="32767" attributes="0"/>
+                      <EmptySpace pref="14" max="32767" attributes="0"/>
                       <Component id="jbuttonF3" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="jbuttonF2" min="-2" max="-2" attributes="0"/>
@@ -227,11 +227,6 @@
         <Property name="text" type="java.lang.String" value=":"/>
       </Properties>
     </Component>
-    <Component class="KomponenGUI.JtextF" name="JTNoTelpon">
-      <Events>
-        <EventHandler event="keyPressed" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="JTNoTelponKeyPressed"/>
-      </Events>
-    </Component>
     <Component class="KomponenGUI.JtextF" name="JTAlamat">
       <Events>
         <EventHandler event="keyPressed" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="JTAlamatKeyPressed"/>
@@ -251,6 +246,8 @@
       <Properties>
         <Property name="text" type="java.lang.String" value="Aktif"/>
       </Properties>
+    </Component>
+    <Component class="KomponenGUI.JNumberOnly" name="JTNoTelpon">
     </Component>
   </SubComponents>
 </Form>

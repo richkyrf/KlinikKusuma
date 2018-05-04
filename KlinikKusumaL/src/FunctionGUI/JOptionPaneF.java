@@ -26,7 +26,7 @@ public class JOptionPaneF {
     public static void showMessageDialog(Component parentComponent, Object message, String title, int messageType) {
         UIManager.put("OptionPane.messageFont", new Font("Tahoma", Font.PLAIN, 18));
         UIManager.put("OptionPane.buttonFont", new Font("Tahoma", Font.PLAIN, 18));
-        if (message.toString().contains("Gagal")) {
+        if (message.toString().toLowerCase().contains("gagal")) {
             UIManager.put("Panel.background", new Color(255, 200, 200));
         } else {
             UIManager.put("Panel.background", new Color(200, 255, 200));
@@ -38,7 +38,7 @@ public class JOptionPaneF {
     public static void showMessageDialog(Component parentComponent, Object message) {
         UIManager.put("OptionPane.messageFont", new Font("Tahoma", Font.PLAIN, 18));
         UIManager.put("OptionPane.buttonFont", new Font("Tahoma", Font.PLAIN, 18));
-        if (message.toString().contains("Gagal")) {
+        if (message.toString().toLowerCase().contains("gagal")) {
             UIManager.put("Panel.background", new Color(255, 200, 200));
         } else {
             UIManager.put("Panel.background", new Color(200, 255, 200));

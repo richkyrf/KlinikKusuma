@@ -97,11 +97,11 @@ public class MasterBeautician extends javax.swing.JFrame {
         jbuttonF3 = new KomponenGUI.JbuttonF();
         jlableF9 = new KomponenGUI.JlableF();
         jlableF10 = new KomponenGUI.JlableF();
-        JTNoTelpon = new KomponenGUI.JtextF();
         JTAlamat = new KomponenGUI.JtextF();
         jlableF4 = new KomponenGUI.JlableF();
         jlableF11 = new KomponenGUI.JlableF();
         JCBStatus = new KomponenGUI.JCheckBoxF();
+        JTNoTelpon = new KomponenGUI.JNumberOnly();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
@@ -169,12 +169,6 @@ public class MasterBeautician extends javax.swing.JFrame {
         jlableF9.setText("Alamat");
 
         jlableF10.setText(":");
-
-        JTNoTelpon.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyPressed(java.awt.event.KeyEvent evt) {
-                JTNoTelponKeyPressed(evt);
-            }
-        });
 
         JTAlamat.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
@@ -314,12 +308,6 @@ public class MasterBeautician extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_formWindowClosed
 
-    private void JTNoTelponKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_JTNoTelponKeyPressed
-        if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
-            JTAlamat.requestFocus();
-        }
-    }//GEN-LAST:event_JTNoTelponKeyPressed
-
     private void JTAlamatKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_JTAlamatKeyPressed
         if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
             JTAKeterangan.requestFocus();
@@ -373,7 +361,7 @@ public class MasterBeautician extends javax.swing.JFrame {
     private KomponenGUI.JTextAreaF JTAKeterangan;
     private KomponenGUI.JtextF JTAlamat;
     private KomponenGUI.JtextF JTNamaBeautician;
-    private KomponenGUI.JtextF JTNoTelpon;
+    private KomponenGUI.JNumberOnly JTNoTelpon;
     private javax.swing.JScrollPane jScrollPane1;
     private KomponenGUI.JbuttonF jbuttonF1;
     private KomponenGUI.JbuttonF jbuttonF2;
