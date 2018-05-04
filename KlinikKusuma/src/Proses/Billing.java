@@ -59,12 +59,15 @@ public class Billing extends javax.swing.JFrame {
         }
         JTBayar.requestFocus();
         setPoin();
+        JTSetelahPotong.setVisible(false);
+        jlableF12.setVisible(false);
+        jlableF24.setVisible(false);
     }
 
     void loadData(Object idEdit) {
         DRunSelctOne dRunSelctOne = new DRunSelctOne();
         dRunSelctOne.seterorm("Eror Gagal Menampilkan Data Billing");
-        dRunSelctOne.setQuery("SELECT `IdBilling` as 'ID', `NoBilling` as 'No. Billing', DATE_FORMAT(a.`Tanggal`,'%d-%m-%Y') as 'Tanggal', a.`NoInvoice` as 'No. Invoice', b.`NoAntrian` as 'No. Antrian', `NamaDokter` as 'Dokter', IFNULL(`NamaBeautician`,'-- Pilih Nama Beautician --') as 'Beautician', CONCAT('(',`KodePasien`,') ',`NamaPasien`) as 'Pasien', FORMAT(`Bayar`,0) as 'Jumlah Bayar' FROM `tbbilling`a JOIN `tbperawatan`b ON a.`NoInvoice`=b.`NoInvoice` JOIN `tbantrian`c ON b.`NoAntrian`=c.`NoAntrian` AND b.`Tanggal`=c.`Tanggal` JOIN `tbmpasien`d ON c.`IdPasien`=d.`IdPasien` JOIN `tbmdokter`e ON b.`IdDokter`=e.`IdDokter` LEFT JOIN `tbmbeautician`f ON b.`IdBeautician`=f.`IdBeautician` WHERE `IdBilling` = '" + Parameter + "'");
+        dRunSelctOne.setQuery("SELECT `IdBilling` as 'ID', `NoBilling` as 'No. Billing', DATE_FORMAT(a.`Tanggal`,'%d-%m-%Y') as 'Tanggal', a.`NoInvoice` as 'No. Invoice', b.`NoAntrian` as 'No. Antrian', `NamaDokter` as 'Dokter', IFNULL(`NamaBeautician`,'-- Pilih Nama Beautician --') as 'Beautician', CONCAT('(',`KodePasien`,') ',`NamaPasien`) as 'Pasien', FORMAT(`Bayar`,0) as 'Jumlah Bayar', IF(`StatusPoin`=1,'Poin','Cash') as 'Bayar', `Poin` FROM `tbbilling`a JOIN `tbperawatan`b ON a.`NoInvoice`=b.`NoInvoice` JOIN `tbantrian`c ON b.`NoAntrian`=c.`NoAntrian` AND b.`Tanggal`=c.`Tanggal` JOIN `tbmpasien`d ON c.`IdPasien`=d.`IdPasien` JOIN `tbmdokter`e ON b.`IdDokter`=e.`IdDokter` LEFT JOIN `tbmbeautician`f ON b.`IdBeautician`=f.`IdBeautician` WHERE `IdBilling` = '" + Parameter + "'");
         ArrayList<String> list = dRunSelctOne.excute();
         JTNoBilling.setText(list.get(1));
         JDTanggal.setDate(FDateF.strtodate(list.get(2), "dd-MM-yyyy"));
@@ -74,6 +77,7 @@ public class Billing extends javax.swing.JFrame {
         JCNamaBeautician.setSelectedItem(list.get(6));
         JTNamaPasien.setText(list.get(7));
         JTBayar.setInt(list.get(8).replace(",", ""));
+        JCBPakaiPoin.setSelected(list.get(9).equals("Poin"));
         DefaultTableModel model = (DefaultTableModel) JTableTindakan.getModel();
         model.getDataVector().removeAllElements();
         RunSelct runSelct = new RunSelct();
@@ -117,6 +121,7 @@ public class Billing extends javax.swing.JFrame {
             runSelct2.closecon();
         }
         setGrandTotal();
+        JTSetelahPotong.setText(String.valueOf(JTGrandTotal.getInt() - Integer.valueOf(list.get(10))*5000));
     }
 
     void loadPerawatan(Object noInvoice) {
@@ -230,8 +235,11 @@ public class Billing extends javax.swing.JFrame {
         } else if (JTableObat.getRowCount() == 0) {
             JOptionPaneF.showMessageDialog(this, "Gagal. Silahkan Isi Obat Terlebih Dahulu.");
             return false;
-        } else if (JTBayar.getText().replace("0", "").isEmpty()) {
-            JOptionPaneF.showMessageDialog(this, "Gagal. Silahkan Masukkan Jumlah Bayar.");
+        } else if (JTBayar.getInt() < JTGrandTotal.getInt() && !JCBPakaiPoin.isSelected()) {
+            JOptionPaneF.showMessageDialog(this, "Gagal. Jumlah Bayar Tidak Mencukupi.");
+            return false;
+        } else if (JTBayar.getInt() < JTSetelahPotong.getInt() && JCBPakaiPoin.isSelected()) {
+            JOptionPaneF.showMessageDialog(this, "Gagal. Jumlah Bayar Tidak Mencukupi.");
             return false;
         } else {
             return true;
@@ -296,9 +304,24 @@ public class Billing extends javax.swing.JFrame {
     void setPoin() {
         DRunSelctOne dRunSelctOne = new DRunSelctOne();
         dRunSelctOne.seterorm("Gagal setPoin()");
-        dRunSelctOne.setQuery("SELECT `IdPasien`, IFNULL(SUM(`Poin`),0) as 'Poin' FROM (SELECT d.`IdPasien`, SUM(e.`Jumlah`*e.`Harga`)+SUM(f.`Jumlah`*f.`Harga`) as 'Total Belanja', FLOOR((SUM(e.`Jumlah`*e.`Harga`)+SUM(f.`Jumlah`*f.`Harga`)) / 50000) as 'Poin' FROM `tbbilling`a JOIN `tbperawatan`b ON a.`NoInvoice`=b.`NoInvoice` JOIN `tbantrian`c ON b.`NoAntrian`=c.`NoAntrian` AND b.`Tanggal`=c.`Tanggal` JOIN `tbmpasien`d ON c.`IdPasien`=d.`IdPasien` JOIN `tbbillingobat`e ON a.`NoBilling`=e.`NoBilling` JOIN `tbbillingtindakan`f ON a.`NoBilling`=f.`NoBilling` WHERE 1 AND d.`IdPasien` = (SELECT `IdPasien` FROM `tbmpasien` WHERE `KodePasien` = '" + JTNamaPasien.getText().split("\\(")[1].split("\\)")[0] + "') GROUP BY d.`IdPasien`, a.`NoBilling` UNION ALL SELECT d.`IdPasien`, SUM(a.`Poin`*5000)*-1 as 'Total Belanja', SUM(`Poin`)*-1 FROM `tbbilling`a JOIN `tbperawatan`b ON a.`NoInvoice`=b.`NoInvoice` JOIN `tbantrian`c ON b.`NoAntrian`=c.`NoAntrian` AND b.`Tanggal`=c.`Tanggal` JOIN `tbmpasien`d ON c.`IdPasien`=d.`IdPasien` JOIN `tbbillingobat`e ON a.`NoBilling`=e.`NoBilling` JOIN `tbbillingtindakan`f ON a.`NoBilling`=f.`NoBilling` WHERE 1 AND a.`StatusPoin` = 1 AND d.`IdPasien` = (SELECT `IdPasien` FROM `tbmpasien` WHERE `KodePasien` = '" + JTNamaPasien.getText().split("\\(")[1].split("\\)")[0] + "') GROUP BY d.`IdPasien`, a.`NoBilling`) t1 WHERE 1 GROUP BY `IdPasien`");
+        dRunSelctOne.setQuery("SELECT `IdPasien`, IFNULL(SUM(`Poin`),0) as 'Poin' FROM (SELECT `IdPasien`, 0 as 'Jumlah Belanja', 0 as 'Poin' FROM `tbmpasien` WHERE 1 AND `KodePasien` = '" + JTNamaPasien.getText().split("\\(")[1].split("\\)")[0] + "' UNION ALL SELECT d.`IdPasien`, SUM(e.`Jumlah`*e.`Harga`)+SUM(f.`Jumlah`*f.`Harga`) as 'Total Belanja', FLOOR((SUM(e.`Jumlah`*e.`Harga`)+SUM(f.`Jumlah`*f.`Harga`)) / 50000) as 'Poin' FROM `tbbilling`a JOIN `tbperawatan`b ON a.`NoInvoice`=b.`NoInvoice` JOIN `tbantrian`c ON b.`NoAntrian`=c.`NoAntrian` AND b.`Tanggal`=c.`Tanggal` JOIN `tbmpasien`d ON c.`IdPasien`=d.`IdPasien` JOIN `tbbillingobat`e ON a.`NoBilling`=e.`NoBilling` JOIN `tbbillingtindakan`f ON a.`NoBilling`=f.`NoBilling` WHERE 1 AND d.`IdPasien` = (SELECT `IdPasien` FROM `tbmpasien` WHERE `KodePasien` = '" + JTNamaPasien.getText().split("\\(")[1].split("\\)")[0] + "') GROUP BY d.`IdPasien`, a.`NoBilling` UNION ALL SELECT d.`IdPasien`, SUM(a.`Poin`*5000)*-1 as 'Total Belanja', SUM(`Poin`)*-1 FROM `tbbilling`a JOIN `tbperawatan`b ON a.`NoInvoice`=b.`NoInvoice` JOIN `tbantrian`c ON b.`NoAntrian`=c.`NoAntrian` AND b.`Tanggal`=c.`Tanggal` JOIN `tbmpasien`d ON c.`IdPasien`=d.`IdPasien` JOIN `tbbillingobat`e ON a.`NoBilling`=e.`NoBilling` JOIN `tbbillingtindakan`f ON a.`NoBilling`=f.`NoBilling` WHERE 1 AND a.`StatusPoin` = 1 AND d.`IdPasien` = (SELECT `IdPasien` FROM `tbmpasien` WHERE `KodePasien` = '" + JTNamaPasien.getText().split("\\(")[1].split("\\)")[0] + "') GROUP BY d.`IdPasien`, a.`NoBilling`) t1 WHERE 1 GROUP BY `IdPasien`");
         ArrayList<String> list = dRunSelctOne.excute();
-        JTPoin.setText(list.get(1));
+        JLPoin.setText("Poin (" + list.get(1) + ")");
+        if (list.get(1).equals("0")) {
+            JCBPakaiPoin.setEnabled(false);
+        }
+    }
+
+    String getSetelahPotong() {
+        if (JTGrandTotal.getInt() - (Integer.valueOf(JLPoin.getText().split("\\(")[1].split("\\)")[0]) * 5000) <= 0) {
+            return "0";
+        } else {
+            return String.valueOf(JTGrandTotal.getInt() - ((Integer.valueOf(JLPoin.getText().split("\\(")[1].split("\\)")[0]) * 5000)));
+        }
+    }
+
+    Integer getPoinTerpakai() {
+        return (JTGrandTotal.getInt() - JTSetelahPotong.getInt()) / 5000;
     }
 
     /**
@@ -364,10 +387,12 @@ public class Billing extends javax.swing.JFrame {
         jlableF10 = new KomponenGUI.JlableF();
         jlableF11 = new KomponenGUI.JlableF();
         JTBayar = new KomponenGUI.JPlaceHolder();
-        JTPoin = new KomponenGUI.JRibuanTextField();
-        jlableF12 = new KomponenGUI.JlableF();
+        JLPoin = new KomponenGUI.JlableF();
         jlableF13 = new KomponenGUI.JlableF();
         JCBPakaiPoin = new KomponenGUI.JCheckBoxF();
+        jlableF12 = new KomponenGUI.JlableF();
+        jlableF24 = new KomponenGUI.JlableF();
+        JTSetelahPotong = new KomponenGUI.JRibuanTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
@@ -754,12 +779,23 @@ public class Billing extends javax.swing.JFrame {
             }
         });
 
-        jlableF12.setText("Poin");
+        JLPoin.setText("Poin (000)");
 
         jlableF13.setText(":");
 
         JCBPakaiPoin.setSelected(false);
         JCBPakaiPoin.setText("Pakai Poin");
+        JCBPakaiPoin.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                JCBPakaiPoinActionPerformed(evt);
+            }
+        });
+
+        jlableF12.setText("Setelah Potong");
+
+        jlableF24.setText(":");
+
+        JTSetelahPotong.setEnabled(false);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -830,27 +866,31 @@ public class Billing extends javax.swing.JFrame {
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                         .addComponent(JBUbah, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                        .addComponent(jlableF12, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(jlableF13, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(JTPoin, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(JCBPakaiPoin, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                            .addComponent(jlableF10, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                            .addComponent(jlableF9, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addGap(0, 0, Short.MAX_VALUE)
                                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addComponent(jlableF9, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 119, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addComponent(JLPoin, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 119, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addComponent(jlableF12, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addComponent(jlableF10, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 119, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                                    .addComponent(jlableF11, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                    .addComponent(JTBayar, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                                .addGroup(layout.createSequentialGroup()
+                                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                        .addComponent(jlableF8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                        .addComponent(jlableF13, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                        .addComponent(JCBPakaiPoin, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                        .addComponent(JTGrandTotal, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE))))
                                             .addGroup(layout.createSequentialGroup()
-                                                .addComponent(jlableF8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addComponent(jlableF24, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                .addComponent(JTGrandTotal, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                                .addComponent(jlableF11, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                .addComponent(JTBayar, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                                                .addComponent(JTSetelahPotong, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(JBTambah, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addGap(10, 10, 10))
@@ -909,17 +949,23 @@ public class Billing extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(JTGrandTotal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jlableF8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jlableF9, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jlableF9, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(JLPoin, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jlableF13, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jlableF12, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(JTPoin, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(JCBPakaiPoin, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jlableF12, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jlableF24, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(JTSetelahPotong, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jlableF10, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jlableF11, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(JTBayar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 55, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(JBTambah, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(JBKembali, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -1129,6 +1175,19 @@ public class Billing extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_JTableObatMouseClicked
 
+    private void JCBPakaiPoinActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JCBPakaiPoinActionPerformed
+        if (JCBPakaiPoin.isSelected()) {
+            JTSetelahPotong.setVisible(true);
+            jlableF12.setVisible(true);
+            jlableF24.setVisible(true);
+            JTSetelahPotong.setText(getSetelahPotong());
+        } else {
+            JTSetelahPotong.setVisible(false);
+            jlableF12.setVisible(false);
+            jlableF24.setVisible(false);
+        }
+    }//GEN-LAST:event_JCBPakaiPoinActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -1184,6 +1243,7 @@ public class Billing extends javax.swing.JFrame {
     private KomponenGUI.JcomboboxF JCObat;
     private KomponenGUI.JcomboboxF JCTindakan;
     private static KomponenGUI.JdateCF JDTanggal;
+    private KomponenGUI.JlableF JLPoin;
     private KomponenGUI.JPlaceHolder JTBayar;
     private KomponenGUI.JPlaceHolder JTGrandTotal;
     private KomponenGUI.JPlaceHolder JTHargaObat;
@@ -1194,7 +1254,7 @@ public class Billing extends javax.swing.JFrame {
     private KomponenGUI.JtextF JTNoAntrian;
     private KomponenGUI.JtextF JTNoBilling;
     private KomponenGUI.JtextF JTNoInvoice;
-    private KomponenGUI.JRibuanTextField JTPoin;
+    private KomponenGUI.JRibuanTextField JTSetelahPotong;
     private KomponenGUI.JPlaceHolder JTSubTotalObat;
     private KomponenGUI.JPlaceHolder JTSubTotalTindakan;
     private KomponenGUI.JtableF JTableObat;
@@ -1220,6 +1280,7 @@ public class Billing extends javax.swing.JFrame {
     private KomponenGUI.JlableF jlableF21;
     private KomponenGUI.JlableF jlableF22;
     private KomponenGUI.JlableF jlableF23;
+    private KomponenGUI.JlableF jlableF24;
     private KomponenGUI.JlableF jlableF3;
     private KomponenGUI.JlableF jlableF4;
     private KomponenGUI.JlableF jlableF5;
@@ -1318,7 +1379,7 @@ public class Billing extends javax.swing.JFrame {
             if (Berhasil) {
                 Berhasil = multiInsert.setautocomit(false);
                 if (Berhasil) {
-                    Berhasil = multiInsert.Excute("INSERT INTO `tbbilling`(`NoBilling`, `Tanggal`, `NoInvoice`, `Bayar`) VALUES ('" + JTNoBilling.getText() + "','" + FDateF.datetostr(JDTanggal.getDate(), "yyyy-MM-dd") + "','" + JTNoInvoice.getText() + "','" + JTBayar.getNumberFormattedText() + "')", null);
+                    Berhasil = multiInsert.Excute("INSERT INTO `tbbilling`(`NoBilling`, `Tanggal`, `NoInvoice`, `Bayar`, `StatusPoin`, `Poin`) VALUES ('" + JTNoBilling.getText() + "','" + FDateF.datetostr(JDTanggal.getDate(), "yyyy-MM-dd") + "','" + JTNoInvoice.getText() + "','" + JTBayar.getNumberFormattedText() + "', " + JCBPakaiPoin.isSelected() + ", '" + getPoinTerpakai() + "')", null);
                     if (Berhasil) {
                         for (int i = 0; i < JTableTindakan.getRowCount(); i++) {
                             Berhasil = multiInsert.Excute("INSERT INTO `tbbillingtindakan`(`NoBilling`, `IdTindakan`, `Jumlah`, `Harga`) VALUES ('" + JTNoBilling.getText() + "',(SELECT `IdTindakan` FROM `tbmtindakan` WHERE `NamaTindakan` = '" + JTableTindakan.getValueAt(i, 0) + "'),'" + JTableTindakan.getValueAt(i, 1).toString().replace(".", "") + "','" + JTableTindakan.getValueAt(i, 2).toString().replace(".", "") + "')", null);
@@ -1365,7 +1426,7 @@ public class Billing extends javax.swing.JFrame {
             if (Berhasil) {
                 Berhasil = multiInsert.setautocomit(false);
                 if (Berhasil) {
-                    Berhasil = multiInsert.Excute("UPDATE `tbbilling` SET `NoBilling`='" + JTNoBilling.getText() + "',`Tanggal`='" + FDateF.datetostr(JDTanggal.getDate(), "yyyy-MM-dd") + "',`NoInvoice`='" + JTNoInvoice.getText() + "',`Bayar`='" + JTBayar.getNumberFormattedText() + "' WHERE `IdBilling` = '" + Parameter + "'", null);
+                    Berhasil = multiInsert.Excute("UPDATE `tbbilling` SET `NoBilling`='" + JTNoBilling.getText() + "',`Tanggal`='" + FDateF.datetostr(JDTanggal.getDate(), "yyyy-MM-dd") + "',`NoInvoice`='" + JTNoInvoice.getText() + "',`Bayar`='" + JTBayar.getNumberFormattedText() + "', `StatusPoin` = " + JCBPakaiPoin.isSelected() + ", `Poin` = '" + getPoinTerpakai() + "' WHERE `IdBilling` = '" + Parameter + "'", null);
                     if (Berhasil) {
                         Berhasil = multiInsert.Excute("DELETE FROM `tbbillingtindakan` WHERE `NoBilling` = '" + JTNoBilling.getText() + "'", null);
                         if (Berhasil) {

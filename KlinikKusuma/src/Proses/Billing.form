@@ -108,29 +108,37 @@
                                       <Component id="JBUbah" min="-2" max="-2" attributes="0"/>
                                   </Group>
                                   <Group type="102" alignment="1" attributes="0">
-                                      <Component id="jlableF12" min="-2" max="-2" attributes="0"/>
-                                      <EmptySpace max="-2" attributes="0"/>
-                                      <Component id="jlableF13" min="-2" max="-2" attributes="0"/>
-                                      <EmptySpace max="-2" attributes="0"/>
-                                      <Component id="JTPoin" min="-2" pref="60" max="-2" attributes="0"/>
-                                      <EmptySpace max="-2" attributes="0"/>
-                                      <Component id="JCBPakaiPoin" min="-2" max="-2" attributes="0"/>
-                                      <EmptySpace max="32767" attributes="0"/>
-                                      <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                                          <Component id="jlableF10" max="32767" attributes="0"/>
-                                          <Component id="jlableF9" max="32767" attributes="0"/>
+                                      <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                                      <Group type="103" groupAlignment="0" attributes="0">
+                                          <Component id="jlableF9" alignment="1" min="-2" pref="119" max="-2" attributes="0"/>
+                                          <Component id="JLPoin" alignment="1" min="-2" pref="119" max="-2" attributes="0"/>
+                                          <Component id="jlableF12" alignment="1" min="-2" max="-2" attributes="0"/>
+                                          <Component id="jlableF10" alignment="1" min="-2" pref="119" max="-2" attributes="0"/>
                                       </Group>
                                       <EmptySpace max="-2" attributes="0"/>
-                                      <Group type="103" groupAlignment="0" attributes="0">
-                                          <Group type="102" alignment="0" attributes="0">
-                                              <Component id="jlableF8" min="-2" max="-2" attributes="0"/>
-                                              <EmptySpace max="-2" attributes="0"/>
-                                              <Component id="JTGrandTotal" min="-2" pref="160" max="-2" attributes="0"/>
+                                      <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                                          <Group type="103" groupAlignment="0" attributes="0">
+                                              <Group type="102" alignment="1" attributes="0">
+                                                  <Component id="jlableF11" min="-2" max="-2" attributes="0"/>
+                                                  <EmptySpace max="-2" attributes="0"/>
+                                                  <Component id="JTBayar" min="-2" pref="160" max="-2" attributes="0"/>
+                                              </Group>
+                                              <Group type="102" alignment="0" attributes="0">
+                                                  <Group type="103" groupAlignment="0" attributes="0">
+                                                      <Component id="jlableF8" alignment="0" min="-2" max="-2" attributes="0"/>
+                                                      <Component id="jlableF13" alignment="0" min="-2" max="-2" attributes="0"/>
+                                                  </Group>
+                                                  <EmptySpace max="-2" attributes="0"/>
+                                                  <Group type="103" groupAlignment="0" attributes="0">
+                                                      <Component id="JCBPakaiPoin" min="-2" max="-2" attributes="0"/>
+                                                      <Component id="JTGrandTotal" min="-2" pref="160" max="-2" attributes="0"/>
+                                                  </Group>
+                                              </Group>
                                           </Group>
-                                          <Group type="102" alignment="1" attributes="0">
-                                              <Component id="jlableF11" min="-2" max="-2" attributes="0"/>
+                                          <Group type="102" alignment="0" attributes="0">
+                                              <Component id="jlableF24" min="-2" max="-2" attributes="0"/>
                                               <EmptySpace max="-2" attributes="0"/>
-                                              <Component id="JTBayar" min="-2" pref="160" max="-2" attributes="0"/>
+                                              <Component id="JTSetelahPotong" max="32767" attributes="0"/>
                                           </Group>
                                       </Group>
                                   </Group>
@@ -207,18 +215,26 @@
                   <Component id="JTGrandTotal" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="jlableF8" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="jlableF9" alignment="3" min="-2" max="-2" attributes="0"/>
+              </Group>
+              <EmptySpace max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="3" attributes="0">
+                  <Component id="JLPoin" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="jlableF13" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="jlableF12" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="JTPoin" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="JCBPakaiPoin" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="3" attributes="0">
+                  <Component id="jlableF12" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="jlableF24" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="JTSetelahPotong" alignment="3" min="-2" max="-2" attributes="0"/>
+              </Group>
+              <EmptySpace min="-2" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="jlableF10" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="jlableF11" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="JTBayar" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
-              <EmptySpace pref="55" max="32767" attributes="0"/>
+              <EmptySpace max="32767" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="JBTambah" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="JBKembali" alignment="3" min="-2" max="-2" attributes="0"/>
@@ -776,11 +792,9 @@
         <AuxValue name="JavaCodeGenerator_InitCodePre" type="java.lang.String" value="JTBayar.setPlaceholder(&quot;Bayar&quot;);"/>
       </AuxValues>
     </Component>
-    <Component class="KomponenGUI.JRibuanTextField" name="JTPoin">
-    </Component>
-    <Component class="KomponenGUI.JlableF" name="jlableF12">
+    <Component class="KomponenGUI.JlableF" name="JLPoin">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Poin"/>
+        <Property name="text" type="java.lang.String" value="Poin (000)"/>
       </Properties>
     </Component>
     <Component class="KomponenGUI.JlableF" name="jlableF13">
@@ -792,6 +806,24 @@
       <Properties>
         <Property name="selected" type="boolean" value="false"/>
         <Property name="text" type="java.lang.String" value="Pakai Poin"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="JCBPakaiPoinActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="KomponenGUI.JlableF" name="jlableF12">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Setelah Potong"/>
+      </Properties>
+    </Component>
+    <Component class="KomponenGUI.JlableF" name="jlableF24">
+      <Properties>
+        <Property name="text" type="java.lang.String" value=":"/>
+      </Properties>
+    </Component>
+    <Component class="KomponenGUI.JRibuanTextField" name="JTSetelahPotong">
+      <Properties>
+        <Property name="enabled" type="boolean" value="false"/>
       </Properties>
     </Component>
   </SubComponents>
