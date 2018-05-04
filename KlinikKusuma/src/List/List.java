@@ -98,7 +98,6 @@ public class List extends javax.swing.JFrame {
                 break;
             case "Permintaan Stok":
                 setTitle("List Permintaan Stok");
-                jCheckBoxF1.setVisible(true);
                 break;
             default:
                 throw new AssertionError();
