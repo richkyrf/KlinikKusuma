@@ -44,7 +44,8 @@ public class PermintaanStok extends javax.swing.JFrame {
         setVisible(true);
         setTitle("Pemintaan Stok");
         setLocationRelativeTo(null);
-        jbuttonF3.setVisible(true);
+        jbuttonF1.setVisible(true);
+        jbuttonF3.setVisible(false);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         //setStok();
     }
@@ -58,7 +59,8 @@ public class PermintaanStok extends javax.swing.JFrame {
         setTitle("Pemintaan Stok");
         setLocationRelativeTo(null);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-        jbuttonF1.setVisible(true);
+        jbuttonF3.setVisible(true);
+        jbuttonF1.setVisible(false);
         loadData(idEdit);
         //setStok();
     }
@@ -66,7 +68,7 @@ public class PermintaanStok extends javax.swing.JFrame {
     void loadData(Object idEdit) {
         DRunSelctOne dRunSelctOne = new DRunSelctOne();
         dRunSelctOne.seterorm("Eror gagal Menampilkan Data Permintaan Stok");
-        dRunSelctOne.setQuery("SELECT `NoPermintaan` as 'No. Permintaan', DATE_FORMAT(`Tanggal`,'%d-%m-%Y') as 'Tanggal', b.`NamaBarang` as 'Nama Barang', `Jumlah`, a.`Keterangan` FROM `tbpermintaan`a JOIN `tbbarang`b ON a.`IdBarang`=b.`Idbarang`  WHERE `IdPermintaan` = '" + IdEdit + "'");
+        dRunSelctOne.setQuery("SELECT `NoPermintaan` as 'No. Permintaan', DATE_FORMAT(`Tanggal`,'%d-%m-%Y') as 'Tanggal', b.`NamaBarang` as 'Nama Barang', `Jumlah`, a.`Keterangan` FROM `tbpermintaanstok`a JOIN `tbmbarang`b ON a.`IdBarang`=b.`Idbarang`  WHERE `IdPermintaan` = '" + IdEdit + "'");
         ArrayList<String> list = dRunSelctOne.excute();
         JTNoPermintaan.setText(list.get(0));
         JDTanggalPermintaan.setDate(FDateF.strtodate(list.get(1), "dd-MM-yyyy"));
@@ -182,7 +184,7 @@ public class PermintaanStok extends javax.swing.JFrame {
             }
         });
 
-        jbuttonF1.setText("TAMBAH");
+        jbuttonF1.setText("TAMBAH + TUTUP");
         jbuttonF1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jbuttonF1ActionPerformed(evt);
@@ -210,12 +212,6 @@ public class PermintaanStok extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(jbuttonF2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jbuttonF1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jbuttonF3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                             .addComponent(jlableF3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -234,19 +230,28 @@ public class PermintaanStok extends javax.swing.JFrame {
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jlableF6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(JCNamaBarang, javax.swing.GroupLayout.DEFAULT_SIZE, 311, Short.MAX_VALUE))))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jlableF17, javax.swing.GroupLayout.PREFERRED_SIZE, 131, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jlableF18, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jScrollPane1))
+                                .addComponent(JCNamaBarang, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jlableF13, javax.swing.GroupLayout.PREFERRED_SIZE, 131, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jlableF14, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(JTJumlah, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                        .addComponent(JTJumlah, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jlableF17, javax.swing.GroupLayout.PREFERRED_SIZE, 131, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jlableF18, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(jbuttonF2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(0, 0, Short.MAX_VALUE)
+                                .addComponent(jbuttonF1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jbuttonF3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(jScrollPane1))))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -315,6 +320,7 @@ public class PermintaanStok extends javax.swing.JFrame {
 
     private void jbuttonF1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbuttonF1ActionPerformed
         tambah();
+        dispose();
     }//GEN-LAST:event_jbuttonF1ActionPerformed
 
     private void JCNamaBarangKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_JCNamaBarangKeyPressed
@@ -498,7 +504,7 @@ public class PermintaanStok extends javax.swing.JFrame {
             if (Berhasil) {
                 Berhasil = multiInsert.setautocomit(false);
                 if (Berhasil) {
-                    Berhasil = multiInsert.Excute("UPDATE `tbpermintaanstok` SET `NoPermintaan`='" + JTNoPermintaan.getText() + "',`Tanggal`='" + FDateF.datetostr(JDTanggalPermintaan.getDate(), "yyyy-MM-dd") + "',`IdBarang`=(SELECT `IdBarang` FROM `tbmbarang` WHERE `NamaBarang` = '" + JCNamaBarang.getSelectedItem() + "'),`Jumlah`+'"+ JTJumlah.getText() +"'`Keterangan`='" + JTAKeterangan.getText() + "' WHERE `IdBarangMasuk` = '" + IdEdit + "'", null);
+                    Berhasil = multiInsert.Excute("UPDATE `tbpermintaanstok` SET `NoPermintaan`='" + JTNoPermintaan.getText() + "',`Tanggal`='" + FDateF.datetostr(JDTanggalPermintaan.getDate(), "yyyy-MM-dd") + "',`IdBarang`=(SELECT `IdBarang` FROM `tbmbarang` WHERE `NamaBarang` = '" + JCNamaBarang.getSelectedItem() + "'),`Jumlah`='" + (Float.parseFloat(JTJumlah.getText().replace(".", ""))) + "',`Keterangan`='" + JTAKeterangan.getText() + "' WHERE `IdPermintaan` = '" + IdEdit + "'", null);
                 }
             }
             if (Berhasil == false) {
@@ -511,9 +517,9 @@ public class PermintaanStok extends javax.swing.JFrame {
                 multiInsert.Commit();
                 multiInsert.closecon();
                 dispose();
-                ubahBarangMasuk = null;
-                if (listBarangMasuk != null) {
-                    listBarangMasuk.load();
+                ubahPermintaanStok = null;
+                if (listPermintaanStok != null) {
+                    listPermintaanStok.load();
                 }
             }
         }
