@@ -55,7 +55,8 @@ public class JtableF extends JTable {
     public Component prepareRenderer(TableCellRenderer renderer, int row, int col) {
         Component comp = super.prepareRenderer(renderer, row, col);
         if (usecolor) {
-            if (getModel().getValueAt(row, getColumnCount() - 1).equals("Antri")) {
+            int modelRow = convertRowIndexToModel(row);
+            if (getModel().getValueAt(modelRow, getColumnCount() - 1).equals("Antri")) {
                 comp.setBackground(Color.pink);
             } else if (isRowSelected(row)) {
                 comp.setBackground(Color.gray);

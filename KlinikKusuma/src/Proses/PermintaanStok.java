@@ -40,21 +40,20 @@ public class PermintaanStok extends javax.swing.JFrame {
     public PermintaanStok() {
         initComponents();
         JTNoPermintaan.setText(getNoPermintaanStok());
-        JCNamaBarang.requestFocus();
+        JTNamaBarang.requestFocus();
         setVisible(true);
         setTitle("Pemintaan Stok");
         setLocationRelativeTo(null);
         jbuttonF1.setVisible(true);
         jbuttonF3.setVisible(false);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-        //setStok();
     }
 
     public PermintaanStok(Object idEdit) {
         IdEdit = idEdit.toString();
         initComponents();
         JTNoPermintaan.setText(getNoPermintaanStok());
-        JCNamaBarang.requestFocus();
+        JTNamaBarang.requestFocus();
         setVisible(true);
         setTitle("Pemintaan Stok");
         setLocationRelativeTo(null);
@@ -62,7 +61,6 @@ public class PermintaanStok extends javax.swing.JFrame {
         jbuttonF3.setVisible(true);
         jbuttonF1.setVisible(false);
         loadData(idEdit);
-        //setStok();
     }
 
     void loadData(Object idEdit) {
@@ -72,15 +70,15 @@ public class PermintaanStok extends javax.swing.JFrame {
         ArrayList<String> list = dRunSelctOne.excute();
         JTNoPermintaan.setText(list.get(0));
         JDTanggalPermintaan.setDate(FDateF.strtodate(list.get(1), "dd-MM-yyyy"));
-        JCNamaBarang.setSelectedItem(list.get(2));
+        JTNamaBarang.setText(list.get(2));
         JTJumlah.setText(list.get(3));
         JTAKeterangan.setText(list.get(4));
     }
 
     boolean checkInput() {
-        if (JCNamaBarang.getSelectedIndex() == 0) {
+        if (JTNamaBarang.getText().replace(" ", "").isEmpty()) {
             JOptionPaneF.showMessageDialog(this, "Gagal. Silahkan Pilih Nama Barang Terlebih Dahulu.");
-            JCNamaBarang.requestFocus();
+            JTNamaBarang.requestFocus();
             return false;
         } else if (JDTanggalPermintaan.getDate() == null) {
             JOptionPaneF.showMessageDialog(this, "Gagal. Tanggal Tidak Boleh Kosong.");
@@ -88,6 +86,25 @@ public class PermintaanStok extends javax.swing.JFrame {
         } else {
             return true;
         }
+    }
+
+    void cariBarang(String keywordCari) {
+        if (jcari == null) {
+            jcari = new Jcari("SELECT `JenisBarang`, `NamaBarang` FROM `tbmbarang`a JOIN `tbsmjenisbarang`b ON a.`IdJenisBarang`=b.`IdJenisBarang` WHERE `JenisBarang` ", "SELECT `JenisBarang`, `NamaBarang` FROM `tbmbarang`a JOIN `tbsmjenisbarang`b ON a.`IdJenisBarang`=b.`IdJenisBarang` WHERE `NamaBarang` ", "Jenis Barang", "Nama Barang", "Cari Barang", 1, JTNamaBarang, JTJumlah, keywordCari);
+        } else {
+            jcari.setState(NORMAL);
+            jcari.toFront();
+        }
+    }
+
+    boolean isAlphanumeric(String str) {
+        for (int i = 0; i < str.length(); i++) {
+            char c = str.charAt(i);
+            if (c < 0x30 || (c >= 0x3a && c <= 0x40) || (c > 0x5a && c <= 0x60) || c > 0x7a) {
+                return false;
+            }
+        }
+        return true;
     }
 
     /**
@@ -113,11 +130,12 @@ public class PermintaanStok extends javax.swing.JFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         JTAKeterangan = new KomponenGUI.JTextAreaF();
         JDTanggalPermintaan = new KomponenGUI.JdateCF();
-        JCNamaBarang = new KomponenGUI.JcomboboxF();
         JTJumlah = new KomponenGUI.JRibuanTextField();
         jbuttonF1 = new KomponenGUI.JbuttonF();
         jbuttonF2 = new KomponenGUI.JbuttonF();
         jbuttonF3 = new KomponenGUI.JbuttonF();
+        JTNamaBarang = new KomponenGUI.JtextF();
+        JBSearchNamaBarang = new KomponenGUI.JbuttonF();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
@@ -165,19 +183,6 @@ public class PermintaanStok extends javax.swing.JFrame {
             }
         });
 
-        JCNamaBarang.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "-- Pilih Nama Barang --" }));
-        JCNamaBarang.load("(SELECT '-- Pilih Nama Barang --' as 'NamaBarangLain') UNION ALL (SELECT `NamaBarang` FROM `tbmbarang` WHERE 1 GROUP BY `IdBarang` ORDER BY `IdBarang`)");
-        JCNamaBarang.addItemListener(new java.awt.event.ItemListener() {
-            public void itemStateChanged(java.awt.event.ItemEvent evt) {
-                JCNamaBarangItemStateChanged(evt);
-            }
-        });
-        JCNamaBarang.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyPressed(java.awt.event.KeyEvent evt) {
-                JCNamaBarangKeyPressed(evt);
-            }
-        });
-
         JTJumlah.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
                 JTJumlahKeyPressed(evt);
@@ -202,6 +207,37 @@ public class PermintaanStok extends javax.swing.JFrame {
         jbuttonF3.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jbuttonF3ActionPerformed(evt);
+            }
+        });
+
+        JTNamaBarang.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                JTNamaBarangFocusLost(evt);
+            }
+        });
+        JTNamaBarang.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                JTNamaBarangKeyPressed(evt);
+            }
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                JTNamaBarangKeyReleased(evt);
+            }
+        });
+
+        JBSearchNamaBarang.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Resource/Search.png"))); // NOI18N
+        JBSearchNamaBarang.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                JBSearchNamaBarangFocusLost(evt);
+            }
+        });
+        JBSearchNamaBarang.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                JBSearchNamaBarangActionPerformed(evt);
+            }
+        });
+        JBSearchNamaBarang.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                JBSearchNamaBarangKeyPressed(evt);
             }
         });
 
@@ -230,7 +266,9 @@ public class PermintaanStok extends javax.swing.JFrame {
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jlableF6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(JCNamaBarang, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                                .addComponent(JTNamaBarang, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(JBSearchNamaBarang, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jlableF13, javax.swing.GroupLayout.PREFERRED_SIZE, 131, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -267,12 +305,14 @@ public class PermintaanStok extends javax.swing.JFrame {
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(jlableF3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(jlableF4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(JDTanggalPermintaan, javax.swing.GroupLayout.PREFERRED_SIZE, 28, Short.MAX_VALUE))
+                    .addComponent(JDTanggalPermintaan, javax.swing.GroupLayout.DEFAULT_SIZE, 28, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jlableF5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jlableF6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(JCNamaBarang, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jlableF5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jlableF6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(JTNamaBarang, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(JBSearchNamaBarang, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(JTJumlah, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -307,10 +347,6 @@ public class PermintaanStok extends javax.swing.JFrame {
         dispose();
     }//GEN-LAST:event_jbuttonF2ActionPerformed
 
-    private void JCNamaBarangItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_JCNamaBarangItemStateChanged
-        //setStok();
-    }//GEN-LAST:event_JCNamaBarangItemStateChanged
-
     private void JTAKeteranganKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_JTAKeteranganKeyPressed
         if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
             evt.consume();
@@ -322,12 +358,6 @@ public class PermintaanStok extends javax.swing.JFrame {
         tambah();
         dispose();
     }//GEN-LAST:event_jbuttonF1ActionPerformed
-
-    private void JCNamaBarangKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_JCNamaBarangKeyPressed
-        if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
-            JTJumlah.requestFocus();
-        }
-    }//GEN-LAST:event_JCNamaBarangKeyPressed
 
     private void JTJumlahKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_JTJumlahKeyPressed
         if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
@@ -343,6 +373,38 @@ public class PermintaanStok extends javax.swing.JFrame {
         ubah();
         dispose();
     }//GEN-LAST:event_jbuttonF3ActionPerformed
+
+    private void JTNamaBarangFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_JTNamaBarangFocusLost
+
+    }//GEN-LAST:event_JTNamaBarangFocusLost
+
+    private void JTNamaBarangKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_JTNamaBarangKeyPressed
+        if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
+            JTJumlah.requestFocus();
+        }
+    }//GEN-LAST:event_JTNamaBarangKeyPressed
+
+    private void JTNamaBarangKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_JTNamaBarangKeyReleased
+        if (evt.getKeyCode() == KeyEvent.VK_SPACE) {
+            cariBarang(null);
+        } else if (isAlphanumeric(String.valueOf(evt.getKeyChar()))) {
+            cariBarang(JTNamaBarang.getText());
+        }
+    }//GEN-LAST:event_JTNamaBarangKeyReleased
+
+    private void JBSearchNamaBarangFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_JBSearchNamaBarangFocusLost
+
+    }//GEN-LAST:event_JBSearchNamaBarangFocusLost
+
+    private void JBSearchNamaBarangActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBSearchNamaBarangActionPerformed
+        cariBarang(null);
+    }//GEN-LAST:event_JBSearchNamaBarangActionPerformed
+
+    private void JBSearchNamaBarangKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_JBSearchNamaBarangKeyPressed
+        if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
+            JTJumlah.requestFocus();
+        }
+    }//GEN-LAST:event_JBSearchNamaBarangKeyPressed
 
     /**
      * @param args the command line arguments
@@ -382,10 +444,11 @@ public class PermintaanStok extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private KomponenGUI.JcomboboxF JCNamaBarang;
+    private KomponenGUI.JbuttonF JBSearchNamaBarang;
     private KomponenGUI.JdateCF JDTanggalPermintaan;
     private KomponenGUI.JTextAreaF JTAKeterangan;
     private KomponenGUI.JRibuanTextField JTJumlah;
+    private KomponenGUI.JtextF JTNamaBarang;
     private KomponenGUI.JtextF JTNoPermintaan;
     private javax.swing.JScrollPane jScrollPane1;
     private KomponenGUI.JbuttonF jbuttonF1;
@@ -485,13 +548,13 @@ public class PermintaanStok extends javax.swing.JFrame {
         if (checkInput()) {
             Boolean berhasil;
             Insert insert = new LSubProces.Insert();
-            berhasil = insert.simpan("INSERT INTO `tbpermintaanstok` (`NoPermintaan`, `Tanggal`, `IdBarang`, `Jumlah`, `Keterangan`) VALUES ('" + JTNoPermintaan.getText() + "', '" + FDateF.datetostr(JDTanggalPermintaan.getDate(), "yyyy-MM-dd") + "',(SELECT `IdBarang` FROM `tbmbarang` WHERE `NamaBarang` = '" + JCNamaBarang.getSelectedItem() + "'),'" + (Float.parseFloat(JTJumlah.getText().replace(".", ""))) + "','" + JTAKeterangan.getText() + "')", "Permintaan Barang Stok", null);
+            berhasil = insert.simpan("INSERT INTO `tbpermintaanstok` (`NoPermintaan`, `Tanggal`, `IdBarang`, `Jumlah`, `Keterangan`) VALUES ('" + JTNoPermintaan.getText() + "', '" + FDateF.datetostr(JDTanggalPermintaan.getDate(), "yyyy-MM-dd") + "',(SELECT `IdBarang` FROM `tbmbarang` WHERE `NamaBarang` = '" + JTNamaBarang.getText() + "'),'" + (Float.parseFloat(JTJumlah.getText().replace(".", ""))) + "','" + JTAKeterangan.getText() + "')", "Permintaan Barang Stok", null);
             if (berhasil) {
                 JTJumlah.setText("0");
                 JTAKeterangan.setText("");
                 JTNoPermintaan.setText(getNoPermintaanStok());
-                JCNamaBarang.setSelectedIndex(0);
-                JCNamaBarang.requestFocus();
+                JTNamaBarang.setText("");
+                JTNamaBarang.requestFocus();
             }
         }
     }
@@ -504,7 +567,7 @@ public class PermintaanStok extends javax.swing.JFrame {
             if (Berhasil) {
                 Berhasil = multiInsert.setautocomit(false);
                 if (Berhasil) {
-                    Berhasil = multiInsert.Excute("UPDATE `tbpermintaanstok` SET `NoPermintaan`='" + JTNoPermintaan.getText() + "',`Tanggal`='" + FDateF.datetostr(JDTanggalPermintaan.getDate(), "yyyy-MM-dd") + "',`IdBarang`=(SELECT `IdBarang` FROM `tbmbarang` WHERE `NamaBarang` = '" + JCNamaBarang.getSelectedItem() + "'),`Jumlah`='" + (Float.parseFloat(JTJumlah.getText().replace(".", ""))) + "',`Keterangan`='" + JTAKeterangan.getText() + "' WHERE `IdPermintaan` = '" + IdEdit + "'", null);
+                    Berhasil = multiInsert.Excute("UPDATE `tbpermintaanstok` SET `NoPermintaan`='" + JTNoPermintaan.getText() + "',`Tanggal`='" + FDateF.datetostr(JDTanggalPermintaan.getDate(), "yyyy-MM-dd") + "',`IdBarang`=(SELECT `IdBarang` FROM `tbmbarang` WHERE `NamaBarang` = '" + JTNamaBarang.getText() + "'),`Jumlah`='" + (Float.parseFloat(JTJumlah.getText().replace(".", ""))) + "',`Keterangan`='" + JTAKeterangan.getText() + "' WHERE `IdPermintaan` = '" + IdEdit + "'", null);
                 }
             }
             if (Berhasil == false) {

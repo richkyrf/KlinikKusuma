@@ -52,7 +52,9 @@
                           <Group type="102" attributes="0">
                               <Component id="jlableF6" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
-                              <Component id="JCNamaBarang" max="32767" attributes="0"/>
+                              <Component id="JTNamaBarang" max="32767" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="JBSearchNamaBarang" min="-2" max="-2" attributes="0"/>
                           </Group>
                       </Group>
                   </Group>
@@ -106,10 +108,13 @@
                   <Component id="JDTanggalPermintaan" pref="28" max="32767" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="3" attributes="0">
-                  <Component id="jlableF5" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="jlableF6" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="JCNamaBarang" alignment="3" min="-2" max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Group type="103" groupAlignment="3" attributes="0">
+                      <Component id="jlableF5" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="jlableF6" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="JTNamaBarang" alignment="3" min="-2" max="-2" attributes="0"/>
+                  </Group>
+                  <Component id="JBSearchNamaBarang" min="-2" pref="28" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
@@ -220,22 +225,6 @@
         <EventHandler event="propertyChange" listener="java.beans.PropertyChangeListener" parameters="java.beans.PropertyChangeEvent" handler="JDTanggalPermintaanPropertyChange"/>
       </Events>
     </Component>
-    <Component class="KomponenGUI.JcomboboxF" name="JCNamaBarang">
-      <Properties>
-        <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
-          <StringArray count="1">
-            <StringItem index="0" value="-- Pilih Nama Barang --"/>
-          </StringArray>
-        </Property>
-      </Properties>
-      <Events>
-        <EventHandler event="itemStateChanged" listener="java.awt.event.ItemListener" parameters="java.awt.event.ItemEvent" handler="JCNamaBarangItemStateChanged"/>
-        <EventHandler event="keyPressed" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="JCNamaBarangKeyPressed"/>
-      </Events>
-      <AuxValues>
-        <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="JCNamaBarang.load(&quot;(SELECT &apos;-- Pilih Nama Barang --&apos; as &apos;NamaBarangLain&apos;) UNION ALL (SELECT `NamaBarang` FROM `tbmbarang` WHERE 1 GROUP BY `IdBarang` ORDER BY `IdBarang`)&quot;);"/>
-      </AuxValues>
-    </Component>
     <Component class="KomponenGUI.JRibuanTextField" name="JTJumlah">
       <Events>
         <EventHandler event="keyPressed" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="JTJumlahKeyPressed"/>
@@ -263,6 +252,25 @@
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jbuttonF3ActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="KomponenGUI.JtextF" name="JTNamaBarang">
+      <Events>
+        <EventHandler event="focusLost" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="JTNamaBarangFocusLost"/>
+        <EventHandler event="keyPressed" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="JTNamaBarangKeyPressed"/>
+        <EventHandler event="keyReleased" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="JTNamaBarangKeyReleased"/>
+      </Events>
+    </Component>
+    <Component class="KomponenGUI.JbuttonF" name="JBSearchNamaBarang">
+      <Properties>
+        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+          <Image iconType="3" name="/Resource/Search.png"/>
+        </Property>
+      </Properties>
+      <Events>
+        <EventHandler event="focusLost" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="JBSearchNamaBarangFocusLost"/>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="JBSearchNamaBarangActionPerformed"/>
+        <EventHandler event="keyPressed" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="JBSearchNamaBarangKeyPressed"/>
       </Events>
     </Component>
   </SubComponents>

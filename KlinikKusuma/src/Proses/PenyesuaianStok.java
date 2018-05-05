@@ -21,6 +21,8 @@ import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import FunctionGUI.JOptionPaneF;
+import static GlobalVar.Var.jcari;
+import static java.awt.Frame.NORMAL;
 import static javax.swing.WindowConstants.DISPOSE_ON_CLOSE;
 
 /**
@@ -37,20 +39,19 @@ public class PenyesuaianStok extends javax.swing.JFrame {
     public PenyesuaianStok() {
         initComponents();
         JTNoPenyesuaian.setText(getNoPenyesuaianStok());
-        JCNamaBarang.requestFocus();
+        JTNamaBarang.requestFocus();
         setVisible(true);
         setTitle("Penyesuaian Stok Barang");
         setLocationRelativeTo(null);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-        //setStok();
     }
 
     boolean checkInput() {
-        if (JCNamaBarang.getSelectedIndex() == 0) {
+        if (JTNamaBarang.getText().replace(" ", "").isEmpty()) {
             JOptionPaneF.showMessageDialog(this, "Gagal. Silahkan Pilih Nama Barang Terlebih Dahulu.");
-            JCNamaBarang.requestFocus();
+            JTNamaBarang.requestFocus();
             return false;
-        } else if ((Integer.valueOf(JTStokBaruKG.getText().replace(".", "")) - Integer.valueOf(JTStokLamaKG.getText().replace(".", "").replace(",", "."))) == 0) {
+        } else if ((Integer.valueOf(JTStokBaru.getText().replace(".", "")) - Integer.valueOf(JTStokLama.getText().replace(".", "").replace(",", "."))) == 0) {
             JOptionPaneF.showMessageDialog(this, "Gagal. Stok Baru Tidak Boleh Sama Dengan Stok Lama.");
             return false;
         } else if (JDTanggalPenyesuaian.getDate() == null) {
@@ -59,6 +60,25 @@ public class PenyesuaianStok extends javax.swing.JFrame {
         } else {
             return true;
         }
+    }
+
+    void cariBarang(String keywordCari) {
+        if (jcari == null) {
+            jcari = new Jcari("SELECT `JenisBarang`, `NamaBarang` FROM `tbmbarang`a JOIN `tbsmjenisbarang`b ON a.`IdJenisBarang`=b.`IdJenisBarang` WHERE `JenisBarang` ", "SELECT `JenisBarang`, `NamaBarang` FROM `tbmbarang`a JOIN `tbsmjenisbarang`b ON a.`IdJenisBarang`=b.`IdJenisBarang` WHERE `NamaBarang` ", "Jenis Barang", "Nama Barang", "Cari Barang", 1, JTNamaBarang, JTStokBaru, keywordCari);
+        } else {
+            jcari.setState(NORMAL);
+            jcari.toFront();
+        }
+    }
+
+    boolean isAlphanumeric(String str) {
+        for (int i = 0; i < str.length(); i++) {
+            char c = str.charAt(i);
+            if (c < 0x30 || (c >= 0x3a && c <= 0x40) || (c > 0x5a && c <= 0x60) || c > 0x7a) {
+                return false;
+            }
+        }
+        return true;
     }
 
     /**
@@ -86,11 +106,12 @@ public class PenyesuaianStok extends javax.swing.JFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         JTAKeterangan = new KomponenGUI.JTextAreaF();
         JDTanggalPenyesuaian = new KomponenGUI.JdateCF();
-        JCNamaBarang = new KomponenGUI.JcomboboxF();
-        JTStokLamaKG = new KomponenGUI.JtextF();
-        JTStokBaruKG = new KomponenGUI.JRibuanTextField();
+        JTStokLama = new KomponenGUI.JtextF();
+        JTStokBaru = new KomponenGUI.JRibuanTextField();
         jbuttonF1 = new KomponenGUI.JbuttonF();
         jbuttonF2 = new KomponenGUI.JbuttonF();
+        JTNamaBarang = new KomponenGUI.JtextF();
+        JBSearchNamaBarang = new KomponenGUI.JbuttonF();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
@@ -142,26 +163,13 @@ public class PenyesuaianStok extends javax.swing.JFrame {
             }
         });
 
-        JCNamaBarang.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "-- Pilih Nama Barang --" }));
-        JCNamaBarang.load("(SELECT '-- Pilih Nama Barang --' as 'NamaBarangLain') UNION ALL (SELECT `NamaBarang` FROM `tbmbarang` WHERE 1 GROUP BY `IdBarang` ORDER BY `IdBarang`)");
-        JCNamaBarang.addItemListener(new java.awt.event.ItemListener() {
-            public void itemStateChanged(java.awt.event.ItemEvent evt) {
-                JCNamaBarangItemStateChanged(evt);
-            }
-        });
-        JCNamaBarang.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyPressed(java.awt.event.KeyEvent evt) {
-                JCNamaBarangKeyPressed(evt);
-            }
-        });
+        JTStokLama.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        JTStokLama.setText("0");
+        JTStokLama.setEnabled(false);
 
-        JTStokLamaKG.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
-        JTStokLamaKG.setText("0");
-        JTStokLamaKG.setEnabled(false);
-
-        JTStokBaruKG.addKeyListener(new java.awt.event.KeyAdapter() {
+        JTStokBaru.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
-                JTStokBaruKGKeyPressed(evt);
+                JTStokBaruKeyPressed(evt);
             }
         });
 
@@ -176,6 +184,37 @@ public class PenyesuaianStok extends javax.swing.JFrame {
         jbuttonF2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jbuttonF2ActionPerformed(evt);
+            }
+        });
+
+        JTNamaBarang.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                JTNamaBarangFocusLost(evt);
+            }
+        });
+        JTNamaBarang.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                JTNamaBarangKeyPressed(evt);
+            }
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                JTNamaBarangKeyReleased(evt);
+            }
+        });
+
+        JBSearchNamaBarang.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Resource/Search.png"))); // NOI18N
+        JBSearchNamaBarang.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                JBSearchNamaBarangFocusLost(evt);
+            }
+        });
+        JBSearchNamaBarang.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                JBSearchNamaBarangActionPerformed(evt);
+            }
+        });
+        JBSearchNamaBarang.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                JBSearchNamaBarangKeyPressed(evt);
             }
         });
 
@@ -209,13 +248,15 @@ public class PenyesuaianStok extends javax.swing.JFrame {
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jlableF6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(JCNamaBarang, javax.swing.GroupLayout.DEFAULT_SIZE, 311, Short.MAX_VALUE))))
+                                .addComponent(JTNamaBarang, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(JBSearchNamaBarang, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jlableF17, javax.swing.GroupLayout.PREFERRED_SIZE, 131, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jlableF18, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jScrollPane1))
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 310, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jlableF9, javax.swing.GroupLayout.PREFERRED_SIZE, 131, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -226,8 +267,8 @@ public class PenyesuaianStok extends javax.swing.JFrame {
                             .addComponent(jlableF14, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(JTStokLamaKG, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(JTStokBaruKG, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                            .addComponent(JTStokLama, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(JTStokBaru, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -243,20 +284,22 @@ public class PenyesuaianStok extends javax.swing.JFrame {
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(jlableF3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(jlableF4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(JDTanggalPenyesuaian, javax.swing.GroupLayout.PREFERRED_SIZE, 28, Short.MAX_VALUE))
+                    .addComponent(JDTanggalPenyesuaian, javax.swing.GroupLayout.DEFAULT_SIZE, 28, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jlableF5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jlableF6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(JCNamaBarang, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jlableF5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jlableF6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(JTNamaBarang, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(JBSearchNamaBarang, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jlableF9, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jlableF10, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(JTStokLamaKG, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(JTStokLama, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(JTStokBaruKG, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(JTStokBaru, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jlableF14, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jlableF13, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -283,10 +326,6 @@ public class PenyesuaianStok extends javax.swing.JFrame {
         dispose();
     }//GEN-LAST:event_jbuttonF2ActionPerformed
 
-    private void JCNamaBarangItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_JCNamaBarangItemStateChanged
-        //setStok();
-    }//GEN-LAST:event_JCNamaBarangItemStateChanged
-
     private void JTAKeteranganKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_JTAKeteranganKeyPressed
         if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
             evt.consume();
@@ -298,21 +337,47 @@ public class PenyesuaianStok extends javax.swing.JFrame {
         sesuaikan();
     }//GEN-LAST:event_jbuttonF1ActionPerformed
 
-    private void JCNamaBarangKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_JCNamaBarangKeyPressed
-        if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
-            JTStokBaruKG.requestFocus();
-        }
-    }//GEN-LAST:event_JCNamaBarangKeyPressed
-
-    private void JTStokBaruKGKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_JTStokBaruKGKeyPressed
+    private void JTStokBaruKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_JTStokBaruKeyPressed
         if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
             JTAKeterangan.requestFocus();
         }
-    }//GEN-LAST:event_JTStokBaruKGKeyPressed
+    }//GEN-LAST:event_JTStokBaruKeyPressed
 
     private void JDTanggalPenyesuaianPropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_JDTanggalPenyesuaianPropertyChange
         //setStok();
     }//GEN-LAST:event_JDTanggalPenyesuaianPropertyChange
+
+    private void JTNamaBarangFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_JTNamaBarangFocusLost
+        setStok();
+    }//GEN-LAST:event_JTNamaBarangFocusLost
+
+    private void JTNamaBarangKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_JTNamaBarangKeyPressed
+        if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
+            JTStokBaru.requestFocus();
+        }
+    }//GEN-LAST:event_JTNamaBarangKeyPressed
+
+    private void JTNamaBarangKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_JTNamaBarangKeyReleased
+        if (evt.getKeyCode() == KeyEvent.VK_SPACE) {
+            cariBarang(null);
+        } else if (isAlphanumeric(String.valueOf(evt.getKeyChar()))) {
+            cariBarang(JTNamaBarang.getText());
+        }
+    }//GEN-LAST:event_JTNamaBarangKeyReleased
+
+    private void JBSearchNamaBarangFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_JBSearchNamaBarangFocusLost
+        setStok();
+    }//GEN-LAST:event_JBSearchNamaBarangFocusLost
+
+    private void JBSearchNamaBarangActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBSearchNamaBarangActionPerformed
+        cariBarang(null);
+    }//GEN-LAST:event_JBSearchNamaBarangActionPerformed
+
+    private void JBSearchNamaBarangKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_JBSearchNamaBarangKeyPressed
+        if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
+            JTStokBaru.requestFocus();
+        }
+    }//GEN-LAST:event_JBSearchNamaBarangKeyPressed
 
     /**
      * @param args the command line arguments
@@ -357,12 +422,13 @@ public class PenyesuaianStok extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private KomponenGUI.JcomboboxF JCNamaBarang;
+    private KomponenGUI.JbuttonF JBSearchNamaBarang;
     private KomponenGUI.JdateCF JDTanggalPenyesuaian;
     private KomponenGUI.JTextAreaF JTAKeterangan;
+    private KomponenGUI.JtextF JTNamaBarang;
     private KomponenGUI.JtextF JTNoPenyesuaian;
-    private KomponenGUI.JRibuanTextField JTStokBaruKG;
-    private KomponenGUI.JtextF JTStokLamaKG;
+    private KomponenGUI.JRibuanTextField JTStokBaru;
+    private KomponenGUI.JtextF JTStokLama;
     private javax.swing.JScrollPane jScrollPane1;
     private KomponenGUI.JbuttonF jbuttonF1;
     private KomponenGUI.JbuttonF jbuttonF2;
@@ -410,37 +476,17 @@ public class PenyesuaianStok extends javax.swing.JFrame {
         return NoPenyesuaian;
     }
 
-    /*    void setStok() {
-        if (JCNamaBarang.getSelectedIndex() != 0) {
+    void setStok() {
+        if (!JTNamaBarang.getText().replace(" ", "").equals("")) {
             DRunSelctOne dRunSelctOne = new DRunSelctOne();
-            dRunSelctOne.seterorm("Gagal setStok()");
-            dRunSelctOne.setQuery("SELECT `IdBarang`, `NamaBarang`, SUM(`Stok`) as 'Stok Awal' FROM (\n"
-                    + "SELECT a.`IdBarang`, a.`NamaBarang`, 0 as 'Stok' FROM `tbmbarang`a JOIN `tbsmjenisbarang`b ON a.`IdJenisBarang`=b.`IdJenisBarang` WHERE 1\n"
-                    + "	UNION ALL\n"
-                    + "SELECT `IdBarang`, null as 'NamaBarang', SUM(`Netto`) as 'Stok' FROM `tbpenerimaanlain` WHERE 1 AND `Tanggal` < '" + FDateF.datetostr(JDTanggalPenyesuaian.getDate(), "yyyy-MM-dd") + "' GROUP BY `IdBarang`\n"
-                    + "    UNION ALL\n"
-                    + "SELECT a.`IdBarang`, null as 'NamaBarang', SUM(`Jumlah`)*-1 as 'Stok' FROM `tbpenjualandetail`a JOIN `tbpenjualan`b ON a.`NoTransaksi`=b.`NoTransaksi` JOIN `tbmbarang`c ON a.`IdBarang`=c.`IdBarang` WHERE (c.`IdjenisBarang` = 2 OR c.`NamaBarang` = 'LAKBAN') AND `StatusLembar` = 0 AND b.`Tanggal` < '" + FDateF.datetostr(JDTanggalPenyesuaian.getDate(), "yyyy-MM-dd") + "' GROUP BY `IdBarang`\n"
-                    + "    UNION ALL\n"
-                    + "SELECT a.`IdBarang`, null as 'NamaBarang', SUM(`Jumlah`/`BeratPembagi`)*-1 as 'Stok' FROM `tbpenjualandetail`a JOIN `tbpenjualan`b ON a.`NoTransaksi`=b.`NoTransaksi` JOIN `tbmbarang`c ON a.`IdBarang`=c.`IdBarang` WHERE c.`IdjenisBarang` = 2 AND `StatusLembar` = 1 AND b.`Tanggal` < '" + FDateF.datetostr(JDTanggalPenyesuaian.getDate(), "yyyy-MM-dd") + "' GROUP BY `IdBarang`\n"
-                    + "    UNION ALL\n"
-                    + "SELECT a.`IdBarang`, null as 'NamaBarang', SUM(`Jumlah`*`Isi`/`BeratPembagi`)*-1 as 'Stok' FROM `tbpenjualandetail`a JOIN `tbpenjualan`b ON a.`NoTransaksi`=b.`NoTransaksi` JOIN `tbmbarang`c ON a.`IdBarang`=c.`IdBarang` JOIN `tbmbarang`d ON c.`IdBarang`=d.`IdPlastikDalam` WHERE c.`IdjenisBarang` = 1 AND `StatusLembar` = 1 AND b.`Tanggal` < '" + FDateF.datetostr(JDTanggalPenyesuaian.getDate(), "yyyy-MM-dd") + "' GROUP BY `IdBarang`\n"
-                    + "    UNION ALL\n"
-                    + "SELECT b.`IdPlastikDalam` as 'IdBarang', null as 'NamaBarang', SUM(a.`JumlahHasil`*b.`Isi`/c.`BeratPembagi`)*-1 as 'Stok' FROM `tbpacking`a JOIN `tbmbarang`b ON a.`IdBarangHasil`=b.`IdBarang` JOIN `tbmbarang`c ON b.`IdPlastikDalam`=c.`IdBarang` WHERE 1 AND `IdJenisBarang` = 1 AND a.`Tanggal` < '" + FDateF.datetostr(JDTanggalPenyesuaian.getDate(), "yyyy-MM-dd") + "' GROUP BY b.`IdPlastikDalam`\n"
-                    + "	UNION ALL\n"
-                    + "SELECT b.`IdPlastikLuar` as 'IdBarang', null as 'NamaBarang', SUM(a.`JumlahHasil`/c.`BeratPembagi`)*-1 as 'Stok' FROM `tbpacking`a JOIN `tbmbarang`b ON a.`IdBarangHasil`=b.`IdBarang` JOIN `tbmbarang`c ON b.`IdPlastikLuar`=c.`IdBarang` WHERE 1 AND `IdJenisBarang` = 2 AND a.`Tanggal` < '" + FDateF.datetostr(JDTanggalPenyesuaian.getDate(), "yyyy-MM-dd") + "' GROUP BY b.`IdPlastikLuar`\n"
-                    + "	UNION ALL\n"
-                    + "SELECT '4' as 'IdBarang', null as 'NamaBarang', SUM(a.`JumlahBahan`*50*0.5*0.0001)*-1 as 'Stok' FROM `tbpacking`a JOIN `tbmpartai`b ON a.`IdPartai`=b.`IdPartai` JOIN `tbmbarang`c ON b.`IdBarang`=c.`IdBarang` JOIN `tbmbarang`d ON a.`IdBarangHasil`=d.`IdBarang` WHERE 1 AND a.`Tanggal` < '" + FDateF.datetostr(JDTanggalPenyesuaian.getDate(), "yyyy-MM-dd") + "' AND c.`NamaBarang` LIKE '%KSR%' AND d.`NamaBarang` NOT LIKE '%@50 KG%'\n"
-                    + "	UNION ALL\n"
-                    + "SELECT a.`IdBarang`, null as 'NamaBarang', SUM(a.`Jumlah`)*-1 as 'Stok' FROM `tbpemakaianlain`a JOIN `tbmbarang`b ON a.`IdBarang`=b.`IdBarang` WHERE 1 AND `IdJenisBarang` = 3 AND a.`Tanggal` < '" + FDateF.datetostr(JDTanggalPenyesuaian.getDate(), "yyyy-MM-dd") + "' GROUP BY a.`IdBarang`\n"
-                    + "    	UNION ALL\n"
-                    + "SELECT a.`IdBarang`,null as 'NamaBarang', SUM(a.`Jumlah`)*-1 as 'Stok' FROM `tbpemakaianlain`a JOIN `tbmbarang`b ON a.`IdBarang`=b.`IdBarang` WHERE 1 AND `IdJenisBarang` < 3 AND a.`Tanggal` < '" + FDateF.datetostr(JDTanggalPenyesuaian.getDate(), "yyyy-MM-dd") + "' GROUP BY a.`IdBarang`\n"
-                    + "    UNION ALL\n"
-                    + "SELECT `IdBarang`, null as 'NamaBarang', SUM(`Jumlah`) as 'Stok' FROM `tbpenyesuaianstok` WHERE 1 AND `Tanggal` < '" + FDateF.datetostr(JDTanggalPenyesuaian.getDate(), "yyyy-MM-dd") + "' GROUP BY `IdBarang` ) t1 WHERE `IdBarang` = (SELECT `IdBarang` FROM `tbmbarang` WHERE `NamaBarang` = '" + JCNamaBarang.getSelectedItem() + "') GROUP BY `IdBarang`");
+            dRunSelctOne.seterorm("Gagal Menampilkan Data Stok Barang");
+            dRunSelctOne.setQuery("SELECT `IdBarang`, IFNULL(SUM(`Jumlah`),0) as 'Stok' FROM( SELECT `IdBarang`, 0 as 'Jumlah' FROM `tbmbarang` WHERE 1 UNION ALL SELECT `IdBarang`, `Jumlah` FROM `tbpermintaanstok` WHERE 1 UNION ALL SELECT `IdBarang`, `Jumlah` FROM `tbpenjualandetail` WHERE 1 UNION ALL SELECT `IdBarang`, `Jumlah` FROM `tbpenyesuaianstok` WHERE 1) t1 WHERE `IdBarang` = (SELECT `IdBarang` FROM `tbmbarang` WHERE `NamaBarang` = '" + JTNamaBarang.getText() + "') GROUP BY `IdBarang`");
             ArrayList<String> list = dRunSelctOne.excute();
-            double StokLamaKG = Double.valueOf(list.get(2));
-            JTStokLamaKG.setText(Decformatdigit(StokLamaKG));
+            String Stok = list.get(1);
+            JTStokLama.setText(Stok);
         }
-    }*/
+    }
+
     String Decformatdigit(double Number) {
         double value = 0;
         value = Number;
@@ -462,14 +508,14 @@ public class PenyesuaianStok extends javax.swing.JFrame {
         if (checkInput()) {
             Boolean berhasil;
             Insert insert = new LSubProces.Insert();
-            berhasil = insert.simpan("INSERT INTO `tbpenyesuaianstok` (`NoPenyesuaian`, `Tanggal`, `IdBarangLain`, `Jumlah`, `Keterangan`) VALUES ('" + JTNoPenyesuaian.getText() + "', '" + FDateF.datetostr(JDTanggalPenyesuaian.getDate(), "yyyy-MM-dd") + "',(SELECT `IdBarang` FROM `tbmbarang` WHERE `NamaBarang` = '" + JCNamaBarang.getSelectedItem() + "'),'" + (Float.parseFloat(JTStokBaruKG.getText().replace(".", "")) - Float.parseFloat(JTStokLamaKG.getText().replace(".", "").replace(",", "."))) + "','" + JTAKeterangan.getText() + "')", "Penyesuaian Barang Stok", null);
+            berhasil = insert.simpan("INSERT INTO `tbpenyesuaianstok` (`NoPenyesuaian`, `Tanggal`, `IdBarang`, `Jumlah`, `Keterangan`) VALUES ('" + JTNoPenyesuaian.getText() + "', '" + FDateF.datetostr(JDTanggalPenyesuaian.getDate(), "yyyy-MM-dd") + "',(SELECT `IdBarang` FROM `tbmbarang` WHERE `NamaBarang` = '" + JTNamaBarang.getText() + "'),'" + (Float.parseFloat(JTStokBaru.getText().replace(".", "")) - Float.parseFloat(JTStokLama.getText().replace(".", "").replace(",", "."))) + "','" + JTAKeterangan.getText() + "')", "Penyesuaian Stok Barang", null);
             if (berhasil) {
-                JTStokLamaKG.setText("0");
-                JTStokBaruKG.setText("0");
+                JTStokLama.setText("0");
+                JTStokBaru.setText("0");
                 JTAKeterangan.setText("");
                 JTNoPenyesuaian.setText(getNoPenyesuaianStok());
-                JCNamaBarang.setSelectedIndex(0);
-                JCNamaBarang.requestFocus();
+                JTNamaBarang.setText("");
+                JTNamaBarang.requestFocus();
             }
         }
     }

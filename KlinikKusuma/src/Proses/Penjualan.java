@@ -424,7 +424,7 @@ public class Penjualan extends javax.swing.JFrame {
         jlabelF9.setEnabled(false);
 
         jlabelF10.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
-        jlabelF10.setText("Stock");
+        jlabelF10.setText("Stock (GK)");
         jlabelF10.setDisabledTextColor(new java.awt.Color(0, 0, 0));
         jlabelF10.setEnabled(false);
 
