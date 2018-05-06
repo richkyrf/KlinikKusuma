@@ -342,7 +342,7 @@ public class Billing extends javax.swing.JFrame {
     void setPoin(int poin) {
         DRunSelctOne dRunSelctOne = new DRunSelctOne();
         dRunSelctOne.seterorm("Gagal setPoin()");
-        dRunSelctOne.setQuery("SELECT `IdPasien`, IFNULL(SUM(`Poin`),0) as 'Poin' FROM (SELECT `IdPasien`, 0 as 'Jumlah Belanja', 0 as 'Poin' FROM `tbmpasien` WHERE 1 AND `KodePasien` = '" + JTNamaPasien.getText().split("\\(")[1].split("\\)")[0] + "' UNION ALL SELECT d.`IdPasien`, SUM(e.`Jumlah`*e.`Harga`)+SUM(f.`Jumlah`*f.`Harga`) as 'Total Belanja', FLOOR((SUM(e.`Jumlah`*e.`Harga`)+SUM(f.`Jumlah`*f.`Harga`)) / 50000) as 'Poin' FROM `tbbilling`a JOIN `tbperawatan`b ON a.`NoInvoice`=b.`NoInvoice` JOIN `tbantrian`c ON b.`NoAntrian`=c.`NoAntrian` AND b.`Tanggal`=c.`Tanggal` JOIN `tbmpasien`d ON c.`IdPasien`=d.`IdPasien` JOIN `tbbillingobat`e ON a.`NoBilling`=e.`NoBilling` JOIN `tbbillingtindakan`f ON a.`NoBilling`=f.`NoBilling` WHERE 1 AND d.`IdPasien` = (SELECT `IdPasien` FROM `tbmpasien` WHERE `KodePasien` = '" + JTNamaPasien.getText().split("\\(")[1].split("\\)")[0] + "') GROUP BY d.`IdPasien`, a.`NoBilling` UNION ALL SELECT d.`IdPasien`, a.`Poin`*5000*-1 as 'Total Belanja', `Poin`*-1 FROM `tbbilling`a JOIN `tbperawatan`b ON a.`NoInvoice`=b.`NoInvoice` JOIN `tbantrian`c ON b.`NoAntrian`=c.`NoAntrian` AND b.`Tanggal`=c.`Tanggal` JOIN `tbmpasien`d ON c.`IdPasien`=d.`IdPasien` JOIN `tbbillingobat`e ON a.`NoBilling`=e.`NoBilling` JOIN `tbbillingtindakan`f ON a.`NoBilling`=f.`NoBilling` WHERE 1 AND a.`StatusPoin` = 1 AND d.`IdPasien` = (SELECT `IdPasien` FROM `tbmpasien` WHERE `KodePasien` = '" + JTNamaPasien.getText().split("\\(")[1].split("\\)")[0] + "') GROUP BY d.`IdPasien`, a.`NoBilling`) t1 WHERE 1 GROUP BY `IdPasien`");
+        dRunSelctOne.setQuery("SELECT `IdPasien`, IFNULL(SUM(`Poin`),0) as 'Poin' FROM (SELECT `IdPasien`, 0 as 'Jumlah Belanja', 0 as 'Poin' FROM `tbmpasien` WHERE 1 AND `KodePasien` = '" + JTNamaPasien.getText().split("\\(")[1].split("\\)")[0] + "' UNION ALL SELECT d.`IdPasien`, (SUM(e.`Jumlah`*e.`Harga`)+SUM(f.`Jumlah`*f.`Harga`) - (`Poin` * 5000)) as 'Total Belanja', FLOOR((SUM(e.`Jumlah`*e.`Harga`)+SUM(f.`Jumlah`*f.`Harga`) - (`Poin` * 5000)) / 50000) as 'Poin' FROM `tbbilling`a JOIN `tbperawatan`b ON a.`NoInvoice`=b.`NoInvoice` JOIN `tbantrian`c ON b.`NoAntrian`=c.`NoAntrian` AND b.`Tanggal`=c.`Tanggal` JOIN `tbmpasien`d ON c.`IdPasien`=d.`IdPasien` JOIN `tbbillingobat`e ON a.`NoBilling`=e.`NoBilling` JOIN `tbbillingtindakan`f ON a.`NoBilling`=f.`NoBilling` WHERE 1 AND d.`IdPasien` = (SELECT `IdPasien` FROM `tbmpasien` WHERE `KodePasien` = '" + JTNamaPasien.getText().split("\\(")[1].split("\\)")[0] + "') GROUP BY d.`IdPasien`, a.`NoBilling` UNION ALL SELECT d.`IdPasien`, a.`Poin`*5000*-1 as 'Total Belanja', `Poin`*-1 FROM `tbbilling`a JOIN `tbperawatan`b ON a.`NoInvoice`=b.`NoInvoice` JOIN `tbantrian`c ON b.`NoAntrian`=c.`NoAntrian` AND b.`Tanggal`=c.`Tanggal` JOIN `tbmpasien`d ON c.`IdPasien`=d.`IdPasien` JOIN `tbbillingobat`e ON a.`NoBilling`=e.`NoBilling` JOIN `tbbillingtindakan`f ON a.`NoBilling`=f.`NoBilling` WHERE 1 AND a.`StatusPoin` = 1 AND d.`IdPasien` = (SELECT `IdPasien` FROM `tbmpasien` WHERE `KodePasien` = '" + JTNamaPasien.getText().split("\\(")[1].split("\\)")[0] + "') GROUP BY d.`IdPasien`, a.`NoBilling`) t1 WHERE 1 GROUP BY `IdPasien`");
         ArrayList<String> list = dRunSelctOne.excute();
         JLPoin.setText("Poin (" + (Integer.parseInt(list.get(1)) + poin) + ")");
         if (list.get(1).equals("0")) {
@@ -356,9 +356,9 @@ public class Billing extends javax.swing.JFrame {
             dRunSelctOne.seterorm("Gagal Panggil Data Harga Tindakan");
             dRunSelctOne.setQuery("SELECT `Harga` FROM `tbmtindakan` WHERE `NamaTindakan`= '" + JCTindakan.getSelectedItem() + "'");
             ArrayList<String> list = dRunSelctOne.excute();
-            JTHargaTindakan.setText(list.get(0));
+            JTHargaTindakan.setInt(list.get(0));
         } else {
-            JTHargaTindakan.setText("0");
+            JTHargaTindakan.setInt("0");
         }
     }
 
@@ -368,9 +368,9 @@ public class Billing extends javax.swing.JFrame {
             dRunSelctOne.seterorm("Gagal Panggil Data Harga Obat");
             dRunSelctOne.setQuery("SELECT `Harga` FROM `tbmbarang` WHERE `NamaBarang`= '" + JCObat.getSelectedItem() + "'");
             ArrayList<String> list = dRunSelctOne.excute();
-            JTHargaObat.setText(list.get(0));
+            JTHargaObat.setInt(list.get(0));
         } else {
-            JTHargaObat.setText("0");
+            JTHargaObat.setInt("0");
         }
     }
 
@@ -383,7 +383,11 @@ public class Billing extends javax.swing.JFrame {
     }
 
     Integer getPoinTerpakai() {
-        return (JTGrandTotal.getInt() - JTSetelahPotong.getInt()) / 5000;
+        if (JCBPakaiPoin.isSelected()) {
+            return (JTGrandTotal.getInt() - JTSetelahPotong.getInt()) / 5000;
+        } else {
+            return 0;
+        }
     }
 
     /**
@@ -518,6 +522,11 @@ public class Billing extends javax.swing.JFrame {
         JCTindakan.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
                 JCTindakanItemStateChanged(evt);
+            }
+        });
+        JCTindakan.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                JCTindakanFocusLost(evt);
             }
         });
         JCTindakan.addKeyListener(new java.awt.event.KeyAdapter() {
@@ -659,6 +668,11 @@ public class Billing extends javax.swing.JFrame {
         JCObat.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
                 JCObatItemStateChanged(evt);
+            }
+        });
+        JCObat.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                JCObatFocusLost(evt);
             }
         });
         JCObat.addKeyListener(new java.awt.event.KeyAdapter() {
@@ -1152,10 +1166,12 @@ public class Billing extends javax.swing.JFrame {
 
     private void JCTindakanItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_JCTindakanItemStateChanged
         setHargaTindakan();
+        setSubTotalTindakan();
     }//GEN-LAST:event_JCTindakanItemStateChanged
 
     private void JCObatItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_JCObatItemStateChanged
         setHargaObat();
+        setSubTotalObat();
     }//GEN-LAST:event_JCObatItemStateChanged
     private void JBKembaliActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBKembaliActionPerformed
         dispose();
@@ -1283,6 +1299,14 @@ public class Billing extends javax.swing.JFrame {
     private void JTHargaObatFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_JTHargaObatFocusLost
         setSubTotalObat();
     }//GEN-LAST:event_JTHargaObatFocusLost
+
+    private void JCTindakanFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_JCTindakanFocusLost
+        setSubTotalTindakan();
+    }//GEN-LAST:event_JCTindakanFocusLost
+
+    private void JCObatFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_JCObatFocusLost
+        setSubTotalObat();
+    }//GEN-LAST:event_JCObatFocusLost
 
     /**
      * @param args the command line arguments
