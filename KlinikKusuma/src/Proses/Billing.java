@@ -500,6 +500,11 @@ public class Billing extends javax.swing.JFrame {
         });
 
         JTJumlahTindakan.setPlaceholder("Jumlah");
+        JTJumlahTindakan.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                JTJumlahTindakanFocusLost(evt);
+            }
+        });
         JTJumlahTindakan.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
                 JTJumlahTindakanKeyPressed(evt);
@@ -556,6 +561,11 @@ public class Billing extends javax.swing.JFrame {
         });
 
         JTHargaTindakan.setPlaceholder("Harga");
+        JTHargaTindakan.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                JTHargaTindakanFocusLost(evt);
+            }
+        });
         JTHargaTindakan.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
                 JTHargaTindakanKeyPressed(evt);
@@ -631,6 +641,11 @@ public class Billing extends javax.swing.JFrame {
         });
 
         JTJumlahObat.setPlaceholder("Jumlah");
+        JTJumlahObat.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                JTJumlahObatFocusLost(evt);
+            }
+        });
         JTJumlahObat.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
                 JTJumlahObatKeyPressed(evt);
@@ -687,6 +702,11 @@ public class Billing extends javax.swing.JFrame {
         });
 
         JTHargaObat.setPlaceholder("Harga");
+        JTHargaObat.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                JTHargaObatFocusLost(evt);
+            }
+        });
         JTHargaObat.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
                 JTHargaObatKeyPressed(evt);
@@ -1247,6 +1267,22 @@ public class Billing extends javax.swing.JFrame {
             jlableF24.setVisible(false);
         }
     }//GEN-LAST:event_JCBPakaiPoinActionPerformed
+
+    private void JTJumlahTindakanFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_JTJumlahTindakanFocusLost
+        setSubTotalTindakan();
+    }//GEN-LAST:event_JTJumlahTindakanFocusLost
+
+    private void JTHargaTindakanFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_JTHargaTindakanFocusLost
+        setSubTotalTindakan();
+    }//GEN-LAST:event_JTHargaTindakanFocusLost
+
+    private void JTJumlahObatFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_JTJumlahObatFocusLost
+        setSubTotalObat();
+    }//GEN-LAST:event_JTJumlahObatFocusLost
+
+    private void JTHargaObatFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_JTHargaObatFocusLost
+        setSubTotalObat();
+    }//GEN-LAST:event_JTHargaObatFocusLost
 
     /**
      * @param args the command line arguments

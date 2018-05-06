@@ -362,6 +362,7 @@
         </Component>
         <Component class="KomponenGUI.JPlaceHolder" name="JTJumlahTindakan">
           <Events>
+            <EventHandler event="focusLost" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="JTJumlahTindakanFocusLost"/>
             <EventHandler event="keyPressed" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="JTJumlahTindakanKeyPressed"/>
             <EventHandler event="keyReleased" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="JTJumlahTindakanKeyReleased"/>
           </Events>
@@ -439,6 +440,7 @@
         </Component>
         <Component class="KomponenGUI.JPlaceHolder" name="JTHargaTindakan">
           <Events>
+            <EventHandler event="focusLost" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="JTHargaTindakanFocusLost"/>
             <EventHandler event="keyPressed" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="JTHargaTindakanKeyPressed"/>
             <EventHandler event="keyReleased" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="JTHargaTindakanKeyReleased"/>
           </Events>
@@ -532,6 +534,7 @@
         </Component>
         <Component class="KomponenGUI.JPlaceHolder" name="JTJumlahObat">
           <Events>
+            <EventHandler event="focusLost" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="JTJumlahObatFocusLost"/>
             <EventHandler event="keyPressed" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="JTJumlahObatKeyPressed"/>
             <EventHandler event="keyReleased" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="JTJumlahObatKeyReleased"/>
           </Events>
@@ -609,6 +612,7 @@
         </Component>
         <Component class="KomponenGUI.JPlaceHolder" name="JTHargaObat">
           <Events>
+            <EventHandler event="focusLost" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="JTHargaObatFocusLost"/>
             <EventHandler event="keyPressed" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="JTHargaObatKeyPressed"/>
             <EventHandler event="keyReleased" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="JTHargaObatKeyReleased"/>
           </Events>
