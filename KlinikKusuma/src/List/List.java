@@ -806,7 +806,7 @@ public class List extends javax.swing.JFrame {
                 jcomCari1.setOrder(" ORDER BY a.`NoTransaksi` DESC ");
                 break;
             case "Penyesuaian Stok":
-                jcomCari1.setQuery("SELECT `IdPenyesuaian` as 'ID', `NoPenyesuaian` as 'No. Penyesuaian', DATE_FORMAT(`Tanggal`,'%d-%m-%Y') as 'Tanggal', IFNULL(`NamaBarang`,'-') as 'Nama Barang', `Jumlah`, a.`Keterangan` FROM `tbpenyesuaianstok`a LEFT JOIN `tbmbarang`b ON a.`IdBarangLain`=b.`IdBarang` WHERE 1");
+                jcomCari1.setQuery("SELECT `IdPenyesuaian` as 'ID', `NoPenyesuaian` as 'No. Penyesuaian', DATE_FORMAT(`Tanggal`,'%d-%m-%Y') as 'Tanggal', IFNULL(`NamaBarang`,'-') as 'Nama Barang', `Jumlah`, a.`Keterangan` FROM `tbpenyesuaianstok`a LEFT JOIN `tbmbarang`b ON a.`IdBarang`=b.`IdBarang` WHERE 1");
                 jcomCari1.setOrder(" ORDER BY `NoPenyesuaian` DESC ");
                 break;
             case "Perawatan":
