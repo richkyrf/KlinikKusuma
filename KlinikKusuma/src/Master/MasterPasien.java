@@ -210,8 +210,10 @@ public class MasterPasien extends javax.swing.JFrame {
 
         JTKodePasien.setEnabled(false);
 
+        jlableF5.setForeground(new java.awt.Color(0, 0, 255));
         jlableF5.setText("Kode Pasien");
 
+        jlableF12.setForeground(new java.awt.Color(0, 0, 255));
         jlableF12.setText(":");
 
         jlableF13.setText("Tanggal Daftar");
