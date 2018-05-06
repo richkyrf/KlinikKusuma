@@ -181,7 +181,7 @@ public class Perawatan extends javax.swing.JFrame {
         } else if (JTJumlahTindakan.getNumberFormattedText().replace("0", "").isEmpty()) {
             JOptionPaneF.showMessageDialog(this, "Gagal. Jumlah Tidak Boleh Kosong.");
             return false;
-        } else if (cekDoubleTindakan(JCTindakan.getSelectedItem().toString()) && JBTambahTindakan.isEnabled()) {
+        } else if (cekDoubleTindakan(JCTindakan.getSelectedItem().toString()) && JBTambahTindakan.getText().equals("Tambah")) {
             JOptionPaneF.showMessageDialog(this, "Gagal. Tidak Bisa Input Tindakan Yang Sama.");
             JCTindakan.requestFocus();
             return false;
@@ -192,7 +192,7 @@ public class Perawatan extends javax.swing.JFrame {
 
     boolean cekDoubleTindakan(String item) {
         for (int i = 0; i < JTableTindakan.getRowCount(); i++) {
-            if (item.equals(JTableTindakan.getValueAt(i, 1))) {
+            if (item.equals(JTableTindakan.getValueAt(i, 0))) {
                 return true;
             }
         }
@@ -206,7 +206,7 @@ public class Perawatan extends javax.swing.JFrame {
         } else if (JTJumlahObat.getNumberFormattedText().replace("0", "").isEmpty()) {
             JOptionPaneF.showMessageDialog(this, "Gagal. Jumlah Tidak Boleh Kosong.");
             return false;
-        } else if (cekDoubleObat(JCObat.getSelectedItem().toString()) && JBTambahObat.isEnabled()) {
+        } else if (cekDoubleObat(JCObat.getSelectedItem().toString()) && JBTambahObat.getText().equals("Tambah")) {
             JOptionPaneF.showMessageDialog(this, "Gagal. Tidak Bisa Input Obat Yang Sama.");
             JCObat.requestFocus();
             return false;
@@ -217,7 +217,7 @@ public class Perawatan extends javax.swing.JFrame {
 
     boolean cekDoubleObat(String item) {
         for (int i = 0; i < JTableObat.getRowCount(); i++) {
-            if (item.equals(JTableObat.getValueAt(i, 1))) {
+            if (item.equals(JTableObat.getValueAt(i, 0))) {
                 return true;
             }
         }
@@ -836,7 +836,7 @@ public class Perawatan extends javax.swing.JFrame {
     }//GEN-LAST:event_JBUbahActionPerformed
 
     private void JCTindakanItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_JCTindakanItemStateChanged
-        
+
     }//GEN-LAST:event_JCTindakanItemStateChanged
 
     private void JCObatItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_JCObatItemStateChanged
@@ -897,13 +897,11 @@ public class Perawatan extends javax.swing.JFrame {
     }//GEN-LAST:event_JTableObatMouseClicked
 
     private void JBRefreshTindakanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBRefreshTindakanActionPerformed
-        JTableTindakan.clearSelection();
-        JBTambahTindakan.setText("Tambah");
+        refreshTindakan();
     }//GEN-LAST:event_JBRefreshTindakanActionPerformed
 
     private void JBRefreshObatActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBRefreshObatActionPerformed
-        JTableObat.clearSelection();
-        JBTambahObat.setText("Tambah");
+        refreshObat();
     }//GEN-LAST:event_JBRefreshObatActionPerformed
 
     /**
@@ -1001,8 +999,7 @@ public class Perawatan extends javax.swing.JFrame {
         if (checkTableTindakan()) {
             DefaultTableModel model = (DefaultTableModel) JTableTindakan.getModel();
             model.addRow(new Object[]{JCTindakan.getSelectedItem(), JTJumlahTindakan.getText()});
-            JCTindakan.requestFocus();
-            JTJumlahTindakan.setText("");
+            refreshTindakan();
         }
     }
 
@@ -1010,20 +1007,21 @@ public class Perawatan extends javax.swing.JFrame {
         if (checkTableObat()) {
             DefaultTableModel model = (DefaultTableModel) JTableObat.getModel();
             model.addRow(new Object[]{JCObat.getSelectedItem(), JTJumlahObat.getText()});
-            JCObat.requestFocus();
-            JTJumlahObat.setText("");
+            refreshObat();
         }
     }
 
     void hapusTableTindakan() {
         if (JTableTindakan.getSelectedRow() != -1) {
             ((DefaultTableModel) JTableTindakan.getModel()).removeRow(JTableTindakan.getSelectedRow());
+            refreshTindakan();
         }
     }
 
     void hapusTableObat() {
         if (JTableObat.getSelectedRow() != -1) {
             ((DefaultTableModel) JTableObat.getModel()).removeRow(JTableObat.getSelectedRow());
+            refreshObat();
         }
     }
 
@@ -1032,10 +1030,7 @@ public class Perawatan extends javax.swing.JFrame {
             if (checkTableTindakan()) {
                 JTableTindakan.setValueAt(JCTindakan.getSelectedItem(), JTableTindakan.getSelectedRow(), 0);
                 JTableTindakan.setValueAt(JTJumlahTindakan.getText(), JTableTindakan.getSelectedRow(), 1);
-                JCTindakan.requestFocus();
-                JCTindakan.setSelectedIndex(0);
-                JTJumlahTindakan.setText("");
-                JTableTindakan.clearSelection();
+                refreshTindakan();
             }
         }
     }
@@ -1045,12 +1040,25 @@ public class Perawatan extends javax.swing.JFrame {
             if (checkTableObat()) {
                 JTableObat.setValueAt(JCObat.getSelectedItem(), JTableObat.getSelectedRow(), 0);
                 JTableObat.setValueAt(JTJumlahObat.getText(), JTableObat.getSelectedRow(), 1);
-                JCObat.requestFocus();
-                JCObat.setSelectedIndex(0);
-                JTJumlahObat.setText("");
-                JTableObat.clearSelection();
+                refreshObat();
             }
         }
+    }
+
+    void refreshTindakan() {
+        JCTindakan.setSelectedIndex(0);
+        JTJumlahTindakan.setText("");
+        JTableTindakan.clearSelection();
+        JBTambahTindakan.setText("Tambah");
+        JCTindakan.requestFocus();
+    }
+
+    void refreshObat() {
+        JCObat.setSelectedIndex(0);
+        JTJumlahObat.setText("");
+        JTableObat.clearSelection();
+        JBTambahObat.setText("Tambah");
+        JCObat.requestFocus();
     }
 
     void tambahData() {

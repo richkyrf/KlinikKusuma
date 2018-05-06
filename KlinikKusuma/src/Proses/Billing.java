@@ -271,7 +271,7 @@ public class Billing extends javax.swing.JFrame {
         } else if (JTHargaTindakan.getNumberFormattedText().replace("0", "").isEmpty()) {
             JOptionPaneF.showMessageDialog(this, "Gagal. Sub Total Tidak Boleh Kosong.");
             return false;
-        } else if (cekDoubleTindakan(JCTindakan.getSelectedItem().toString()) && JBTambahTindakan.isEnabled()) {
+        } else if (cekDoubleTindakan(JCTindakan.getSelectedItem().toString()) && JBTambahTindakan.getText().equals("Tambah")) {
             JOptionPaneF.showMessageDialog(this, "Gagal. Tidak Bisa Input Tindakan Yang Sama.");
             JCTindakan.requestFocus();
             return false;
@@ -282,7 +282,7 @@ public class Billing extends javax.swing.JFrame {
 
     boolean cekDoubleTindakan(String item) {
         for (int i = 0; i < JTableTindakan.getRowCount(); i++) {
-            if (item.equals(JTableTindakan.getValueAt(i, 1))) {
+            if (item.equals(JTableTindakan.getValueAt(i, 0))) {
                 return true;
             }
         }
@@ -302,7 +302,7 @@ public class Billing extends javax.swing.JFrame {
         } else if (JTSubTotalObat.getNumberFormattedText().replace("0", "").isEmpty()) {
             JOptionPaneF.showMessageDialog(this, "Gagal. Sub Total Tidak Boleh Kosong.");
             return false;
-        } else if (cekDoubleObat(JCObat.getSelectedItem().toString()) && JBTambahObat.isEnabled()) {
+        } else if (cekDoubleObat(JCObat.getSelectedItem().toString()) && JBTambahObat.getText().equals("Tambah")) {
             JOptionPaneF.showMessageDialog(this, "Gagal. Tidak Bisa Input Obat Yang Sama.");
             JCObat.requestFocus();
             return false;
@@ -313,7 +313,7 @@ public class Billing extends javax.swing.JFrame {
 
     boolean cekDoubleObat(String item) {
         for (int i = 0; i < JTableObat.getRowCount(); i++) {
-            if (item.equals(JTableObat.getValueAt(i, 1))) {
+            if (item.equals(JTableObat.getValueAt(i, 0))) {
                 return true;
             }
         }
@@ -344,7 +344,7 @@ public class Billing extends javax.swing.JFrame {
         dRunSelctOne.seterorm("Gagal setPoin()");
         dRunSelctOne.setQuery("SELECT `IdPasien`, IFNULL(SUM(`Poin`),0) as 'Poin' FROM (SELECT `IdPasien`, 0 as 'Jumlah Belanja', 0 as 'Poin' FROM `tbmpasien` WHERE 1 AND `KodePasien` = '" + JTNamaPasien.getText().split("\\(")[1].split("\\)")[0] + "' UNION ALL SELECT d.`IdPasien`, SUM(e.`Jumlah`*e.`Harga`)+SUM(f.`Jumlah`*f.`Harga`) as 'Total Belanja', FLOOR((SUM(e.`Jumlah`*e.`Harga`)+SUM(f.`Jumlah`*f.`Harga`)) / 50000) as 'Poin' FROM `tbbilling`a JOIN `tbperawatan`b ON a.`NoInvoice`=b.`NoInvoice` JOIN `tbantrian`c ON b.`NoAntrian`=c.`NoAntrian` AND b.`Tanggal`=c.`Tanggal` JOIN `tbmpasien`d ON c.`IdPasien`=d.`IdPasien` JOIN `tbbillingobat`e ON a.`NoBilling`=e.`NoBilling` JOIN `tbbillingtindakan`f ON a.`NoBilling`=f.`NoBilling` WHERE 1 AND d.`IdPasien` = (SELECT `IdPasien` FROM `tbmpasien` WHERE `KodePasien` = '" + JTNamaPasien.getText().split("\\(")[1].split("\\)")[0] + "') GROUP BY d.`IdPasien`, a.`NoBilling` UNION ALL SELECT d.`IdPasien`, SUM(a.`Poin`*5000)*-1 as 'Total Belanja', SUM(`Poin`)*-1 FROM `tbbilling`a JOIN `tbperawatan`b ON a.`NoInvoice`=b.`NoInvoice` JOIN `tbantrian`c ON b.`NoAntrian`=c.`NoAntrian` AND b.`Tanggal`=c.`Tanggal` JOIN `tbmpasien`d ON c.`IdPasien`=d.`IdPasien` JOIN `tbbillingobat`e ON a.`NoBilling`=e.`NoBilling` JOIN `tbbillingtindakan`f ON a.`NoBilling`=f.`NoBilling` WHERE 1 AND a.`StatusPoin` = 1 AND d.`IdPasien` = (SELECT `IdPasien` FROM `tbmpasien` WHERE `KodePasien` = '" + JTNamaPasien.getText().split("\\(")[1].split("\\)")[0] + "') GROUP BY d.`IdPasien`, a.`NoBilling`) t1 WHERE 1 GROUP BY `IdPasien`");
         ArrayList<String> list = dRunSelctOne.excute();
-        JLPoin.setText("Poin (" + (Integer.parseInt(list.get(1)) - poin) + ")");
+        JLPoin.setText("Poin (" + (Integer.parseInt(list.get(1)) + poin) + ")");
         if (list.get(1).equals("0")) {
             JCBPakaiPoin.setEnabled(false);
         }
@@ -1216,13 +1216,11 @@ public class Billing extends javax.swing.JFrame {
     }//GEN-LAST:event_JTableTindakanMouseClicked
 
     private void JBRefreshTindakanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBRefreshTindakanActionPerformed
-        JTableTindakan.clearSelection();
-        JBTambahTindakan.setText("Tambah");
+        refreshTindakan();
     }//GEN-LAST:event_JBRefreshTindakanActionPerformed
 
     private void JBRefreshObatActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBRefreshObatActionPerformed
-        JTableObat.clearSelection();
-        JBTambahObat.setText("Tambah");
+        refreshObat();
     }//GEN-LAST:event_JBRefreshObatActionPerformed
 
     private void JTableObatMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_JTableObatMouseClicked
@@ -1357,11 +1355,8 @@ public class Billing extends javax.swing.JFrame {
             if (JCTindakan.getSelectedIndex() != 0) {
                 DefaultTableModel model = (DefaultTableModel) JTableTindakan.getModel();
                 model.addRow(new Object[]{JCTindakan.getSelectedItem(), JTJumlahTindakan.getText(), JTHargaTindakan.getText(), JTSubTotalTindakan.getText()});
-                JCTindakan.requestFocus();
-                JTJumlahTindakan.setText("");
-                JTHargaTindakan.setText("");
-                JTSubTotalTindakan.setText("");
                 setGrandTotal();
+                refreshTindakan();
             } else {
                 JOptionPaneF.showMessageDialog(this, "Gagal. Silahkan Pilih Tindakan Terlebih Dahulu");
             }
@@ -1373,11 +1368,8 @@ public class Billing extends javax.swing.JFrame {
             if (JCObat.getSelectedIndex() != 0) {
                 DefaultTableModel model = (DefaultTableModel) JTableObat.getModel();
                 model.addRow(new Object[]{JCObat.getSelectedItem(), JTJumlahObat.getText(), JTHargaObat.getText(), JTSubTotalObat.getText()});
-                JCObat.requestFocus();
-                JTJumlahObat.setText("");
-                JTHargaObat.setText("");
-                JTSubTotalObat.setText("");
                 setGrandTotal();
+                refreshObat();
             } else {
                 JOptionPaneF.showMessageDialog(this, "Gagal. Silahkan Pilih Obat Terlebih Dahulu");
             }
@@ -1388,6 +1380,7 @@ public class Billing extends javax.swing.JFrame {
         if (JTableTindakan.getSelectedRow() != -1) {
             ((DefaultTableModel) JTableTindakan.getModel()).removeRow(JTableTindakan.getSelectedRow());
             setGrandTotal();
+            refreshTindakan();
         }
     }
 
@@ -1395,6 +1388,7 @@ public class Billing extends javax.swing.JFrame {
         if (JTableObat.getSelectedRow() != -1) {
             ((DefaultTableModel) JTableObat.getModel()).removeRow(JTableObat.getSelectedRow());
             setGrandTotal();
+            refreshObat();
         }
     }
 
@@ -1405,13 +1399,8 @@ public class Billing extends javax.swing.JFrame {
                 JTableTindakan.setValueAt(JTJumlahTindakan.getText(), JTableTindakan.getSelectedRow(), 1);
                 JTableTindakan.setValueAt(JTHargaTindakan.getText(), JTableTindakan.getSelectedRow(), 2);
                 JTableTindakan.setValueAt(JTSubTotalTindakan.getText(), JTableTindakan.getSelectedRow(), 3);
-                JCTindakan.requestFocus();
-                JCTindakan.setSelectedIndex(0);
-                JTJumlahTindakan.setText("");
-                JTHargaTindakan.setText("");
-                JTSubTotalTindakan.setText("");
-                JTableTindakan.clearSelection();
                 setGrandTotal();
+                refreshTindakan();
             }
         }
     }
@@ -1423,15 +1412,30 @@ public class Billing extends javax.swing.JFrame {
                 JTableObat.setValueAt(JTJumlahObat.getText(), JTableObat.getSelectedRow(), 1);
                 JTableObat.setValueAt(JTHargaObat.getText(), JTableObat.getSelectedRow(), 2);
                 JTableTindakan.setValueAt(JTSubTotalObat.getText(), JTableObat.getSelectedRow(), 3);
-                JCObat.requestFocus();
-                JCObat.setSelectedIndex(0);
-                JTJumlahObat.setText("");
-                JTHargaObat.setText("");
-                JTSubTotalObat.setText("");
-                JTableObat.clearSelection();
                 setGrandTotal();
+                refreshObat();
             }
         }
+    }
+
+    void refreshTindakan() {
+        JCTindakan.setSelectedIndex(0);
+        JTJumlahTindakan.setText("");
+        JTHargaTindakan.setText("");
+        JTSubTotalTindakan.setText("");
+        JTableTindakan.clearSelection();
+        JBTambahTindakan.setText("Tambah");
+        JCTindakan.requestFocus();
+    }
+
+    void refreshObat() {
+        JCObat.setSelectedIndex(0);
+        JTJumlahObat.setText("");
+        JTHargaObat.setText("");
+        JTSubTotalObat.setText("");
+        JTableObat.clearSelection();
+        JBTambahObat.setText("Tambah");
+        JCObat.requestFocus();
     }
 
     void tambahData() {
