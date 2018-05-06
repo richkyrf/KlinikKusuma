@@ -590,6 +590,7 @@ public class List extends javax.swing.JFrame {
                     tambahPermintaanStok.setState(NORMAL);
                     tambahPermintaanStok.toFront();
                 }
+                break;
             default:
                 throw new AssertionError();
         }
