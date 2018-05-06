@@ -52,16 +52,16 @@ public class Billing extends javax.swing.JFrame {
             loadPerawatan(parameter);
             JBUbah.setVisible(false);
             JTNoBilling.setText(getNoBilling());
+            JTSetelahPotong.setVisible(false);
+            jlableF12.setVisible(false);
+            jlableF24.setVisible(false);
+            setPoin(0);
         } else {
             setTitle("Ubah Billing");
             JBTambah.setVisible(false);
             loadData(parameter);
         }
         JTBayar.requestFocus();
-        setPoin();
-        JTSetelahPotong.setVisible(false);
-        jlableF12.setVisible(false);
-        jlableF24.setVisible(false);
     }
 
     void loadData(Object idEdit) {
@@ -121,7 +121,19 @@ public class Billing extends javax.swing.JFrame {
             runSelct2.closecon();
         }
         setGrandTotal();
-        JTSetelahPotong.setText(String.valueOf(JTGrandTotal.getInt() - Integer.valueOf(list.get(10)) * 5000));
+        if (JCBPakaiPoin.isSelected()) {
+            JTSetelahPotong.setVisible(true);
+            jlableF12.setVisible(true);
+            jlableF24.setVisible(true);
+            setPoin(Integer.valueOf(list.get(10)));
+            JTSetelahPotong.setText(String.valueOf(JTGrandTotal.getInt() - Integer.valueOf(list.get(10)) * 5000));
+        } else {
+            JTSetelahPotong.setVisible(false);
+            jlableF12.setVisible(false);
+            jlableF24.setVisible(false);
+            JLPoin.setText("Poin (0)");
+            JCBPakaiPoin.setEnabled(false);
+        }
     }
 
     void loadPerawatan(Object noInvoice) {
@@ -327,12 +339,12 @@ public class Billing extends javax.swing.JFrame {
         JTGrandTotal.setInt(String.valueOf(total));
     }
 
-    void setPoin() {
+    void setPoin(int poin) {
         DRunSelctOne dRunSelctOne = new DRunSelctOne();
         dRunSelctOne.seterorm("Gagal setPoin()");
         dRunSelctOne.setQuery("SELECT `IdPasien`, IFNULL(SUM(`Poin`),0) as 'Poin' FROM (SELECT `IdPasien`, 0 as 'Jumlah Belanja', 0 as 'Poin' FROM `tbmpasien` WHERE 1 AND `KodePasien` = '" + JTNamaPasien.getText().split("\\(")[1].split("\\)")[0] + "' UNION ALL SELECT d.`IdPasien`, SUM(e.`Jumlah`*e.`Harga`)+SUM(f.`Jumlah`*f.`Harga`) as 'Total Belanja', FLOOR((SUM(e.`Jumlah`*e.`Harga`)+SUM(f.`Jumlah`*f.`Harga`)) / 50000) as 'Poin' FROM `tbbilling`a JOIN `tbperawatan`b ON a.`NoInvoice`=b.`NoInvoice` JOIN `tbantrian`c ON b.`NoAntrian`=c.`NoAntrian` AND b.`Tanggal`=c.`Tanggal` JOIN `tbmpasien`d ON c.`IdPasien`=d.`IdPasien` JOIN `tbbillingobat`e ON a.`NoBilling`=e.`NoBilling` JOIN `tbbillingtindakan`f ON a.`NoBilling`=f.`NoBilling` WHERE 1 AND d.`IdPasien` = (SELECT `IdPasien` FROM `tbmpasien` WHERE `KodePasien` = '" + JTNamaPasien.getText().split("\\(")[1].split("\\)")[0] + "') GROUP BY d.`IdPasien`, a.`NoBilling` UNION ALL SELECT d.`IdPasien`, SUM(a.`Poin`*5000)*-1 as 'Total Belanja', SUM(`Poin`)*-1 FROM `tbbilling`a JOIN `tbperawatan`b ON a.`NoInvoice`=b.`NoInvoice` JOIN `tbantrian`c ON b.`NoAntrian`=c.`NoAntrian` AND b.`Tanggal`=c.`Tanggal` JOIN `tbmpasien`d ON c.`IdPasien`=d.`IdPasien` JOIN `tbbillingobat`e ON a.`NoBilling`=e.`NoBilling` JOIN `tbbillingtindakan`f ON a.`NoBilling`=f.`NoBilling` WHERE 1 AND a.`StatusPoin` = 1 AND d.`IdPasien` = (SELECT `IdPasien` FROM `tbmpasien` WHERE `KodePasien` = '" + JTNamaPasien.getText().split("\\(")[1].split("\\)")[0] + "') GROUP BY d.`IdPasien`, a.`NoBilling`) t1 WHERE 1 GROUP BY `IdPasien`");
         ArrayList<String> list = dRunSelctOne.excute();
-        JLPoin.setText("Poin (" + list.get(1) + ")");
+        JLPoin.setText("Poin (" + (Integer.parseInt(list.get(1)) - poin) + ")");
         if (list.get(1).equals("0")) {
             JCBPakaiPoin.setEnabled(false);
         }

@@ -16,6 +16,7 @@ import Proses.*;
 import java.awt.Color;
 import java.awt.Component;
 import static java.awt.Frame.NORMAL;
+import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.Date;
 import javax.swing.RowFilter;
@@ -108,6 +109,7 @@ public class List extends javax.swing.JFrame {
         if (!GlobalVar.VarL.level.equals("Administrator")) {
             JBHapus.setVisible(false);
         }
+        jtextF1.requestFocus();
     }
 
     String getNoAntrian() {
@@ -137,6 +139,7 @@ public class List extends javax.swing.JFrame {
                 if (listAntrian != null) {
                     listAntrian.load();
                 }
+                jtextF1.setText("");
             }
         }
     }
@@ -395,6 +398,19 @@ public class List extends javax.swing.JFrame {
             rowSorter.setRowFilter(null);
         } else {
             rowSorter.setRowFilter(RowFilter.regexFilter("(?i)" + text));
+        }
+        if (Type.equals("Master Pasien")) {
+            if (evt.getKeyCode() == KeyEvent.VK_ENTER && jcomCari1.jtablef.getRowCount() != 0) {
+                jcomCari1.jtablef.setRowSelectionInterval(0, 0);
+                if (jcomCari1.jtablef.getValueAt(jcomCari1.jtablef.getSelectedRow(), jcomCari1.jtablef.getColumnCount() - 1).equals("Antri")) {
+                    JBRegister.setEnabled(false);
+                    JBRegister.setText("Sedang Antri");
+                } else {
+                    JBRegister.setEnabled(true);
+                    JBRegister.setText("Register");
+                }
+            }
+
         }
     }//GEN-LAST:event_jtextF1KeyReleased
 

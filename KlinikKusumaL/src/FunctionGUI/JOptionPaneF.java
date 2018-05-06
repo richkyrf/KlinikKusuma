@@ -50,8 +50,8 @@ public class JOptionPaneF {
     public static int showConfirmDialog(Component parentComponent, Object message, String title, int optionType) {
         UIManager.put("OptionPane.messageFont", new Font("Tahoma", Font.PLAIN, 18));
         UIManager.put("OptionPane.buttonFont", new Font("Tahoma", Font.PLAIN, 18));
-        UIManager.put("Panel.background", new Color(255, 225, 200));
-        int a = showConfirmDialog(parentComponent, message, title, optionType);
+        UIManager.put("Panel.background", new Color(255, 255, 100));
+        int a = JOptionPane.showConfirmDialog(parentComponent, message, title, optionType);
         UIManager.put("Panel.background", new Color(240, 240, 240));
         return a;
     }
