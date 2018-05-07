@@ -477,6 +477,7 @@ public class BarangMasuk extends javax.swing.JFrame {
         jlabelF11.setDisabledTextColor(new java.awt.Color(0, 0, 0));
         jlabelF11.setEnabled(false);
 
+        JTHargaSatuan.setEnabled(false);
         JTHargaSatuan.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusLost(java.awt.event.FocusEvent evt) {
                 JTHargaSatuanFocusLost(evt);
@@ -1402,7 +1403,7 @@ public class BarangMasuk extends javax.swing.JFrame {
         if (!JTNamaBarang.getText().replace(" ", "").equals("")) {
             DRunSelctOne dRunSelctOne = new DRunSelctOne();
             dRunSelctOne.seterorm("Gagal Menampilkan Data Stok Barang");
-            dRunSelctOne.setQuery("SELECT `IdBarang`, SUM(`Jumlah`) as 'Stok' FROM( SELECT `IdBarang`, 0 as 'Jumlah' FROm `tbmbarang` WHERE 1 UNION ALL SELECT `IdBarang`, `Jumlah` FROM `tbbarangmasukdetail` WHERE 1 UNION ALL SELECT `IdBarang`, `Jumlah` FROM `tbpermintaanstok` WHERE 1) t1 WHERE `IdBarang` = (SELECT `IdBarang` FROM `tbmbarang` WHERE `NamaBarang` = '" + JTNamaBarang.getText() + "' GROUP BY `IdBarang`");
+            dRunSelctOne.setQuery("SELECT `IdBarang`, SUM(`Jumlah`) as 'Stok' FROM( SELECT `IdBarang`, 0 as 'Jumlah' FROM `tbmbarang` WHERE 1 UNION ALL SELECT `IdBarang`, `Jumlah` FROM `tbbarangmasukdetail` WHERE 1 UNION ALL SELECT `IdBarang`, `Jumlah` FROM `tbpermintaanstok` WHERE 1) t1 WHERE `IdBarang` = (SELECT `IdBarang` FROM `tbmbarang` WHERE `NamaBarang` = '" + JTNamaBarang.getText() + "') GROUP BY `IdBarang`");
             ArrayList<String> list = dRunSelctOne.excute();
             String Stok = list.get(1);
             JTStock.setText(Stok);

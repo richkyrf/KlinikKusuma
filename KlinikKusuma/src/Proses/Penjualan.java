@@ -481,6 +481,7 @@ public class Penjualan extends javax.swing.JFrame {
         jlabelF11.setDisabledTextColor(new java.awt.Color(0, 0, 0));
         jlabelF11.setEnabled(false);
 
+        JTHargaSatuan.setEnabled(false);
         JTHargaSatuan.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusLost(java.awt.event.FocusEvent evt) {
                 JTHargaSatuanFocusLost(evt);
