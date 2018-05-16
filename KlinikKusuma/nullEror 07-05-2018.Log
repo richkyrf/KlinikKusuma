@@ -1,5 +1,6 @@
 
 ==============================================================
+<<<<<<< HEAD
 java.lang.NullPointerException
 	at KomponenGUI.JtableF.setrender(JtableF.java:83)
 	at KomponenGUI.JcomCari.tampilkan(JcomCari.java:113)
@@ -3494,6 +3495,32 @@ java.lang.NumberFormatException: For input string: ""
 	at KomponenGUI.JPlaceHolder.formatNumber(JPlaceHolder.java:125)
 	at KomponenGUI.JPlaceHolder.setInt(JPlaceHolder.java:102)
 	at KomponenGUI.JPlaceHolder$1.focusLost(JPlaceHolder.java:45)
+=======
+STRING = com.mysql.jdbc.JDBC4PreparedStatement@a37074d: SELECT `IdBarang`, SUM(`Jumlah`) as 'Stok' FROM( SELECT `IdBarang`, 0 as 'Jumlah' FROm `tbmbarang` WHERE 1 UNION ALL SELECT `IdBarang`, `Jumlah` FROM `tbbarangmasukdetail` WHERE 1 UNION ALL SELECT `IdBarang`, `Jumlah` FROM `tbpermintaanstok` WHERE 1) t1 WHERE `IdBarang` = (SELECT `IdBarang` FROM `tbmbarang` WHERE `NamaBarang` = 'WH-1' GROUP BY `IdBarang` LIMIT 1
+==============================================================
+
+==============================================================
+com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException: You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '' at line 1
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:62)
+	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+	at java.lang.reflect.Constructor.newInstance(Constructor.java:423)
+	at com.mysql.jdbc.Util.handleNewInstance(Util.java:411)
+	at com.mysql.jdbc.Util.getInstance(Util.java:386)
+	at com.mysql.jdbc.SQLError.createSQLException(SQLError.java:1053)
+	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:4120)
+	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:4052)
+	at com.mysql.jdbc.MysqlIO.sendCommand(MysqlIO.java:2503)
+	at com.mysql.jdbc.MysqlIO.sqlQueryDirect(MysqlIO.java:2664)
+	at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2794)
+	at com.mysql.jdbc.PreparedStatement.executeInternal(PreparedStatement.java:2155)
+	at com.mysql.jdbc.PreparedStatement.executeQuery(PreparedStatement.java:2322)
+	at LSubProces.DRunSelctOne.excute(DRunSelctOne.java:41)
+	at Proses.BarangMasuk.setStok(BarangMasuk.java:1406)
+	at Proses.BarangMasuk.JBSearchNamaBarangFocusLost(BarangMasuk.java:911)
+	at Proses.BarangMasuk.access$2200(BarangMasuk.java:59)
+	at Proses.BarangMasuk$22.focusLost(BarangMasuk.java:564)
+>>>>>>> 93ff603281f6f9cc4aa34abfbdf2458e957b6bd3
 	at java.awt.AWTEventMulticaster.focusLost(AWTEventMulticaster.java:230)
 	at java.awt.Component.processFocusEvent(Component.java:6425)
 	at java.awt.Component.processEvent(Component.java:6289)
@@ -3507,12 +3534,21 @@ java.lang.NumberFormatException: For input string: ""
 	at java.awt.Component.dispatchEventImpl(Component.java:4760)
 	at java.awt.Container.dispatchEventImpl(Container.java:2294)
 	at java.awt.Component.dispatchEvent(Component.java:4711)
+<<<<<<< HEAD
 	at java.awt.EventQueue.dispatchEventImpl(EventQueue.java:758)
+=======
+	at java.awt.KeyboardFocusManager.dispatchAndCatchException(KeyboardFocusManager.java:2601)
+	at java.awt.KeyboardFocusManager.processCurrentLightweightRequests(KeyboardFocusManager.java:2693)
+	at java.awt.KeyboardFocusManager$4.run(KeyboardFocusManager.java:2804)
+	at java.awt.event.InvocationEvent.dispatch(InvocationEvent.java:311)
+	at java.awt.EventQueue.dispatchEventImpl(EventQueue.java:756)
+>>>>>>> 93ff603281f6f9cc4aa34abfbdf2458e957b6bd3
 	at java.awt.EventQueue.access$500(EventQueue.java:97)
 	at java.awt.EventQueue$3.run(EventQueue.java:709)
 	at java.awt.EventQueue$3.run(EventQueue.java:703)
 	at java.security.AccessController.doPrivileged(Native Method)
 	at java.security.ProtectionDomain$JavaSecurityAccessImpl.doIntersectionPrivilege(ProtectionDomain.java:80)
+<<<<<<< HEAD
 	at java.security.ProtectionDomain$JavaSecurityAccessImpl.doIntersectionPrivilege(ProtectionDomain.java:90)
 	at java.awt.EventQueue$4.run(EventQueue.java:731)
 	at java.awt.EventQueue$4.run(EventQueue.java:729)
@@ -3569,6 +3605,9 @@ java.lang.NullPointerException
 	at java.security.AccessController.doPrivileged(Native Method)
 	at java.security.ProtectionDomain$JavaSecurityAccessImpl.doIntersectionPrivilege(ProtectionDomain.java:80)
 	at java.awt.EventQueue.dispatchEvent(EventQueue.java:728)
+=======
+	at java.awt.EventQueue.dispatchEvent(EventQueue.java:726)
+>>>>>>> 93ff603281f6f9cc4aa34abfbdf2458e957b6bd3
 	at java.awt.EventDispatchThread.pumpOneEventForFilters(EventDispatchThread.java:201)
 	at java.awt.EventDispatchThread.pumpEventsForFilter(EventDispatchThread.java:116)
 	at java.awt.EventDispatchThread.pumpEventsForHierarchy(EventDispatchThread.java:105)
@@ -3579,6 +3618,7 @@ java.lang.NullPointerException
 ==============================================================
 
 ==============================================================
+<<<<<<< HEAD
 java.lang.NumberFormatException: For input string: ""
 	at java.lang.NumberFormatException.forInputString(NumberFormatException.java:65)
 	at java.lang.Integer.parseInt(Integer.java:592)
@@ -3628,6 +3668,32 @@ java.lang.NumberFormatException: For input string: ""
 	at KomponenGUI.JPlaceHolder.formatNumber(JPlaceHolder.java:125)
 	at KomponenGUI.JPlaceHolder.setInt(JPlaceHolder.java:102)
 	at KomponenGUI.JPlaceHolder$1.focusLost(JPlaceHolder.java:45)
+=======
+STRING = com.mysql.jdbc.JDBC4PreparedStatement@89da3c8: SELECT `IdBarang`, SUM(`Jumlah`) as 'Stok' FROM( SELECT `IdBarang`, 0 as 'Jumlah' FROm `tbmbarang` WHERE 1 UNION ALL SELECT `IdBarang`, `Jumlah` FROM `tbbarangmasukdetail` WHERE 1 UNION ALL SELECT `IdBarang`, `Jumlah` FROM `tbpermintaanstok` WHERE 1) t1 WHERE `IdBarang` = (SELECT `IdBarang` FROM `tbmbarang` WHERE `NamaBarang` = 'SABUN HIJAU' GROUP BY `IdBarang` LIMIT 1
+==============================================================
+
+==============================================================
+com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException: You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '' at line 1
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:62)
+	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+	at java.lang.reflect.Constructor.newInstance(Constructor.java:423)
+	at com.mysql.jdbc.Util.handleNewInstance(Util.java:411)
+	at com.mysql.jdbc.Util.getInstance(Util.java:386)
+	at com.mysql.jdbc.SQLError.createSQLException(SQLError.java:1053)
+	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:4120)
+	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:4052)
+	at com.mysql.jdbc.MysqlIO.sendCommand(MysqlIO.java:2503)
+	at com.mysql.jdbc.MysqlIO.sqlQueryDirect(MysqlIO.java:2664)
+	at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2794)
+	at com.mysql.jdbc.PreparedStatement.executeInternal(PreparedStatement.java:2155)
+	at com.mysql.jdbc.PreparedStatement.executeQuery(PreparedStatement.java:2322)
+	at LSubProces.DRunSelctOne.excute(DRunSelctOne.java:41)
+	at Proses.BarangMasuk.setStok(BarangMasuk.java:1407)
+	at Proses.BarangMasuk.JBSearchNamaBarangFocusLost(BarangMasuk.java:912)
+	at Proses.BarangMasuk.access$2200(BarangMasuk.java:59)
+	at Proses.BarangMasuk$22.focusLost(BarangMasuk.java:565)
+>>>>>>> 93ff603281f6f9cc4aa34abfbdf2458e957b6bd3
 	at java.awt.AWTEventMulticaster.focusLost(AWTEventMulticaster.java:230)
 	at java.awt.Component.processFocusEvent(Component.java:6425)
 	at java.awt.Component.processEvent(Component.java:6289)
@@ -3641,6 +3707,7 @@ java.lang.NumberFormatException: For input string: ""
 	at java.awt.Component.dispatchEventImpl(Component.java:4760)
 	at java.awt.Container.dispatchEventImpl(Container.java:2294)
 	at java.awt.Component.dispatchEvent(Component.java:4711)
+<<<<<<< HEAD
 	at java.awt.EventQueue.dispatchEventImpl(EventQueue.java:758)
 	at java.awt.EventQueue.access$500(EventQueue.java:97)
 	at java.awt.EventQueue$3.run(EventQueue.java:709)
@@ -3692,17 +3759,28 @@ java.lang.NullPointerException
 	at java.awt.Window.dispatchEventImpl(Window.java:2746)
 	at java.awt.Component.dispatchEvent(Component.java:4711)
 	at java.awt.EventQueue.dispatchEventImpl(EventQueue.java:758)
+=======
+	at java.awt.KeyboardFocusManager.dispatchAndCatchException(KeyboardFocusManager.java:2601)
+	at java.awt.KeyboardFocusManager.processCurrentLightweightRequests(KeyboardFocusManager.java:2693)
+	at java.awt.KeyboardFocusManager$4.run(KeyboardFocusManager.java:2804)
+	at java.awt.event.InvocationEvent.dispatch(InvocationEvent.java:311)
+	at java.awt.EventQueue.dispatchEventImpl(EventQueue.java:756)
+>>>>>>> 93ff603281f6f9cc4aa34abfbdf2458e957b6bd3
 	at java.awt.EventQueue.access$500(EventQueue.java:97)
 	at java.awt.EventQueue$3.run(EventQueue.java:709)
 	at java.awt.EventQueue$3.run(EventQueue.java:703)
 	at java.security.AccessController.doPrivileged(Native Method)
 	at java.security.ProtectionDomain$JavaSecurityAccessImpl.doIntersectionPrivilege(ProtectionDomain.java:80)
+<<<<<<< HEAD
 	at java.security.ProtectionDomain$JavaSecurityAccessImpl.doIntersectionPrivilege(ProtectionDomain.java:90)
 	at java.awt.EventQueue$4.run(EventQueue.java:731)
 	at java.awt.EventQueue$4.run(EventQueue.java:729)
 	at java.security.AccessController.doPrivileged(Native Method)
 	at java.security.ProtectionDomain$JavaSecurityAccessImpl.doIntersectionPrivilege(ProtectionDomain.java:80)
 	at java.awt.EventQueue.dispatchEvent(EventQueue.java:728)
+=======
+	at java.awt.EventQueue.dispatchEvent(EventQueue.java:726)
+>>>>>>> 93ff603281f6f9cc4aa34abfbdf2458e957b6bd3
 	at java.awt.EventDispatchThread.pumpOneEventForFilters(EventDispatchThread.java:201)
 	at java.awt.EventDispatchThread.pumpEventsForFilter(EventDispatchThread.java:116)
 	at java.awt.EventDispatchThread.pumpEventsForHierarchy(EventDispatchThread.java:105)
@@ -3713,6 +3791,7 @@ java.lang.NullPointerException
 ==============================================================
 
 ==============================================================
+<<<<<<< HEAD
 java.lang.NumberFormatException: For input string: ""
 	at java.lang.NumberFormatException.forInputString(NumberFormatException.java:65)
 	at java.lang.Integer.parseInt(Integer.java:592)
@@ -3762,6 +3841,32 @@ java.lang.NumberFormatException: For input string: ""
 	at KomponenGUI.JPlaceHolder.formatNumber(JPlaceHolder.java:125)
 	at KomponenGUI.JPlaceHolder.setInt(JPlaceHolder.java:102)
 	at KomponenGUI.JPlaceHolder$1.focusLost(JPlaceHolder.java:45)
+=======
+STRING = com.mysql.jdbc.JDBC4PreparedStatement@30ef38c: SELECT `IdBarang`, SUM(`Jumlah`) as 'Stok' FROM( SELECT `IdBarang`, 0 as 'Jumlah' FROM `tbmbarang` WHERE 1 UNION ALL SELECT `IdBarang`, `Jumlah` FROM `tbbarangmasukdetail` WHERE 1 UNION ALL SELECT `IdBarang`, `Jumlah` FROM `tbpermintaanstok` WHERE 1) t1 WHERE `IdBarang` = (SELECT `IdBarang` FROM `tbmbarang` WHERE `NamaBarang` = 'WH-1' GROUP BY `IdBarang` LIMIT 1
+==============================================================
+
+==============================================================
+com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException: You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '' at line 1
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:62)
+	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+	at java.lang.reflect.Constructor.newInstance(Constructor.java:423)
+	at com.mysql.jdbc.Util.handleNewInstance(Util.java:411)
+	at com.mysql.jdbc.Util.getInstance(Util.java:386)
+	at com.mysql.jdbc.SQLError.createSQLException(SQLError.java:1053)
+	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:4120)
+	at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:4052)
+	at com.mysql.jdbc.MysqlIO.sendCommand(MysqlIO.java:2503)
+	at com.mysql.jdbc.MysqlIO.sqlQueryDirect(MysqlIO.java:2664)
+	at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2794)
+	at com.mysql.jdbc.PreparedStatement.executeInternal(PreparedStatement.java:2155)
+	at com.mysql.jdbc.PreparedStatement.executeQuery(PreparedStatement.java:2322)
+	at LSubProces.DRunSelctOne.excute(DRunSelctOne.java:41)
+	at Proses.BarangMasuk.setStok(BarangMasuk.java:1408)
+	at Proses.BarangMasuk.JBSearchNamaBarangFocusLost(BarangMasuk.java:912)
+	at Proses.BarangMasuk.access$2200(BarangMasuk.java:59)
+	at Proses.BarangMasuk$22.focusLost(BarangMasuk.java:565)
+>>>>>>> 93ff603281f6f9cc4aa34abfbdf2458e957b6bd3
 	at java.awt.AWTEventMulticaster.focusLost(AWTEventMulticaster.java:230)
 	at java.awt.Component.processFocusEvent(Component.java:6425)
 	at java.awt.Component.processEvent(Component.java:6289)
@@ -3775,18 +3880,30 @@ java.lang.NumberFormatException: For input string: ""
 	at java.awt.Component.dispatchEventImpl(Component.java:4760)
 	at java.awt.Container.dispatchEventImpl(Container.java:2294)
 	at java.awt.Component.dispatchEvent(Component.java:4711)
+<<<<<<< HEAD
 	at java.awt.EventQueue.dispatchEventImpl(EventQueue.java:758)
+=======
+	at java.awt.KeyboardFocusManager.dispatchAndCatchException(KeyboardFocusManager.java:2601)
+	at java.awt.KeyboardFocusManager.processCurrentLightweightRequests(KeyboardFocusManager.java:2693)
+	at java.awt.KeyboardFocusManager$4.run(KeyboardFocusManager.java:2804)
+	at java.awt.event.InvocationEvent.dispatch(InvocationEvent.java:311)
+	at java.awt.EventQueue.dispatchEventImpl(EventQueue.java:756)
+>>>>>>> 93ff603281f6f9cc4aa34abfbdf2458e957b6bd3
 	at java.awt.EventQueue.access$500(EventQueue.java:97)
 	at java.awt.EventQueue$3.run(EventQueue.java:709)
 	at java.awt.EventQueue$3.run(EventQueue.java:703)
 	at java.security.AccessController.doPrivileged(Native Method)
 	at java.security.ProtectionDomain$JavaSecurityAccessImpl.doIntersectionPrivilege(ProtectionDomain.java:80)
+<<<<<<< HEAD
 	at java.security.ProtectionDomain$JavaSecurityAccessImpl.doIntersectionPrivilege(ProtectionDomain.java:90)
 	at java.awt.EventQueue$4.run(EventQueue.java:731)
 	at java.awt.EventQueue$4.run(EventQueue.java:729)
 	at java.security.AccessController.doPrivileged(Native Method)
 	at java.security.ProtectionDomain$JavaSecurityAccessImpl.doIntersectionPrivilege(ProtectionDomain.java:80)
 	at java.awt.EventQueue.dispatchEvent(EventQueue.java:728)
+=======
+	at java.awt.EventQueue.dispatchEvent(EventQueue.java:726)
+>>>>>>> 93ff603281f6f9cc4aa34abfbdf2458e957b6bd3
 	at java.awt.EventDispatchThread.pumpOneEventForFilters(EventDispatchThread.java:201)
 	at java.awt.EventDispatchThread.pumpEventsForFilter(EventDispatchThread.java:116)
 	at java.awt.EventDispatchThread.pumpEventsForHierarchy(EventDispatchThread.java:105)
