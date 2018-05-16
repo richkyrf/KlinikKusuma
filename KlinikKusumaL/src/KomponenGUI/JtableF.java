@@ -99,6 +99,9 @@ public class JtableF extends JTable {
                 if ("Number".equals(Type[i])) {
                     m.getColumn(x[i]).setCellRenderer(FNumberRenderer.getumberrender());
                 }
+                if ("CenteredNumber".equals(Type[i])) {
+                    m.getColumn(x[i]).setCellRenderer(FNumberRenderer.getcenteredumberrender());
+                }
                 if ("Decimal".equals(Type[i])) {
                     m.getColumn(x[i]).setCellRenderer(FNumberRenderer.getdecimalrender());
                 }

@@ -5,6 +5,7 @@
  */
 package Proses;
 
+import File.Printsupport;
 import java.awt.event.KeyEvent;
 import java.util.Date;
 import FunctionGUI.JOptionPaneF;
@@ -14,14 +15,32 @@ import KomponenGUI.FDateF;
 import LSubProces.DRunSelctOne;
 import LSubProces.MultiInsert;
 import LSubProces.RunSelct;
+import static Proses.Billing.itemsTable;
 import static Proses.Penjualan.JCPasien;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
+import java.awt.print.PageFormat;
+import java.awt.print.Paper;
+import java.awt.print.Printable;
+import static java.awt.print.Printable.NO_SUCH_PAGE;
+import static java.awt.print.Printable.PAGE_EXISTS;
+import java.awt.print.PrinterException;
+import java.awt.print.PrinterJob;
+import java.io.IOException;
 import static java.lang.Integer.parseInt;
 import static java.lang.System.out;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import javax.imageio.ImageIO;
+import javax.swing.JTable;
+import javax.swing.table.TableModel;
 
 /**
  *
@@ -46,9 +65,11 @@ public class Perawatan extends javax.swing.JFrame {
             setTitle("Tambah Perawatan");
             loadPasien(parameter);
             JBUbah.setVisible(false);
+            JBUbahPrint.setVisible(false);
         } else {
             setTitle("Ubah Perawatan");
             JBTambah.setVisible(false);
+            JBTambahPrint.setVisible(false);
             loadData(parameter);
         }
         JCNamaDokter.requestFocus();
@@ -283,6 +304,8 @@ public class Perawatan extends javax.swing.JFrame {
         jlableF20 = new KomponenGUI.JlableF();
         jlableF21 = new KomponenGUI.JlableF();
         JTNoAntrian = new KomponenGUI.JtextF();
+        JBTambahPrint = new KomponenGUI.JbuttonF();
+        JBUbahPrint = new KomponenGUI.JbuttonF();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
@@ -604,6 +627,20 @@ public class Perawatan extends javax.swing.JFrame {
 
         JTNoAntrian.setEnabled(false);
 
+        JBTambahPrint.setText("Simpan & Print");
+        JBTambahPrint.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                JBTambahPrintActionPerformed(evt);
+            }
+        });
+
+        JBUbahPrint.setText("Ubah & Print");
+        JBUbahPrint.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                JBUbahPrintActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -682,7 +719,11 @@ public class Perawatan extends javax.swing.JFrame {
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addComponent(JBUbah, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(JBTambah, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(JBUbahPrint, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(JBTambah, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(JBTambahPrint, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addComponent(jlableF19, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(jSeparator2)
                             .addComponent(jlableF18, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -748,7 +789,9 @@ public class Perawatan extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(JBTambah, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(JBKembali, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(JBUbah, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(JBUbah, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(JBTambahPrint, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(JBUbahPrint, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap())
         );
 
@@ -828,11 +871,11 @@ public class Perawatan extends javax.swing.JFrame {
     }//GEN-LAST:event_JBHapusObatActionPerformed
 
     private void JBTambahActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBTambahActionPerformed
-        tambahData();
+        tambahData(false);
     }//GEN-LAST:event_JBTambahActionPerformed
 
     private void JBUbahActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBUbahActionPerformed
-        ubahData();
+        ubahData(false);
     }//GEN-LAST:event_JBUbahActionPerformed
 
     private void JCTindakanItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_JCTindakanItemStateChanged
@@ -904,6 +947,14 @@ public class Perawatan extends javax.swing.JFrame {
         refreshObat();
     }//GEN-LAST:event_JBRefreshObatActionPerformed
 
+    private void JBTambahPrintActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBTambahPrintActionPerformed
+        tambahData(true);
+    }//GEN-LAST:event_JBTambahPrintActionPerformed
+
+    private void JBUbahPrintActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBUbahPrintActionPerformed
+        ubahData(true);
+    }//GEN-LAST:event_JBUbahPrintActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -950,8 +1001,10 @@ public class Perawatan extends javax.swing.JFrame {
     private KomponenGUI.JbuttonF JBRefreshTindakan;
     private KomponenGUI.JbuttonF JBTambah;
     private KomponenGUI.JbuttonF JBTambahObat;
+    private KomponenGUI.JbuttonF JBTambahPrint;
     private KomponenGUI.JbuttonF JBTambahTindakan;
     private KomponenGUI.JbuttonF JBUbah;
+    private KomponenGUI.JbuttonF JBUbahPrint;
     private KomponenGUI.JcomboboxF JCNamaBeautician;
     private KomponenGUI.JcomboboxF JCNamaDokter;
     private KomponenGUI.JcomboboxF JCObat;
@@ -1061,7 +1114,7 @@ public class Perawatan extends javax.swing.JFrame {
         JCObat.requestFocus();
     }
 
-    void tambahData() {
+    void tambahData(boolean print) {
         if (checkInput()) {
             boolean Berhasil;
             MultiInsert multiInsert = new MultiInsert();
@@ -1093,9 +1146,9 @@ public class Perawatan extends javax.swing.JFrame {
                     JOptionPaneF.showMessageDialog(this, "Berhasil Tambah Data Perawatan");
                     multiInsert.Commit();
                     multiInsert.closecon();
-//                if (print) {
-//                    printing();
-//                }
+                    if (print) {
+                        printing();
+                    }
                     if (listPerawatan != null) {
                         listPerawatan.load();
                     }
@@ -1105,33 +1158,13 @@ public class Perawatan extends javax.swing.JFrame {
                             listAntrian.dispose();
                         }
                     }
-//                    JTableTindakan.setModel(new javax.swing.table.DefaultTableModel(
-//                            new Object[][]{}, new String[]{"Tindakan", "Jumlah", "Harga"}
-//                    ));
-//                    JTableTindakan.getColumnModel().getColumn(0).setPreferredWidth(668);
-//                    JTableTindakan.getColumnModel().getColumn(1).setPreferredWidth(105);
-//                    JCTindakan.requestFocus();
-//                    JTJumlahTindakan.setText("");
-//                    JTHargaTindakan.setText("");
-//                    JTableTindakan.clearSelection();
-//
-//                    JTableObat.setModel(new javax.swing.table.DefaultTableModel(
-//                            new Object[][]{}, new String[]{"Obat", "Jumlah", "Harga"}
-//                    ));
-//                    JTableObat.getColumnModel().getColumn(0).setPreferredWidth(668);
-//                    JTableObat.getColumnModel().getColumn(1).setPreferredWidth(105);
-//                    JCObat.requestFocus();
-//                    JTJumlahObat.setText("");
-//                    JTHargaObat.setText("");
-//                    JTableObat.clearSelection();
-//                    JTNoInvoice.setText(getNoInvoice());
                     dispose();
                 }
             }
         }
     }
 
-    void ubahData() {
+    void ubahData(boolean print) {
         if (checkInput()) {
             boolean Berhasil;
             MultiInsert multiInsert = new MultiInsert();
@@ -1166,9 +1199,9 @@ public class Perawatan extends javax.swing.JFrame {
                     JOptionPaneF.showMessageDialog(this, "Berhasil Ubah Data Perawatan");
                     multiInsert.Commit();
                     multiInsert.closecon();
-//                if (print) {
-//                    printing();
-//                }
+                    if (print) {
+                        printing();
+                    }
                     dispose();
                     ubahPerawatan = null;
                     if (listPerawatan != null) {
@@ -1178,4 +1211,181 @@ public class Perawatan extends javax.swing.JFrame {
             }
         }
     }
+
+    void printing() {
+        PrintResep pr = new PrintResep();
+        Object printitem[][] = getTableData(JTableObat);
+        setItems(printitem);
+        total_item_count = itemsTable.getRowCount();
+        PrinterJob pj = PrinterJob.getPrinterJob();
+        pj.setPrintable(pr, getPageFormat(pj));
+        try {
+            pj.print();
+
+        } catch (PrinterException ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    void setItems(Object[][] printitem) {
+        Object data[][] = printitem;
+        DefaultTableModel model = new DefaultTableModel();
+        //assume jtable has 4 columns.
+        model.addColumn(title[0]);
+        model.addColumn(title[1]);
+
+        int rowcount = printitem.length;
+
+        addtomodel(model, data, rowcount);
+
+        itemsTable = new JTable(model);
+    }
+
+    void addtomodel(DefaultTableModel model, Object[][] data, int rowcount) {
+        int count = 0;
+        while (count < rowcount) {
+            model.addRow(data[count]);
+            count++;
+        }
+        if (model.getRowCount() != rowcount) {
+            addtomodel(model, data, rowcount);
+        }
+
+        System.out.println("Check Passed.");
+    }
+
+    Object[][] getTableData(JTable table) {
+        int itemcount = table.getRowCount();
+        System.out.println("Item Count:" + itemcount);
+
+        DefaultTableModel dtm = (DefaultTableModel) table.getModel();
+        int nRow = dtm.getRowCount(), nCol = dtm.getColumnCount();
+        Object[][] tableData = new Object[nRow][nCol];
+        if (itemcount == nRow) //check is there any data loss.
+        {
+            for (int i = 0; i < nRow; i++) {
+                for (int j = 0; j < nCol; j++) {
+                    tableData[i][j] = dtm.getValueAt(i, j);
+                }
+            }
+            if (tableData.length != itemcount) {
+                getTableData(table);
+            }
+            System.out.println("Data check passed");
+        } else {
+            //collecting data again because of data loss.
+            getTableData(table);
+        }
+        return tableData;
+    }
+
+    PageFormat getPageFormat(PrinterJob pj) {
+        PageFormat pf = pj.defaultPage();
+        Paper paper = pf.getPaper();
+
+        double middleHeight = total_item_count * 13;
+        double headerHeight = 3.1758;
+        double footerHeight = 2.1;
+
+        double width = convert_CM_To_PPI(7);
+        double height = (convert_CM_To_PPI(headerHeight + footerHeight)) + middleHeight;
+        paper.setSize(width, height);
+        paper.setImageableArea(convert_CM_To_PPI(0.25), convert_CM_To_PPI(0.5), width - convert_CM_To_PPI(0.35), height - convert_CM_To_PPI(1));
+
+        pf.setOrientation(PageFormat.PORTRAIT);
+        pf.setPaper(paper);
+
+        return pf;
+    }
+
+    double convert_CM_To_PPI(double cm) {
+        return toPPI(cm * 0.393600787);
+    }
+
+    double toPPI(double inch) {
+        return inch * 72d;
+    }
+
+    String now() {
+        Calendar cal = Calendar.getInstance();
+        SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT_NOW);
+        return sdf.format(cal.getTime());
+
+    }
+
+    static JTable itemsTable;
+    int total_item_count = 0;
+    String DATE_FORMAT_NOW = "dd/MM/yyyy HH:mm:ss a";
+    String title[] = new String[]{"Nama Barang", "Jumlah"};
+    String NoSIP, AlamatPasien;
+
+    class PrintResep implements Printable {
+
+        @Override
+        public int print(Graphics graphics, PageFormat pageFormat, int pageIndex) throws PrinterException {
+            DRunSelctOne dRunSelctOne = new DRunSelctOne();
+            dRunSelctOne.seterorm("Gagal Select Alamat Pasien");
+            dRunSelctOne.setQuery("SELECT `Alamat` FROM `tbmpasien` WHERE `KodePasien` = '" + JTNamaPasien.getText().split("\\(")[1].split("\\)")[0] + "'");
+            ArrayList<String> list = dRunSelctOne.excute();
+            AlamatPasien = list.get(0);
+            dRunSelctOne.seterorm("Gagal Select NoSIP Dokter");
+            dRunSelctOne.setQuery("SELECT `NoSIP` FROM `tbmdokter` WHERE `NamaDokter` = '" + JCNamaDokter.getSelectedItem() + "'");
+            list = dRunSelctOne.excute();
+            NoSIP = list.get(0);
+            int result = NO_SUCH_PAGE;
+            if (pageIndex == 0) {
+                Graphics2D g2d = (Graphics2D) graphics;
+                g2d.translate((int) pageFormat.getImageableX(), (int) pageFormat.getImageableY());
+                try {
+                    int x = 3;
+                    int y = 0;
+                    int w = 180;
+                    Font font = new Font("Times New Roman", Font.BOLD, 15);
+                    g2d.setFont(font);
+                    g2d.drawString(JCNamaDokter.getSelectedItem().toString(), x + ((w - g2d.getFontMetrics().stringWidth(JCNamaDokter.getSelectedItem().toString())) / 2), y + 10);
+
+                    font = new Font("Times New Roman", Font.PLAIN, 10);
+                    g2d.setFont(font);
+                    g2d.drawString("SIP No. " + NoSIP, x + ((w - g2d.getFontMetrics().stringWidth("SIP No. " + NoSIP)) / 2), y + 25);
+
+                    font = new Font("Times New Roman", Font.PLAIN, 7);
+                    g2d.setFont(font);
+                    g2d.drawString("Jl. Kompol Zainal Abidin No.05-06 (0741-7553068)", x + ((w - g2d.getFontMetrics().stringWidth("Jl. Kompol Zainal Abidin No.05-06 (0741-7553068)")) / 2), y + 35);
+                    g2d.drawString("Tanjung Pinang - Jambi", x + ((w - g2d.getFontMetrics().stringWidth("Tanjung Pinang - Jambi")) / 2), y + 45);
+                    g2d.drawLine(x, y + 55, 180, y + 55);
+
+                    font = new Font("Times New Roman", Font.PLAIN, 10);
+                    g2d.setFont(font);
+                    g2d.drawString("Tgl Resep : " + now(), x, y + 65);
+
+                    int cH = 0;
+                    TableModel mod = itemsTable.getModel();
+                    g2d.drawString("R / ", x, 90);
+
+                    font = new Font("Times New Roman", Font.PLAIN, 12);
+                    g2d.setFont(font);
+                    for (int i = 0; i < mod.getRowCount(); i++) {
+                        String NamaBarang = mod.getValueAt(i, 0).toString();
+                        String Jumlah = mod.getValueAt(i, 1).toString();
+
+                        cH = 90 + (13 * i);
+
+                        g2d.drawString(NamaBarang, x + 15, cH);
+                        g2d.drawString(Jumlah, x + 150 + (15 - g2d.getFontMetrics().stringWidth(Jumlah)), cH);
+
+                    }
+
+                    font = new Font("Times New Roman", Font.PLAIN, 10);
+                    g2d.setFont(font);
+                    g2d.drawString("Pasien  : " + JTNamaPasien.getText(), x, cH + 30);
+                    g2d.drawString("Alamat : " + AlamatPasien, x, cH + 40);
+                } catch (Exception r) {
+                    r.printStackTrace();
+                }
+                result = PAGE_EXISTS;
+            }
+            return result;
+        }
+    }
+
 }

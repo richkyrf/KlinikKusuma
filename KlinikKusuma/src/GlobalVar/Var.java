@@ -6,6 +6,7 @@
 package GlobalVar;
 
 import File.*;
+import Laporan.*;
 import Master.*;
 import List.*;
 import Proses.*;
@@ -31,13 +32,17 @@ public class Var {
     public static MasterBeautician tambahMasterBeautician, ubahMasterBeautician;
     public static MasterTindakan tambahMasterTindakan, ubahMasterTindakan;
 
-    public static List listMasterBarang, listMasterDokter, listMasterPasien, listPenjualan, listMasterBeautician, listMasterTindakan, listAntrian, listMasterPemasok, listBarangMasuk, listPenyesuaianStok, listPerawatan, listAntrianBilling, listBilling, listPermintaanStok;
+    public static List listMasterBarang, listMasterDokter, listMasterPasien, listPenjualan, listMasterBeautician, listMasterTindakan, listAntrian, listMasterPemasok, listBarangMasuk, listPenyesuaianStok, listPerawatan, listAntrianBilling, listBilling, listPermintaanStok, listPenyesuaianStokGudangBesar;
+    public static ListPoin cekPoin;
 
     public static Jcari jcari;
     public static Penjualan tambahPenjualan, ubahPenjualan;
     public static BarangMasuk tambahBarangMasuk, ubahBarangMasuk;
     public static Perawatan tambahPerawatan, ubahPerawatan;
-    public static PenyesuaianStok tambahPenyesuaianStok;
+    public static PenyesuaianStok tambahPenyesuaianStok, tambahPenyesuaianStokGudangBesar;
     public static Billing tambahBilling, ubahBilling;
     public static PermintaanStok tambahPermintaanStok, ubahPermintaanStok;
+    
+    public static LaporanStok laporanStokGudangKecil, laporanStokGudangBesar;
+    public static Laporan laporanTindakan, laporanFacial, laporanHarian;
 }

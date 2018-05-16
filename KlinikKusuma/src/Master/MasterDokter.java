@@ -52,19 +52,20 @@ public class MasterDokter extends javax.swing.JFrame {
 
     void loadeditdata() {
         DRunSelctOne dRunSelctOne = new DRunSelctOne();
-        dRunSelctOne.setQuery("SELECT `IdDokter` as 'ID', `NamaDokter` as 'Nama Dokter', `NoTelepon` as 'No Telpon', `Alamat`, `Keterangan`, IF(`Status`=1,'Aktif','Tidak Aktif') as 'Status' FROM `tbmdokter` WHERE `IdDokter` = " + IdEdit);
+        dRunSelctOne.setQuery("SELECT `IdDokter` as 'ID', `NamaDokter` as 'Nama Dokter', `NoSIP`, `NoTelepon` as 'No Telpon', `Alamat`, `Keterangan`, IF(`Status`=1,'Aktif','Tidak Aktif') as 'Status' FROM `tbmdokter` WHERE `IdDokter` = " + IdEdit);
         ArrayList<String> list = dRunSelctOne.excute();
-        JTNamaBarang.setText(list.get(1));
-        JTNoTelpon.setText(list.get(2));
-        JTAlamat.setText(list.get(3));
-        JTAKeterangan.setText(list.get(4));
-        JCBStatus.setSelected(list.get(5).equals("Aktif"));
+        JTNamaDokter.setText(list.get(1));
+        JTNoSIP.setText(list.get(2));
+        JTNoTelpon.setText(list.get(3));
+        JTAlamat.setText(list.get(4));
+        JTAKeterangan.setText(list.get(5));
+        JCBStatus.setSelected(list.get(6).equals("Aktif"));
     }
 
     Boolean checkInput() {
-        if (JTNamaBarang.getText().replace(" ", "").equals("")) {
+        if (JTNamaDokter.getText().replace(" ", "").equals("")) {
             JOptionPaneF.showMessageDialog(null, "Gagal. Nama Tidak Boleh Kosong");
-            JTNamaBarang.requestFocus();
+            JTNamaDokter.requestFocus();
             return false;
         } else if (JTNoTelpon.getText().replace(" ", "").equals("")) {
             JOptionPaneF.showMessageDialog(null, "Gagal. No. Telpon Tidak Boleh Kosong");
@@ -88,7 +89,7 @@ public class MasterDokter extends javax.swing.JFrame {
         jlableF3 = new KomponenGUI.JlableF();
         jScrollPane1 = new javax.swing.JScrollPane();
         JTAKeterangan = new KomponenGUI.JTextAreaF();
-        JTNamaBarang = new KomponenGUI.JtextF();
+        JTNamaDokter = new KomponenGUI.JtextF();
         jbuttonF1 = new KomponenGUI.JbuttonF();
         jbuttonF2 = new KomponenGUI.JbuttonF();
         jbuttonF4 = new KomponenGUI.JbuttonF();
@@ -103,6 +104,9 @@ public class MasterDokter extends javax.swing.JFrame {
         jlableF11 = new KomponenGUI.JlableF();
         JCBStatus = new KomponenGUI.JCheckBoxF();
         JTNoTelpon = new KomponenGUI.JNumberOnly();
+        jlableF12 = new KomponenGUI.JlableF();
+        jlableF13 = new KomponenGUI.JlableF();
+        JTNoSIP = new KomponenGUI.JtextF();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
@@ -127,9 +131,9 @@ public class MasterDokter extends javax.swing.JFrame {
         });
         jScrollPane1.setViewportView(JTAKeterangan);
 
-        JTNamaBarang.addKeyListener(new java.awt.event.KeyAdapter() {
+        JTNamaDokter.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
-                JTNamaBarangKeyPressed(evt);
+                JTNamaDokterKeyPressed(evt);
             }
         });
 
@@ -183,6 +187,16 @@ public class MasterDokter extends javax.swing.JFrame {
 
         JCBStatus.setText("Aktif");
 
+        jlableF12.setText("No. SIP");
+
+        jlableF13.setText(":");
+
+        JTNoSIP.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                JTNoSIPKeyPressed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -202,7 +216,7 @@ public class MasterDokter extends javax.swing.JFrame {
                             .addComponent(jlableF8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(JTNamaBarang, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(JTNamaDokter, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(jScrollPane1)
                             .addComponent(JTNoTelpon, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                     .addGroup(layout.createSequentialGroup()
@@ -224,7 +238,13 @@ public class MasterDokter extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jlableF10, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(JTAlamat, javax.swing.GroupLayout.DEFAULT_SIZE, 306, Short.MAX_VALUE)))
+                        .addComponent(JTAlamat, javax.swing.GroupLayout.DEFAULT_SIZE, 306, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jlableF12, javax.swing.GroupLayout.PREFERRED_SIZE, 136, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jlableF13, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(JTNoSIP, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -233,8 +253,13 @@ public class MasterDokter extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jlableF1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(JTNamaBarang, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(JTNamaDokter, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jlableF8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jlableF12, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jlableF13, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(JTNoSIP, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jlableF2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -284,11 +309,11 @@ public class MasterDokter extends javax.swing.JFrame {
         dispose();
     }//GEN-LAST:event_jbuttonF4ActionPerformed
 
-    private void JTNamaBarangKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_JTNamaBarangKeyPressed
+    private void JTNamaDokterKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_JTNamaDokterKeyPressed
         if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
             JTNoTelpon.requestFocus();
         }
-    }//GEN-LAST:event_JTNamaBarangKeyPressed
+    }//GEN-LAST:event_JTNamaDokterKeyPressed
 
     private void JTAKeteranganKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_JTAKeteranganKeyPressed
         if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
@@ -313,6 +338,12 @@ public class MasterDokter extends javax.swing.JFrame {
             JTAKeterangan.requestFocus();
         }
     }//GEN-LAST:event_JTAlamatKeyPressed
+
+    private void JTNoSIPKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_JTNoSIPKeyPressed
+        if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
+            JTNoTelpon.requestFocus();
+        }
+    }//GEN-LAST:event_JTNoSIPKeyPressed
 
     /**
      * @param args the command line arguments
@@ -356,7 +387,8 @@ public class MasterDokter extends javax.swing.JFrame {
     private KomponenGUI.JCheckBoxF JCBStatus;
     private KomponenGUI.JTextAreaF JTAKeterangan;
     private KomponenGUI.JtextF JTAlamat;
-    private KomponenGUI.JtextF JTNamaBarang;
+    private KomponenGUI.JtextF JTNamaDokter;
+    private KomponenGUI.JtextF JTNoSIP;
     private KomponenGUI.JNumberOnly JTNoTelpon;
     private javax.swing.JScrollPane jScrollPane1;
     private KomponenGUI.JbuttonF jbuttonF1;
@@ -366,6 +398,8 @@ public class MasterDokter extends javax.swing.JFrame {
     private KomponenGUI.JlableF jlableF1;
     private KomponenGUI.JlableF jlableF10;
     private KomponenGUI.JlableF jlableF11;
+    private KomponenGUI.JlableF jlableF12;
+    private KomponenGUI.JlableF jlableF13;
     private KomponenGUI.JlableF jlableF2;
     private KomponenGUI.JlableF jlableF3;
     private KomponenGUI.JlableF jlableF4;
@@ -378,7 +412,7 @@ public class MasterDokter extends javax.swing.JFrame {
     void tambahData(Boolean tutup) {
         if (checkInput()) {
             Insert insert = new Insert();
-            Boolean berhasil = insert.simpan("INSERT INTO `tbmdokter`(`NamaDokter`, `NoTelepon`, `Alamat`, `Keterangan`, `Status`) VALUES ('" + JTNamaBarang.getText() + "','" + JTNoTelpon.getText() + "','" + JTAlamat.getText() + "','" + JTAKeterangan.getText() + "'," + JCBStatus.isSelected() + ")", "Dokter", this);
+            Boolean berhasil = insert.simpan("INSERT INTO `tbmdokter`(`NamaDokter`, `NoSIP`, `NoTelepon`, `Alamat`, `Keterangan`, `Status`) VALUES ('" + JTNamaDokter.getText() + "','" + JTNoSIP.getText() + "','" + JTNoTelpon.getText() + "','" + JTAlamat.getText() + "','" + JTAKeterangan.getText() + "'," + JCBStatus.isSelected() + ")", "Dokter", this);
             if (berhasil) {
                 if (listMasterDokter != null) {
                     listMasterDokter.load();
@@ -386,11 +420,12 @@ public class MasterDokter extends javax.swing.JFrame {
                 if (tutup) {
                     dispose();
                 } else {
-                    JTNamaBarang.setText("");
+                    JTNamaDokter.setText("");
+                    JTNoSIP.setText("");
                     JTNoTelpon.setText("");
                     JTAlamat.setText("");
                     JTAKeterangan.setText("");
-                    JTNamaBarang.requestFocus();
+                    JTNamaDokter.requestFocus();
                 }
             }
         }
@@ -399,7 +434,7 @@ public class MasterDokter extends javax.swing.JFrame {
     void ubahData() {
         if (checkInput()) {
             Update update = new Update();
-            Boolean berhasil = update.Ubah("UPDATE `tbmdokter` SET `NamaDokter`='" + JTNamaBarang.getText() + "',`NoTelepon`='" + JTNoTelpon.getText() + "',`Alamat`='" + JTAlamat.getText() + "',`Keterangan`='" + JTAKeterangan.getText() + "',`Status`=" + JCBStatus.isSelected() + " WHERE `IdDokter` = " + IdEdit, "Dokter", this);
+            Boolean berhasil = update.Ubah("UPDATE `tbmdokter` SET `NamaDokter`='" + JTNamaDokter.getText() + "',`NoSIP`='" + JTNoSIP.getText() + "',`NoTelepon`='" + JTNoTelpon.getText() + "',`Alamat`='" + JTAlamat.getText() + "',`Keterangan`='" + JTAKeterangan.getText() + "',`Status`=" + JCBStatus.isSelected() + " WHERE `IdDokter` = " + IdEdit, "Dokter", this);
             if (berhasil) {
                 dispose();
                 if (listMasterDokter != null) {

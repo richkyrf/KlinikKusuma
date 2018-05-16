@@ -83,7 +83,7 @@ public class TambahUser extends javax.swing.JFrame {
 
         JLLevel2.setText(":");
 
-        JCLevel.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "-- Pilih Level User --", "Administrator", "Operator" }));
+        JCLevel.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "-- Pilih Level User --", "Administrator", "Operator", "Kasir", "Gudang" }));
         JCLevel.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyReleased(java.awt.event.KeyEvent evt) {
                 JCLevelKeyReleased(evt);

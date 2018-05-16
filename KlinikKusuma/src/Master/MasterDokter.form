@@ -44,7 +44,7 @@
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                          <Component id="JTNamaBarang" max="32767" attributes="0"/>
+                          <Component id="JTNamaDokter" max="32767" attributes="0"/>
                           <Component id="jScrollPane1" alignment="0" max="32767" attributes="0"/>
                           <Component id="JTNoTelpon" alignment="0" max="32767" attributes="0"/>
                       </Group>
@@ -72,6 +72,13 @@
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="JTAlamat" pref="306" max="32767" attributes="0"/>
                   </Group>
+                  <Group type="102" alignment="0" attributes="0">
+                      <Component id="jlableF12" min="-2" pref="136" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="jlableF13" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="JTNoSIP" max="32767" attributes="0"/>
+                  </Group>
               </Group>
               <EmptySpace max="32767" attributes="0"/>
           </Group>
@@ -83,10 +90,16 @@
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="jlableF1" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="JTNamaBarang" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="JTNamaDokter" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="jlableF8" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="3" attributes="0">
+                  <Component id="jlableF12" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="jlableF13" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="JTNoSIP" alignment="3" min="-2" max="-2" attributes="0"/>
+              </Group>
+              <EmptySpace min="-2" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="jlableF2" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="jlableF7" alignment="3" min="-2" max="-2" attributes="0"/>
@@ -158,9 +171,9 @@
         </Component>
       </SubComponents>
     </Container>
-    <Component class="KomponenGUI.JtextF" name="JTNamaBarang">
+    <Component class="KomponenGUI.JtextF" name="JTNamaDokter">
       <Events>
-        <EventHandler event="keyPressed" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="JTNamaBarangKeyPressed"/>
+        <EventHandler event="keyPressed" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="JTNamaDokterKeyPressed"/>
       </Events>
     </Component>
     <Component class="KomponenGUI.JbuttonF" name="jbuttonF1">
@@ -241,6 +254,21 @@
       </Properties>
     </Component>
     <Component class="KomponenGUI.JNumberOnly" name="JTNoTelpon">
+    </Component>
+    <Component class="KomponenGUI.JlableF" name="jlableF12">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="No. SIP"/>
+      </Properties>
+    </Component>
+    <Component class="KomponenGUI.JlableF" name="jlableF13">
+      <Properties>
+        <Property name="text" type="java.lang.String" value=":"/>
+      </Properties>
+    </Component>
+    <Component class="KomponenGUI.JtextF" name="JTNoSIP">
+      <Events>
+        <EventHandler event="keyPressed" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="JTNoSIPKeyPressed"/>
+      </Events>
     </Component>
   </SubComponents>
 </Form>

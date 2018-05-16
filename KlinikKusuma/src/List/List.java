@@ -41,7 +41,8 @@ public class List extends javax.swing.JFrame {
         setVisible(true);
         JBRegister.setVisible(false);
         jCheckBoxF1.setVisible(false);
-        switch (Type) {
+        JBCekPoin.setVisible(false);
+        switch (Type.split("-")[0]) {
             case "Master Barang":
                 setTitle("List Master Barang");
                 break;
@@ -51,6 +52,7 @@ public class List extends javax.swing.JFrame {
             case "Master Pasien":
                 setTitle("List Master Pasien");
                 JBRegister.setVisible(true);
+                JBCekPoin.setVisible(true);
                 break;
             case "Master Beautician":
                 setTitle("List Master Beautician");
@@ -79,6 +81,11 @@ public class List extends javax.swing.JFrame {
                 break;
             case "Penyesuaian Stok":
                 setTitle("Penyesuaian Stok");
+                JBUbah.setVisible(false);
+                break;
+            case "Penyesuaian Stok Gudang Besar":
+                setTitle("Penyesuaian Stok Gudang Besar");
+                JBUbah.setVisible(false);
                 break;
             case "Perawatan":
                 setTitle("List Perawatan");
@@ -189,6 +196,7 @@ public class List extends javax.swing.JFrame {
         jlableF1 = new KomponenGUI.JlableF();
         jtextF1 = new KomponenGUI.JtextF();
         jCheckBoxF1 = new KomponenGUI.JCheckBoxF();
+        JBCekPoin = new KomponenGUI.JbuttonF();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         addWindowListener(new java.awt.event.WindowAdapter() {
@@ -261,6 +269,13 @@ public class List extends javax.swing.JFrame {
             }
         });
 
+        JBCekPoin.setText("Cek Poin");
+        JBCekPoin.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                JBCekPoinActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -281,6 +296,8 @@ public class List extends javax.swing.JFrame {
                         .addComponent(jbuttonF4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(jCheckBoxF1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(JBCekPoin, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(JBRegister, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -310,7 +327,8 @@ public class List extends javax.swing.JFrame {
                     .addComponent(jbuttonF4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(JBTambah, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(JBRegister, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jCheckBoxF1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jCheckBoxF1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(JBCekPoin, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap())
         );
 
@@ -369,6 +387,9 @@ public class List extends javax.swing.JFrame {
             case "Penyesuaian Stok":
                 listPenyesuaianStok = null;
                 break;
+            case "Penyesuaian Stok Gudang Besar":
+                listPenyesuaianStokGudangBesar = null;
+                break;
             case "Perawatan":
                 listPerawatan = null;
                 break;
@@ -417,6 +438,19 @@ public class List extends javax.swing.JFrame {
     private void jCheckBoxF1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBoxF1ActionPerformed
         load();
     }//GEN-LAST:event_jCheckBoxF1ActionPerformed
+
+    private void JBCekPoinActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBCekPoinActionPerformed
+        if (jcomCari1.getSelectedRow() < 0) {
+            JOptionPaneF.showMessageDialog(this, "Gagal. Silahkan Pilih Data Terlebih Dahulu");
+        } else {
+            if (cekPoin == null) {
+                cekPoin = new ListPoin(jcomCari1.GetIDTable().toString());
+            } else {
+                cekPoin.setState(NORMAL);
+                cekPoin.toFront();
+            }
+        }
+    }//GEN-LAST:event_JBCekPoinActionPerformed
 
     private void JTableTindakanMouseClicked(java.awt.event.MouseEvent evt) {
         if (Type.equals("Master Pasien")) {
@@ -468,6 +502,7 @@ public class List extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private KomponenGUI.JbuttonF JBCekPoin;
     private KomponenGUI.JbuttonF JBHapus;
     private KomponenGUI.JbuttonF JBRefresh;
     private KomponenGUI.JbuttonF JBRegister;
@@ -571,10 +606,18 @@ public class List extends javax.swing.JFrame {
                 break;
             case "Penyesuaian Stok":
                 if (tambahPenyesuaianStok == null) {
-                    tambahPenyesuaianStok = new PenyesuaianStok();
+                    tambahPenyesuaianStok = new PenyesuaianStok("Penyesuaian Stok");
                 } else {
                     tambahPenyesuaianStok.setState(NORMAL);
                     tambahPenyesuaianStok.toFront();
+                }
+                break;
+            case "Penyesuaian Stok Gudang Besar":
+                if (tambahPenyesuaianStokGudangBesar == null) {
+                    tambahPenyesuaianStokGudangBesar = new PenyesuaianStok("Penyesuaian Stok Gudang Besar");
+                } else {
+                    tambahPenyesuaianStokGudangBesar.setState(NORMAL);
+                    tambahPenyesuaianStokGudangBesar.toFront();
                 }
                 break;
             case "Perawatan":
@@ -631,6 +674,8 @@ public class List extends javax.swing.JFrame {
                     berhasil = delete.Hapus("ID " + jcomCari1.GetIDTable(), "DELETE FROM `tbbarangmasuk` WHERE `IdBarangMasuk` = " + jcomCari1.GetIDTable(), "Barang Masuk", this);
                     break;
                 case "Penyesuaian Stok":
+                    break;
+                case "Penyesuaian Stok Gudang Besar":
                     break;
                 case "Perawatan":
                     berhasil = delete.Hapus("ID " + jcomCari1.GetIDTable(), "DELETE FROM `tbperawatan` WHERE `IdPerawatan` = " + jcomCari1.GetIDTable(), "Perawatan", this);
@@ -725,6 +770,8 @@ public class List extends javax.swing.JFrame {
                     break;
                 case "Penyesuaian Stok":
                     break;
+                case "Penyesuaian Stok Gudang Besar":
+                    break;
                 case "Perawatan":
                     if (ubahPerawatan == null) {
                         ubahPerawatan = new Perawatan("Ubah", jcomCari1.GetIDTable());
@@ -765,7 +812,7 @@ public class List extends javax.swing.JFrame {
                 jcomCari1.setOrder(" ORDER BY `JenisBarang`, `NamaBarang` ");
                 break;
             case "Master Dokter":
-                jcomCari1.setQuery("SELECT `IdDokter` as 'ID', `NamaDokter` as 'Nama Dokter', `NoTelepon` as 'No Telpon', `Alamat`, `Keterangan`, IF(`Status`=1,'Aktif','Tidak Aktif') as 'Status' FROM `tbmdokter` WHERE 1 ");
+                jcomCari1.setQuery("SELECT `IdDokter` as 'ID', `NamaDokter` as 'Nama Dokter', `NoSIP`, `NoTelepon` as 'No Telpon', `Alamat`, `Keterangan`, IF(`Status`=1,'Aktif','Tidak Aktif') as 'Status' FROM `tbmdokter` WHERE 1 ");
                 jcomCari1.setOrder(" ORDER BY `NamaDokter` ");
                 break;
             case "Master Pasien":
@@ -808,6 +855,10 @@ public class List extends javax.swing.JFrame {
                 break;
             case "Penyesuaian Stok":
                 jcomCari1.setQuery("SELECT `IdPenyesuaian` as 'ID', `NoPenyesuaian` as 'No. Penyesuaian', DATE_FORMAT(`Tanggal`,'%d-%m-%Y') as 'Tanggal', IFNULL(`NamaBarang`,'-') as 'Nama Barang', `Jumlah`, a.`Keterangan` FROM `tbpenyesuaianstok`a LEFT JOIN `tbmbarang`b ON a.`IdBarang`=b.`IdBarang` WHERE 1");
+                jcomCari1.setOrder(" ORDER BY `NoPenyesuaian` DESC ");
+                break;
+            case "Penyesuaian Stok Gudang Besar":
+                jcomCari1.setQuery("SELECT `IdPenyesuaian` as 'ID', `NoPenyesuaian` as 'No. Penyesuaian', DATE_FORMAT(`Tanggal`,'%d-%m-%Y') as 'Tanggal', IFNULL(`NamaBarang`,'-') as 'Nama Barang', `Jumlah`, a.`Keterangan` FROM `tbpenyesuaianstokgudangbesar`a LEFT JOIN `tbmbarang`b ON a.`IdBarang`=b.`IdBarang` WHERE 1");
                 jcomCari1.setOrder(" ORDER BY `NoPenyesuaian` DESC ");
                 break;
             case "Perawatan":

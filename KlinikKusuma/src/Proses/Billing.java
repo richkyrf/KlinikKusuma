@@ -5,25 +5,68 @@
  */
 package Proses;
 
+import File.Printsupport;
+import static File.Printsupport.addtomodel;
+import static File.Printsupport.now;
+import static File.Printsupport.title;
 import java.awt.event.KeyEvent;
 import java.util.Date;
 import FunctionGUI.JOptionPaneF;
 import javax.swing.table.DefaultTableModel;
 import static GlobalVar.Var.*;
 import KomponenGUI.FDateF;
+import static KomponenGUI.FDateF.datetostr;
 import LSubProces.DRunSelctOne;
 import LSubProces.MultiInsert;
 import LSubProces.RunSelct;
 import static Proses.Penjualan.JCPasien;
 import java.awt.Color;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
+import java.awt.print.PageFormat;
+import java.awt.print.Paper;
+import java.awt.print.Printable;
+import static java.awt.print.Printable.NO_SUCH_PAGE;
+import static java.awt.print.Printable.PAGE_EXISTS;
+import java.awt.print.PrinterException;
+import java.awt.print.PrinterJob;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import static java.lang.Integer.parseInt;
+import static java.lang.String.format;
 import static java.lang.System.out;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import javax.imageio.ImageIO;
+import javax.print.Doc;
+import javax.print.DocFlavor;
+import static javax.print.DocFlavor.INPUT_STREAM.AUTOSENSE;
+import javax.print.DocPrintJob;
+import javax.print.PrintException;
+import javax.print.PrintService;
+import static javax.print.PrintServiceLookup.lookupDefaultPrintService;
+import javax.print.SimpleDoc;
+import javax.print.attribute.DocAttributeSet;
+import javax.print.attribute.HashDocAttributeSet;
+import javax.print.attribute.HashPrintRequestAttributeSet;
+import javax.print.attribute.PrintRequestAttributeSet;
+import static javax.print.attribute.Size2DSyntax.INCH;
+import javax.print.attribute.standard.Copies;
+import static javax.print.attribute.standard.MediaSize.findMedia;
+import static javax.print.attribute.standard.OrientationRequested.LANDSCAPE;
+import javax.print.event.PrintJobAdapter;
+import javax.print.event.PrintJobEvent;
+import javax.swing.JTable;
 import javax.swing.UIManager;
+import javax.swing.table.TableModel;
 
 /**
  *
@@ -51,6 +94,7 @@ public class Billing extends javax.swing.JFrame {
             setTitle("Tambah Billing");
             loadPerawatan(parameter);
             JBUbah.setVisible(false);
+            JBUbahPrint.setVisible(false);
             JTNoBilling.setText(getNoBilling());
             JTSetelahPotong.setVisible(false);
             jlableF12.setVisible(false);
@@ -59,6 +103,7 @@ public class Billing extends javax.swing.JFrame {
         } else {
             setTitle("Ubah Billing");
             JBTambah.setVisible(false);
+            JBTambahPrint.setVisible(false);
             loadData(parameter);
         }
         JTBayar.requestFocus();
@@ -390,6 +435,17 @@ public class Billing extends javax.swing.JFrame {
         }
     }
 
+    void setKembalian() {
+        if (!JTBayar.getText().isEmpty()) {
+            if (JCBPakaiPoin.isSelected()) {
+                JTKembali.setInt(JTBayar.getInt() - JTSetelahPotong.getInt());
+            } else {
+                JTKembali.setInt(JTBayar.getInt() - JTGrandTotal.getInt());
+            }
+
+        }
+    }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -459,6 +515,11 @@ public class Billing extends javax.swing.JFrame {
         jlableF12 = new KomponenGUI.JlableF();
         jlableF24 = new KomponenGUI.JlableF();
         JTSetelahPotong = new KomponenGUI.JRibuanTextField();
+        JBTambahPrint = new KomponenGUI.JbuttonF();
+        JBUbahPrint = new KomponenGUI.JbuttonF();
+        jlableF25 = new KomponenGUI.JlableF();
+        jlableF26 = new KomponenGUI.JlableF();
+        JTKembali = new KomponenGUI.JRibuanTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
@@ -869,9 +930,20 @@ public class Billing extends javax.swing.JFrame {
         jlableF11.setText(":");
 
         JTBayar.setPlaceholder("Bayar");
+        JTBayar.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                JTBayarFocusGained(evt);
+            }
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                JTBayarFocusLost(evt);
+            }
+        });
         JTBayar.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
                 JTBayarKeyPressed(evt);
+            }
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                JTBayarKeyReleased(evt);
             }
         });
 
@@ -892,6 +964,26 @@ public class Billing extends javax.swing.JFrame {
         jlableF24.setText(":");
 
         JTSetelahPotong.setEnabled(false);
+
+        JBTambahPrint.setText("Simpan & Print");
+        JBTambahPrint.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                JBTambahPrintActionPerformed(evt);
+            }
+        });
+
+        JBUbahPrint.setText("Ubah & Print");
+        JBUbahPrint.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                JBUbahPrintActionPerformed(evt);
+            }
+        });
+
+        jlableF25.setText("Kembali");
+
+        jlableF26.setText(":");
+
+        JTKembali.setEnabled(false);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -956,39 +1048,46 @@ public class Billing extends javax.swing.JFrame {
                                                     .addComponent(JTNoBilling, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
                                                     .addComponent(JTNoInvoice, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)))))))
                             .addGroup(layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addGap(0, 0, Short.MAX_VALUE)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(jlableF9, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(JLPoin, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(jlableF12, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(jlableF10, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(jlableF25, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                     .addGroup(layout.createSequentialGroup()
-                                        .addComponent(JBKembali, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addComponent(JBUbah, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                        .addGap(0, 0, Short.MAX_VALUE)
                                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addComponent(jlableF9, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 119, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                            .addComponent(JLPoin, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 119, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                            .addComponent(jlableF12, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                            .addComponent(jlableF10, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 119, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                            .addComponent(jlableF8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addComponent(jlableF13, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addComponent(JCBPakaiPoin, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addComponent(JTGrandTotal, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(jlableF24, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(JTSetelahPotong, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                            .addComponent(jlableF11, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addComponent(jlableF26, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                                    .addComponent(jlableF11, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                    .addComponent(JTBayar, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                                .addGroup(layout.createSequentialGroup()
-                                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                                        .addComponent(jlableF8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                        .addComponent(jlableF13, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                                        .addComponent(JCBPakaiPoin, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                        .addComponent(JTGrandTotal, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                                            .addGroup(layout.createSequentialGroup()
-                                                .addComponent(jlableF24, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                .addComponent(JTSetelahPotong, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))))
+                                            .addComponent(JTKembali, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                            .addComponent(JTBayar, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 160, Short.MAX_VALUE))))
+                                .addGap(97, 97, 97))
+                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                                .addComponent(JBKembali, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(JBUbah, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(JBTambah, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addComponent(JBUbahPrint, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(JBTambah, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(JBTambahPrint, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addGap(10, 10, 10))
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
@@ -1061,11 +1160,18 @@ public class Billing extends javax.swing.JFrame {
                     .addComponent(jlableF10, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jlableF11, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(JTBayar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(JTKembali, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jlableF26, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jlableF25, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 12, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(JBTambah, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(JBKembali, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(JBUbah, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(JBUbah, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(JBTambahPrint, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(JBUbahPrint, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap())
         );
 
@@ -1157,11 +1263,11 @@ public class Billing extends javax.swing.JFrame {
     }//GEN-LAST:event_JTHargaObatKeyPressed
 
     private void JBTambahActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBTambahActionPerformed
-        tambahData();
+        tambahData(false);
     }//GEN-LAST:event_JBTambahActionPerformed
 
     private void JBUbahActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBUbahActionPerformed
-        ubahData();
+        ubahData(false);
     }//GEN-LAST:event_JBUbahActionPerformed
 
     private void JCTindakanItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_JCTindakanItemStateChanged
@@ -1232,9 +1338,9 @@ public class Billing extends javax.swing.JFrame {
     private void JTBayarKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_JTBayarKeyPressed
         if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
             if (JBTambah.isVisible()) {
-                tambahData();
+                tambahData(false);
             } else {
-                ubahData();
+                ubahData(false);
             }
         }
     }//GEN-LAST:event_JTBayarKeyPressed
@@ -1282,6 +1388,7 @@ public class Billing extends javax.swing.JFrame {
             jlableF12.setVisible(false);
             jlableF24.setVisible(false);
         }
+        JTBayar.requestFocus();
     }//GEN-LAST:event_JCBPakaiPoinActionPerformed
 
     private void JTJumlahTindakanFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_JTJumlahTindakanFocusLost
@@ -1307,6 +1414,26 @@ public class Billing extends javax.swing.JFrame {
     private void JCObatFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_JCObatFocusLost
         setSubTotalObat();
     }//GEN-LAST:event_JCObatFocusLost
+
+    private void JBTambahPrintActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBTambahPrintActionPerformed
+        tambahData(true);
+    }//GEN-LAST:event_JBTambahPrintActionPerformed
+
+    private void JBUbahPrintActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBUbahPrintActionPerformed
+        ubahData(false);
+    }//GEN-LAST:event_JBUbahPrintActionPerformed
+
+    private void JTBayarFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_JTBayarFocusLost
+        setKembalian();
+    }//GEN-LAST:event_JTBayarFocusLost
+
+    private void JTBayarFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_JTBayarFocusGained
+        setKembalian();
+    }//GEN-LAST:event_JTBayarFocusGained
+
+    private void JTBayarKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_JTBayarKeyReleased
+        setKembalian();
+    }//GEN-LAST:event_JTBayarKeyReleased
 
     /**
      * @param args the command line arguments
@@ -1355,8 +1482,10 @@ public class Billing extends javax.swing.JFrame {
     private KomponenGUI.JbuttonF JBRefreshTindakan;
     private KomponenGUI.JbuttonF JBTambah;
     private KomponenGUI.JbuttonF JBTambahObat;
+    private KomponenGUI.JbuttonF JBTambahPrint;
     private KomponenGUI.JbuttonF JBTambahTindakan;
     private KomponenGUI.JbuttonF JBUbah;
+    private KomponenGUI.JbuttonF JBUbahPrint;
     private KomponenGUI.JCheckBoxF JCBPakaiPoin;
     private KomponenGUI.JcomboboxF JCNamaBeautician;
     private KomponenGUI.JcomboboxF JCNamaDokter;
@@ -1370,6 +1499,7 @@ public class Billing extends javax.swing.JFrame {
     private KomponenGUI.JPlaceHolder JTHargaTindakan;
     private KomponenGUI.JPlaceHolder JTJumlahObat;
     private KomponenGUI.JPlaceHolder JTJumlahTindakan;
+    private KomponenGUI.JRibuanTextField JTKembali;
     private KomponenGUI.JtextF JTNamaPasien;
     private KomponenGUI.JtextF JTNoAntrian;
     private KomponenGUI.JtextF JTNoBilling;
@@ -1401,6 +1531,8 @@ public class Billing extends javax.swing.JFrame {
     private KomponenGUI.JlableF jlableF22;
     private KomponenGUI.JlableF jlableF23;
     private KomponenGUI.JlableF jlableF24;
+    private KomponenGUI.JlableF jlableF25;
+    private KomponenGUI.JlableF jlableF26;
     private KomponenGUI.JlableF jlableF3;
     private KomponenGUI.JlableF jlableF4;
     private KomponenGUI.JlableF jlableF5;
@@ -1471,7 +1603,7 @@ public class Billing extends javax.swing.JFrame {
                 JTableObat.setValueAt(JCObat.getSelectedItem(), JTableObat.getSelectedRow(), 0);
                 JTableObat.setValueAt(JTJumlahObat.getText(), JTableObat.getSelectedRow(), 1);
                 JTableObat.setValueAt(JTHargaObat.getText(), JTableObat.getSelectedRow(), 2);
-                JTableTindakan.setValueAt(JTSubTotalObat.getText(), JTableObat.getSelectedRow(), 3);
+                JTableObat.setValueAt(JTSubTotalObat.getText(), JTableObat.getSelectedRow(), 3);
                 setGrandTotal();
                 refreshObat();
             }
@@ -1498,7 +1630,7 @@ public class Billing extends javax.swing.JFrame {
         JCObat.requestFocus();
     }
 
-    void tambahData() {
+    void tambahData(boolean print) {
         if (checkInput()) {
             boolean Berhasil;
             MultiInsert multiInsert = new MultiInsert();
@@ -1527,9 +1659,9 @@ public class Billing extends javax.swing.JFrame {
                     JOptionPaneF.showMessageDialog(this, "Berhasil Tambah Data Billing");
                     multiInsert.Commit();
                     multiInsert.closecon();
-//                if (print) {
-//                    printing();
-//                }
+                    if (print) {
+                        printing();
+                    }
                     if (listBilling != null) {
                         listBilling.load();
                     }
@@ -1545,7 +1677,7 @@ public class Billing extends javax.swing.JFrame {
         }
     }
 
-    void ubahData() {
+    void ubahData(boolean print) {
         if (checkInput()) {
             boolean Berhasil;
             MultiInsert multiInsert = new MultiInsert();
@@ -1580,9 +1712,9 @@ public class Billing extends javax.swing.JFrame {
                     JOptionPaneF.showMessageDialog(this, "Berhasil Ubah Data Billing");
                     multiInsert.Commit();
                     multiInsert.closecon();
-//                if (print) {
-//                    printing();
-//                }
+                    if (print) {
+                        printing();
+                    }
                     dispose();
                     if (listBilling != null) {
                         listBilling.load();
@@ -1591,4 +1723,226 @@ public class Billing extends javax.swing.JFrame {
             }
         }
     }
+
+    void printing() {
+        PrintResep pr = new PrintResep();
+        Object printitem[][] = getTableData(JTableTindakan, JTableObat);
+        setItems(printitem);
+        total_item_count = itemsTable.getRowCount();
+        PrinterJob pj = PrinterJob.getPrinterJob();
+        pj.setPrintable(pr, getPageFormat(pj));
+        try {
+            pj.print();
+
+        } catch (PrinterException ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    void setItems(Object[][] printitem) {
+        Object data[][] = printitem;
+        DefaultTableModel model = new DefaultTableModel();
+        model.addColumn(title[0]);
+        model.addColumn(title[1]);
+        model.addColumn(title[2]);
+        model.addColumn(title[3]);
+
+        int rowcount = printitem.length;
+
+        addtomodel(model, data, rowcount);
+
+        itemsTable = new JTable(model);
+    }
+
+    void addtomodel(DefaultTableModel model, Object[][] data, int rowcount) {
+        int count = 0;
+        while (count < rowcount) {
+            model.addRow(data[count]);
+            count++;
+        }
+        if (model.getRowCount() != rowcount) {
+            addtomodel(model, data, rowcount);
+        }
+
+        System.out.println("Check Passed.");
+    }
+
+    Object[][] getTableData(JTable table1, JTable table2) {
+        int itemcount = table1.getRowCount() + table2.getRowCount();
+        System.out.println("Item Count:" + itemcount);
+
+        DefaultTableModel dtm1 = (DefaultTableModel) table1.getModel();
+        DefaultTableModel dtm2 = (DefaultTableModel) table2.getModel();
+        int nRow1 = dtm1.getRowCount(), nCol1 = dtm1.getColumnCount();
+        int nRow2 = dtm2.getRowCount(), nCol2 = dtm2.getColumnCount();
+        Object[][] tableData = new Object[nRow1 + nRow2][nCol1 + nCol2];
+        if (itemcount == nRow1 + nRow2) {
+            int x = 0;
+            for (int i = 0; i < nRow1; i++) {
+                for (int j = 0; j < nCol1; j++) {
+                    tableData[x][j] = dtm1.getValueAt(i, j);
+                }
+                x++;
+            }
+            for (int i = 0; i < nRow2; i++) {
+                for (int j = 0; j < nCol2; j++) {
+                    tableData[x][j] = dtm2.getValueAt(i, j);
+                }
+                x++;
+            }
+            if (tableData.length != itemcount) {
+                getTableData(table1, table2);
+            }
+            System.out.println("Data check passed");
+        } else {
+            getTableData(table1, table2);
+        }
+        return tableData;
+    }
+
+    PageFormat getPageFormat(PrinterJob pj) {
+        PageFormat pf = pj.defaultPage();
+        Paper paper = pf.getPaper();
+
+        double middleHeight = total_item_count * 13;
+        double headerHeight = 5.4694448;
+        double footerHeight = 2.575932;
+        if (JCBPakaiPoin.isSelected()) {
+            footerHeight = 3.705;
+        }
+
+        double width = convert_CM_To_PPI(7);
+        double height = (convert_CM_To_PPI(headerHeight + footerHeight)) + middleHeight;
+        paper.setSize(width, height);
+        paper.setImageableArea(convert_CM_To_PPI(0.25), convert_CM_To_PPI(0.5), width - convert_CM_To_PPI(0.35), height - convert_CM_To_PPI(1));
+
+        pf.setOrientation(PageFormat.PORTRAIT);
+        pf.setPaper(paper);
+
+        return pf;
+    }
+
+    double convert_CM_To_PPI(double cm) {
+        return toPPI(cm * 0.393600787);
+    }
+
+    double toPPI(double inch) {
+        return inch * 72d;
+    }
+
+    String now() {
+        Calendar cal = Calendar.getInstance();
+        SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT_NOW);
+        return sdf.format(cal.getTime());
+
+    }
+
+    static JTable itemsTable;
+    int total_item_count = 0;
+    String DATE_FORMAT_NOW = "dd/MM/yyyy HH:mm:ss a";
+    String title[] = new String[]{"Nama Barang", "Jml", "Harga", "Total"};
+    String Poin, PoinTerpakai, SetelahPotong, Bayar;
+
+    class PrintResep implements Printable {
+
+        @Override
+        public int print(Graphics graphics, PageFormat pageFormat, int pageIndex) throws PrinterException {
+            int result = NO_SUCH_PAGE;
+            if (pageIndex == 0) {
+                Graphics2D g2d = (Graphics2D) graphics;
+                g2d.translate((int) pageFormat.getImageableX(), (int) pageFormat.getImageableY());
+                Font font;
+                try {
+                    int x = 5;
+                    int y = 0;
+                    int w = 180;
+                    int imagewidth = 120;
+                    int imageheight = 40;
+                    BufferedImage read = ImageIO.read(getClass().getResource("/Resource/logo.png"));
+                    g2d.drawImage(read, x + ((w - imagewidth) / 2), y, imagewidth, imageheight, null);
+                    font = new Font("Times New Roman", Font.PLAIN, 7);
+                    g2d.setFont(font);
+                    g2d.drawString("Jl. Kompol Zainal Abidin No.05-06 (0741-7553068)", x + ((w - g2d.getFontMetrics().stringWidth("Jl. Kompol Zainal Abidin No.05-06 (0741-7553068)")) / 2), y + 45);
+                    g2d.drawString("Tanjung Pinang - Jambi", x + ((w - g2d.getFontMetrics().stringWidth("Tanjung Pinang - Jambi")) / 2), y + 55);
+                    g2d.drawLine(x, y + 65, 180, y + 65);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                try {
+                    int x = 5;
+                    int y = 55;
+                    int w = 188;
+                    font = new Font("Times New Roman", Font.PLAIN, 10);
+                    g2d.setFont(font);
+                    g2d.drawString("Tanggal : " + now(), x, y + 20);
+                    g2d.drawString("Cashier : " + GlobalVar.VarL.username, x, y + 33);
+
+                    g2d.drawLine(x, y + 40, 180, y + 40);
+
+                    font = new Font("Times New Roman", Font.PLAIN, 9);
+                    g2d.setFont(font);
+                    g2d.drawString(title[0], x, y + 50);
+                    g2d.drawString(title[1], 85, y + 50);
+                    g2d.drawString(title[2], 110, y + 50);
+                    g2d.drawString(title[3], 155, y + 50);
+                    g2d.drawLine(x, y + 55, 180, y + 55);
+
+                    int cH = 0;
+                    TableModel mod = itemsTable.getModel();
+                    for (int i = 0; i < mod.getRowCount(); i++) {
+                        String NamaBarang = mod.getValueAt(i, 0).toString();
+                        String Jumlah = mod.getValueAt(i, 1).toString();
+                        String Harga = mod.getValueAt(i, 2).toString();
+                        String SubTotal = mod.getValueAt(i, 3).toString();
+
+                        cH = (y + 65) + (13 * i);
+                        g2d.drawString(NamaBarang, x, cH);
+                        g2d.drawString(Jumlah, 82 + (13 - g2d.getFontMetrics().stringWidth(Jumlah)), cH);
+                        g2d.drawString(Harga, 100 + (36 - g2d.getFontMetrics().stringWidth(Harga)), cH);
+                        g2d.drawString(SubTotal, 134 + (46 - g2d.getFontMetrics().stringWidth(SubTotal)), cH);
+                    }
+                    g2d.drawLine(80, cH + 5, 180, cH + 5);
+                    g2d.drawString("Total", 80, cH + 15);
+                    g2d.drawString(":", 140, cH + 15);
+                    g2d.drawString(JTGrandTotal.getText(), 134 + (46 - g2d.getFontMetrics().stringWidth(JTGrandTotal.getText())), cH + 15);
+                    if (JCBPakaiPoin.isSelected()) {
+                        g2d.drawString("Poin Anda", 80, cH + 25);
+                        g2d.drawString(":", 140, cH + 25);
+                        g2d.drawString(JLPoin.getText().split("\\(")[1].split("\\)")[0], 134 + (46 - g2d.getFontMetrics().stringWidth(JLPoin.getText().split("\\(")[1].split("\\)")[0])), cH + 25);
+                        g2d.drawString("Poin Dipakai", 80, cH + 35);
+                        g2d.drawString(":", 140, cH + 35);
+                        g2d.drawString(String.valueOf(getPoinTerpakai()), 134 + (46 - g2d.getFontMetrics().stringWidth(String.valueOf(getPoinTerpakai()))), cH + 35);
+                        g2d.drawString("Setelah Potong", 80, cH + 45);
+                        g2d.drawString(":", 140, cH + 45);
+                        g2d.drawString(JTSetelahPotong.getText(), 134 + (46 - g2d.getFontMetrics().stringWidth(JTSetelahPotong.getText())), cH + 45);
+                        g2d.drawString("Bayar", 80, cH + 55);
+                        g2d.drawString(":", 140, cH + 55);
+                        g2d.drawString(JTBayar.getText(), 134 + (46 - g2d.getFontMetrics().stringWidth(JTBayar.getText())), cH + 55);
+                        g2d.drawString("Kembali", 80, cH + 65);
+                        g2d.drawString(":", 140, cH + 65);
+                        g2d.drawString(JTKembali.getText(), 134 + (46 - g2d.getFontMetrics().stringWidth(JTKembali.getText())), cH + 65);
+                        font = new Font("Arial", Font.BOLD, 10);
+                        g2d.setFont(font);
+                        g2d.drawString("Thank You Come Again", x + ((w - g2d.getFontMetrics().stringWidth("Thank You Come Again")) / 2), cH + 95);
+                    } else {
+                        g2d.drawString("Bayar", 80, cH + 25);
+                        g2d.drawString(":", 140, cH + 25);
+                        g2d.drawString(JTBayar.getText(), 134 + (46 - g2d.getFontMetrics().stringWidth(JTBayar.getText())), cH + 25);
+                        g2d.drawString("Kembali", 80, cH + 35);
+                        g2d.drawString(":", 140, cH + 35);
+                        g2d.drawString(JTKembali.getText(), 134 + (46 - g2d.getFontMetrics().stringWidth(JTKembali.getText())), cH + 33);
+                        font = new Font("Arial", Font.BOLD, 10);
+                        g2d.setFont(font);
+                        g2d.drawString("Thank You Come Again", x + ((w - g2d.getFontMetrics().stringWidth("Thank You Come Again")) / 2), cH + 63);
+                    }
+
+                } catch (Exception r) {
+                    r.printStackTrace();
+                }
+                result = PAGE_EXISTS;
+            }
+            return result;
+        }
+    }
+
 }

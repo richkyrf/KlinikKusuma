@@ -54,6 +54,11 @@ public class JPlaceHolder extends JTextField {
                     e.consume();
                 }
             }
+
+            @Override
+            public void keyReleased(KeyEvent e) {
+                JPlaceHolder.this.setInt(JPlaceHolder.this.getNumberFormattedText());
+            }
         });
     }
 

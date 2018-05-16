@@ -139,10 +139,12 @@
     <Component class="KomponenGUI.JcomboboxF" name="JCLevel">
       <Properties>
         <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
-          <StringArray count="3">
+          <StringArray count="5">
             <StringItem index="0" value="-- Pilih Level User --"/>
             <StringItem index="1" value="Administrator"/>
             <StringItem index="2" value="Operator"/>
+            <StringItem index="3" value="Kasir"/>
+            <StringItem index="4" value="Gudang"/>
           </StringArray>
         </Property>
       </Properties>

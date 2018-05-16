@@ -21,7 +21,7 @@ import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import FunctionGUI.JOptionPaneF;
-import static GlobalVar.Var.jcari;
+import static GlobalVar.Var.*;
 import static java.awt.Frame.NORMAL;
 import static javax.swing.WindowConstants.DISPOSE_ON_CLOSE;
 
@@ -36,12 +36,12 @@ public class PenyesuaianStok extends javax.swing.JFrame {
     /**
      * Creates new form PenyesuaianStok
      */
-    public PenyesuaianStok() {
+    public PenyesuaianStok(String type) {
+        setTitle(type);
         initComponents();
         JTNoPenyesuaian.setText(getNoPenyesuaianStok());
         JTNamaBarang.requestFocus();
         setVisible(true);
-        setTitle("Penyesuaian Stok Barang");
         setLocationRelativeTo(null);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
     }
@@ -173,14 +173,14 @@ public class PenyesuaianStok extends javax.swing.JFrame {
             }
         });
 
-        jbuttonF1.setText("SESUAIKAN");
+        jbuttonF1.setText("Sesuaikan");
         jbuttonF1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jbuttonF1ActionPerformed(evt);
             }
         });
 
-        jbuttonF2.setText("KEMBALI");
+        jbuttonF2.setText("Kembali");
         jbuttonF2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jbuttonF2ActionPerformed(evt);
@@ -256,7 +256,7 @@ public class PenyesuaianStok extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jlableF18, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 310, Short.MAX_VALUE))
+                        .addComponent(jScrollPane1))
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jlableF9, javax.swing.GroupLayout.PREFERRED_SIZE, 131, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -319,7 +319,11 @@ public class PenyesuaianStok extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void formWindowClosed(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosed
-        GlobalVar.Var.tambahPenyesuaianStok = null;
+        if (getTitle().equals("Penyesuaian Stok")) {
+            tambahPenyesuaianStok = null;
+        } else {
+            tambahPenyesuaianStokGudangBesar = null;
+        }
     }//GEN-LAST:event_formWindowClosed
 
     private void jbuttonF2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbuttonF2ActionPerformed
@@ -344,7 +348,7 @@ public class PenyesuaianStok extends javax.swing.JFrame {
     }//GEN-LAST:event_JTStokBaruKeyPressed
 
     private void JDTanggalPenyesuaianPropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_JDTanggalPenyesuaianPropertyChange
-        //setStok();
+
     }//GEN-LAST:event_JDTanggalPenyesuaianPropertyChange
 
     private void JTNamaBarangFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_JTNamaBarangFocusLost
@@ -407,16 +411,11 @@ public class PenyesuaianStok extends javax.swing.JFrame {
         //</editor-fold>
         //</editor-fold>
         //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new PenyesuaianStok().setVisible(true);
+                new PenyesuaianStok("").setVisible(true);
             }
         });
     }
@@ -446,25 +445,41 @@ public class PenyesuaianStok extends javax.swing.JFrame {
     private KomponenGUI.JlableF jlableF9;
     // End of variables declaration//GEN-END:variables
 
-    public static String getNoPenyesuaianStok() {
+    String getNoPenyesuaianStok() {
         NumberFormat nf = new DecimalFormat("000000");
         String NoPenyesuaian = null;
         RunSelct runSelct = new RunSelct();
-        runSelct.setQuery("SELECT `NoPenyesuaian` FROM `tbpenyesuaianstok` ORDER BY `NoPenyesuaian` DESC LIMIT 1");
+        if (getTitle().equals("Penyesuaian Stok")) {
+            runSelct.setQuery("SELECT `NoPenyesuaian` FROM `tbpenyesuaianstok` ORDER BY `NoPenyesuaian` DESC LIMIT 1");
+        } else {
+            runSelct.setQuery("SELECT `NoPenyesuaian` FROM `tbpenyesuaianstokgudangbesar` ORDER BY `NoPenyesuaian` DESC LIMIT 1");
+        }
         try {
             ResultSet rs = runSelct.excute();
             if (!rs.isBeforeFirst()) {
-                NoPenyesuaian = "KB-" + "000001" + "-PS";
+                if (getTitle().equals("Penyesuaian Stok")) {
+                    NoPenyesuaian = "KB-" + "000001" + "-PS";
+                } else {
+                    NoPenyesuaian = "KB-" + "000001" + "-PG";
+                }
             }
             while (rs.next()) {
                 String nopenjualan = rs.getString("NoPenyesuaian");
                 String number = nopenjualan.substring(3, 9);
                 int p = 1 + parseInt(number);
                 if (p != 999999) {
-                    NoPenyesuaian = "KB-" + nf.format(p) + "-PS";
+                    if (getTitle().equals("Penyesuaian Stok")) {
+                        NoPenyesuaian = "KB-" + nf.format(p) + "-PS";
+                    } else {
+                        NoPenyesuaian = "KB-" + nf.format(p) + "-PG";
+                    }
                 } else if (p == 999999) {
                     p = 1;
-                    NoPenyesuaian = "KB-" + nf.format(p) + "-PS";
+                    if (getTitle().equals("Penyesuaian Stok")) {
+                        NoPenyesuaian = "KB-" + nf.format(p) + "-PS";
+                    } else {
+                        NoPenyesuaian = "KB-" + nf.format(p) + "-PG";
+                    }
                 }
             }
         } catch (SQLException e) {
@@ -480,7 +495,11 @@ public class PenyesuaianStok extends javax.swing.JFrame {
         if (!JTNamaBarang.getText().replace(" ", "").equals("")) {
             DRunSelctOne dRunSelctOne = new DRunSelctOne();
             dRunSelctOne.seterorm("Gagal Menampilkan Data Stok Barang");
-            dRunSelctOne.setQuery("SELECT `IdBarang`, IFNULL(SUM(`Jumlah`),0) as 'Stok' FROM( SELECT `IdBarang`, 0 as 'Jumlah' FROM `tbmbarang` WHERE 1 UNION ALL SELECT `IdBarang`, `Jumlah` FROM `tbpermintaanstok` WHERE 1 UNION ALL SELECT `IdBarang`, `Jumlah` FROM `tbpenjualandetail` WHERE 1 UNION ALL SELECT `IdBarang`, `Jumlah` FROM `tbpenyesuaianstok` WHERE 1) t1 WHERE `IdBarang` = (SELECT `IdBarang` FROM `tbmbarang` WHERE `NamaBarang` = '" + JTNamaBarang.getText() + "') GROUP BY `IdBarang`");
+            if (getTitle().equals("Penyesuaian Stok")) {
+                dRunSelctOne.setQuery("SELECT `IdBarang`, IFNULL(SUM(`Jumlah`),0) as 'Stok' FROM( SELECT `IdBarang`, 0 as 'Jumlah' FROM `tbmbarang` WHERE 1 UNION ALL SELECT `IdBarang`, `Jumlah` FROM `tbpermintaanstok` WHERE 1 UNION ALL SELECT `IdBarang`, `Jumlah` FROM `tbpenjualandetail` WHERE 1 UNION ALL SELECT `IdBarang`, `Jumlah` FROM `tbpenyesuaianstok` WHERE 1) t1 WHERE `IdBarang` = (SELECT `IdBarang` FROM `tbmbarang` WHERE `NamaBarang` = '" + JTNamaBarang.getText() + "') GROUP BY `IdBarang`");
+            } else {
+                dRunSelctOne.setQuery("SELECT `IdBarang`, SUM(`Jumlah`) as 'Stok' FROM( SELECT `IdBarang`, 0 as 'Jumlah' FROm `tbmbarang` WHERE 1 UNION ALL SELECT `IdBarang`, `Jumlah` FROM `tbbarangmasukdetail` WHERE 1 UNION ALL SELECT `IdBarang`, `Jumlah` FROM `tbpermintaanstok` WHERE 1 UNION ALL SELECT `IdBarang`, `Jumlah` FROM `tbpenyesuaianstokgudangbesar` WHERE 1) t1 WHERE `IdBarang` = (SELECT `IdBarang` FROM `tbmbarang` WHERE `NamaBarang` = '" + JTNamaBarang.getText() + "') GROUP BY `IdBarang`");
+            }
             ArrayList<String> list = dRunSelctOne.excute();
             String Stok = list.get(1);
             JTStokLama.setText(Stok);
@@ -508,13 +527,17 @@ public class PenyesuaianStok extends javax.swing.JFrame {
         if (checkInput()) {
             Boolean berhasil;
             Insert insert = new LSubProces.Insert();
-            berhasil = insert.simpan("INSERT INTO `tbpenyesuaianstok` (`NoPenyesuaian`, `Tanggal`, `IdBarang`, `Jumlah`, `Keterangan`) VALUES ('" + JTNoPenyesuaian.getText() + "', '" + FDateF.datetostr(JDTanggalPenyesuaian.getDate(), "yyyy-MM-dd") + "',(SELECT `IdBarang` FROM `tbmbarang` WHERE `NamaBarang` = '" + JTNamaBarang.getText() + "'),'" + (Float.parseFloat(JTStokBaru.getText().replace(".", "")) - Float.parseFloat(JTStokLama.getText().replace(".", "").replace(",", "."))) + "','" + JTAKeterangan.getText() + "')", "Penyesuaian Stok Barang", null);
+            if (getTitle().equals("Penyesuaian Stok")) {
+                berhasil = insert.simpan("INSERT INTO `tbpenyesuaianstok` (`NoPenyesuaian`, `Tanggal`, `IdBarang`, `Jumlah`, `Keterangan`) VALUES ('" + JTNoPenyesuaian.getText() + "', '" + FDateF.datetostr(JDTanggalPenyesuaian.getDate(), "yyyy-MM-dd") + "',(SELECT `IdBarang` FROM `tbmbarang` WHERE `NamaBarang` = '" + JTNamaBarang.getText() + "'),'" + (Float.parseFloat(JTStokBaru.getText().replace(".", "")) - Float.parseFloat(JTStokLama.getText().replace(".", "").replace(",", "."))) + "','" + JTAKeterangan.getText() + "')", "Penyesuaian Stok", null);
+            } else {
+                berhasil = insert.simpan("INSERT INTO `tbpenyesuaianstokgudangbesar` (`NoPenyesuaian`, `Tanggal`, `IdBarang`, `Jumlah`, `Keterangan`) VALUES ('" + JTNoPenyesuaian.getText() + "', '" + FDateF.datetostr(JDTanggalPenyesuaian.getDate(), "yyyy-MM-dd") + "',(SELECT `IdBarang` FROM `tbmbarang` WHERE `NamaBarang` = '" + JTNamaBarang.getText() + "'),'" + (Float.parseFloat(JTStokBaru.getText().replace(".", "")) - Float.parseFloat(JTStokLama.getText().replace(".", "").replace(",", "."))) + "','" + JTAKeterangan.getText() + "')", "Penyesuaian Stok Gudang Besar", null);
+            }
             if (berhasil) {
+                JTNoPenyesuaian.setText(getNoPenyesuaianStok());
+                JTNamaBarang.setText("");
                 JTStokLama.setText("0");
                 JTStokBaru.setText("0");
                 JTAKeterangan.setText("");
-                JTNoPenyesuaian.setText(getNoPenyesuaianStok());
-                JTNamaBarang.setText("");
                 JTNamaBarang.requestFocus();
             }
         }
