@@ -33,13 +33,7 @@
                   <Group type="102" attributes="0">
                       <Component id="jbuttonF4" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="32767" attributes="0"/>
-                      <Component id="jbuttonF5" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace max="-2" attributes="0"/>
-                      <Component id="jbuttonF9" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace max="-2" attributes="0"/>
                       <Component id="jbuttonF3" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace max="-2" attributes="0"/>
-                      <Component id="jbuttonF8" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="jbuttonF2" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
@@ -222,9 +216,6 @@
                           <Component id="jbuttonF1" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="jbuttonF2" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="jbuttonF3" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="jbuttonF5" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="jbuttonF8" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="jbuttonF9" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
                   </Group>
                   <Group type="103" groupAlignment="3" attributes="0">
@@ -492,21 +483,10 @@
       </Properties>
     </Component>
     <Component class="KomponenGUI.JRibuanTextField" name="JTHargaSatuan">
-      <Properties>
-        <Property name="enabled" type="boolean" value="false"/>
-      </Properties>
       <Events>
         <EventHandler event="focusLost" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="JTHargaSatuanFocusLost"/>
         <EventHandler event="keyPressed" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="JTHargaSatuanKeyPressed"/>
         <EventHandler event="keyReleased" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="JTHargaSatuanKeyReleased"/>
-      </Events>
-    </Component>
-    <Component class="KomponenGUI.JbuttonF" name="jbuttonF5">
-      <Properties>
-        <Property name="text" type="java.lang.String" value="Print"/>
-      </Properties>
-      <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jbuttonF5ActionPerformed"/>
       </Events>
     </Component>
     <Component class="KomponenGUI.JRibuanTextField" name="JTSubTotal">
@@ -551,22 +531,6 @@
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jbuttonF7ActionPerformed"/>
       </Events>
     </Component>
-    <Component class="KomponenGUI.JbuttonF" name="jbuttonF8">
-      <Properties>
-        <Property name="text" type="java.lang.String" value="Tambah &amp; Print"/>
-      </Properties>
-      <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jbuttonF8ActionPerformed"/>
-      </Events>
-    </Component>
-    <Component class="KomponenGUI.JbuttonF" name="jbuttonF9">
-      <Properties>
-        <Property name="text" type="java.lang.String" value="Ubah &amp; Print"/>
-      </Properties>
-      <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jbuttonF9ActionPerformed"/>
-      </Events>
-    </Component>
     <Component class="KomponenGUI.JlableF" name="jlableF29">
       <Properties>
         <Property name="text" type="java.lang.String" value="BARANG MASUK"/>
@@ -604,7 +568,10 @@
     </Component>
     <Component class="KomponenGUI.JRibuanTextField" name="JTJumlah">
       <Events>
+        <EventHandler event="focusGained" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="JTJumlahFocusGained"/>
+        <EventHandler event="focusLost" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="JTJumlahFocusLost"/>
         <EventHandler event="keyPressed" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="JTJumlahKeyPressed"/>
+        <EventHandler event="keyReleased" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="JTJumlahKeyReleased"/>
       </Events>
     </Component>
   </SubComponents>

@@ -70,7 +70,6 @@ public class BarangMasuk extends javax.swing.JFrame {
         setLocationRelativeTo(null);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         jbuttonF3.setVisible(false);
-        jbuttonF9.setVisible(false);
         JCPemasok.requestFocus();
         JTNoTransaksi.setText(getNoBarangMasuk());
     }
@@ -84,7 +83,6 @@ public class BarangMasuk extends javax.swing.JFrame {
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         jbuttonF1.setVisible(false);
         jbuttonF2.setVisible(false);
-        jbuttonF8.setVisible(false);
         loadeditdata();
         JCPemasok.requestFocus();
     }
@@ -291,15 +289,12 @@ public class BarangMasuk extends javax.swing.JFrame {
         JTStock = new KomponenGUI.JtextF();
         jlabelF11 = new KomponenGUI.JtextF();
         JTHargaSatuan = new KomponenGUI.JRibuanTextField();
-        jbuttonF5 = new KomponenGUI.JbuttonF();
         JTSubTotal = new KomponenGUI.JRibuanTextField();
         JCPemasok = new KomponenGUI.JcomboboxF();
         jScrollPane1 = new javax.swing.JScrollPane();
         JTAKeterangan = new KomponenGUI.JTextAreaF();
         JTGrandTotal = new KomponenGUI.JRibuanTextField();
         jbuttonF7 = new KomponenGUI.JbuttonF();
-        jbuttonF8 = new KomponenGUI.JbuttonF();
-        jbuttonF9 = new KomponenGUI.JbuttonF();
         jlableF29 = new KomponenGUI.JlableF();
         JTNamaBarang = new KomponenGUI.JtextF();
         jbuttonF11 = new KomponenGUI.JbuttonF();
@@ -477,7 +472,6 @@ public class BarangMasuk extends javax.swing.JFrame {
         jlabelF11.setDisabledTextColor(new java.awt.Color(0, 0, 0));
         jlabelF11.setEnabled(false);
 
-        JTHargaSatuan.setEnabled(false);
         JTHargaSatuan.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusLost(java.awt.event.FocusEvent evt) {
                 JTHargaSatuanFocusLost(evt);
@@ -489,13 +483,6 @@ public class BarangMasuk extends javax.swing.JFrame {
             }
             public void keyReleased(java.awt.event.KeyEvent evt) {
                 JTHargaSatuanKeyReleased(evt);
-            }
-        });
-
-        jbuttonF5.setText("Print");
-        jbuttonF5.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jbuttonF5ActionPerformed(evt);
             }
         });
 
@@ -518,20 +505,6 @@ public class BarangMasuk extends javax.swing.JFrame {
         jbuttonF7.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jbuttonF7ActionPerformed(evt);
-            }
-        });
-
-        jbuttonF8.setText("Tambah & Print");
-        jbuttonF8.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jbuttonF8ActionPerformed(evt);
-            }
-        });
-
-        jbuttonF9.setText("Ubah & Print");
-        jbuttonF9.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jbuttonF9ActionPerformed(evt);
             }
         });
 
@@ -576,9 +549,20 @@ public class BarangMasuk extends javax.swing.JFrame {
             }
         });
 
+        JTJumlah.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                JTJumlahFocusGained(evt);
+            }
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                JTJumlahFocusLost(evt);
+            }
+        });
         JTJumlah.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
                 JTJumlahKeyPressed(evt);
+            }
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                JTJumlahKeyReleased(evt);
             }
         });
 
@@ -592,13 +576,7 @@ public class BarangMasuk extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jbuttonF4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jbuttonF5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jbuttonF9, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jbuttonF3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jbuttonF8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jbuttonF2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -742,10 +720,7 @@ public class BarangMasuk extends javax.swing.JFrame {
                             .addComponent(jbuttonF4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jbuttonF1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jbuttonF2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jbuttonF3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jbuttonF5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jbuttonF8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jbuttonF9, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addComponent(jbuttonF3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(jlableF4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(jlableF10, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -767,7 +742,7 @@ public class BarangMasuk extends javax.swing.JFrame {
     }//GEN-LAST:event_jbuttonF2ActionPerformed
 
     private void jbuttonF3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbuttonF3ActionPerformed
-        ubahData(false);
+        ubahData();
     }//GEN-LAST:event_jbuttonF3ActionPerformed
 
     private void jbuttonF4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbuttonF4ActionPerformed
@@ -808,10 +783,6 @@ public class BarangMasuk extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_JTableMouseClicked
 
-    private void jbuttonF5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbuttonF5ActionPerformed
-        printing();
-    }//GEN-LAST:event_jbuttonF5ActionPerformed
-
     private void JCPemasokKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_JCPemasokKeyPressed
         if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
             JTNamaBarang.requestFocus();
@@ -830,14 +801,6 @@ public class BarangMasuk extends javax.swing.JFrame {
             tambahMasterPemasok.toFront();
         }
     }//GEN-LAST:event_jbuttonF7ActionPerformed
-
-    private void jbuttonF8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbuttonF8ActionPerformed
-        tambahData(false, true);
-    }//GEN-LAST:event_jbuttonF8ActionPerformed
-
-    private void jbuttonF9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbuttonF9ActionPerformed
-        ubahData(true);
-    }//GEN-LAST:event_jbuttonF9ActionPerformed
 
     private void JTNamaBarangKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_JTNamaBarangKeyPressed
         if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
@@ -901,14 +864,26 @@ public class BarangMasuk extends javax.swing.JFrame {
     }//GEN-LAST:event_JTHargaSatuanKeyPressed
 
     private void JTNamaBarangFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_JTNamaBarangFocusLost
-        setHarga();
-        setStok();
+        
     }//GEN-LAST:event_JTNamaBarangFocusLost
 
     private void JBSearchNamaBarangFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_JBSearchNamaBarangFocusLost
         setHarga();
         setStok();
     }//GEN-LAST:event_JBSearchNamaBarangFocusLost
+
+    private void JTJumlahFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_JTJumlahFocusGained
+        setHarga();
+        setStok();
+    }//GEN-LAST:event_JTJumlahFocusGained
+
+    private void JTJumlahFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_JTJumlahFocusLost
+        setSubTotal();
+    }//GEN-LAST:event_JTJumlahFocusLost
+
+    private void JTJumlahKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_JTJumlahKeyReleased
+        setSubTotal();
+    }//GEN-LAST:event_JTJumlahKeyReleased
 
     /**
      * @param args the command line arguments
@@ -971,10 +946,7 @@ public class BarangMasuk extends javax.swing.JFrame {
     private KomponenGUI.JbuttonF jbuttonF2;
     private KomponenGUI.JbuttonF jbuttonF3;
     private KomponenGUI.JbuttonF jbuttonF4;
-    private KomponenGUI.JbuttonF jbuttonF5;
     private KomponenGUI.JbuttonF jbuttonF7;
-    private KomponenGUI.JbuttonF jbuttonF8;
-    private KomponenGUI.JbuttonF jbuttonF9;
     private KomponenGUI.JtextF jlabelF10;
     private KomponenGUI.JtextF jlabelF11;
     private KomponenGUI.JtextF jlabelF7;
@@ -1044,9 +1016,6 @@ public class BarangMasuk extends javax.swing.JFrame {
                 JOptionPaneF.showMessageDialog(this, "Berhasil Tambah Data Barang Masuk");
                 multiInsert.Commit();
                 multiInsert.closecon();
-                if (print) {
-                    printing();
-                }
                 if (listBarangMasuk != null) {
                     listBarangMasuk.load();
                 }
@@ -1069,7 +1038,7 @@ public class BarangMasuk extends javax.swing.JFrame {
         }
     }
 
-    void ubahData(Boolean print) {
+    void ubahData() {
         if (checkInput()) {
             boolean Berhasil;
             MultiInsert multiInsert = new MultiInsert();
@@ -1097,9 +1066,6 @@ public class BarangMasuk extends javax.swing.JFrame {
                 JOptionPaneF.showMessageDialog(this, "Berhasil Ubah Data Barang Masuk");
                 multiInsert.Commit();
                 multiInsert.closecon();
-                if (print) {
-                    printing();
-                }
                 dispose();
                 ubahBarangMasuk = null;
                 if (listBarangMasuk != null) {
@@ -1107,128 +1073,6 @@ public class BarangMasuk extends javax.swing.JFrame {
                 }
             }
         }
-    }
-
-    void printing() {
-//        String NamaSupir = JTNamaSupir.getText();
-//        if (JTNamaSupir.getText().length() > 13) {
-//            NamaSupir = JTNamaSupir.getText().substring(0, 13);
-//        }
-//        String Plat = JCPasien.getSelectedItem().toString();
-//        String JenisKendaraan = JTJenisKendaraan.getText();
-//        String NoTransaksi = JTNoTransaksi.getText();
-//        String NoDO = JTNoDO.getText();
-//        String Tujuan = JCTujuan.getSelectedItem().toString();
-//        String Tanggal = datetostr(JDTanggal.getDate(), "dd-MM-yyyy");
-//        String Keterangan = JTAKeterangan.getText();
-//
-//        String[] Barang = new String[JTable.getRowCount()];
-//        int[] Jumlah = new int[JTable.getRowCount()];
-//        String[] Jumlahs = new String[JTable.getRowCount()];
-//        int[] Harga = new int[JTable.getRowCount()];
-//        String[] Hargas = new String[JTable.getRowCount()];
-//        int[] Sub = new int[JTable.getRowCount()];
-//        String[] Subs = new String[JTable.getRowCount()];
-//
-//        for (int i = 0; i < JTable.getRowCount(); i++) {
-//            Barang[i] = JTable.getValueAt(i, 1).toString().split(" \\(PARTAI ")[0];
-//            Jumlah[i] = Integer.parseInt(JTable.getValueAt(i, 2).toString().replace(".", ""));
-//            Jumlahs[i] = Intformatdigit(Jumlah[i]);
-//            Harga[i] = Integer.parseInt(JTable.getValueAt(i, 3).toString().replace(".", ""));
-//            Hargas[i] = Intformatdigit(Harga[i]);
-//            Sub[i] = Integer.parseInt(JTable.getValueAt(i, 4).toString().replace(".", ""));
-//            Subs[i] = Intformatdigit(Sub[i]);
-//        }
-//
-//        int Total = getGrandTotal();
-//        String Totals = Intformatdigit(Total);
-//        String terbilang = angkaToTerbilang(Long.valueOf(Total)) + "RUPIAH";
-//        if (terbilang.length() > 66) {
-//            terbilang = terbilang.substring(0, 66);
-//        }
-//
-//        if (JCJenisPenjualan.getSelectedItem().equals("MUTASI GUDANG")) {
-//            String leftAlignFormat = "%-5s%-11s%-63s%-1s%n";
-//            String OutFormat = "";
-//            OutFormat += format("%-81s%n", " _____________________________________________________________________________");
-//            OutFormat += format("%-54s%-26s%n", " SURAT JALAN", "No Transaksi: " + NoTransaksi);
-//            OutFormat += format("%-54s%-26s%n", " ", "Tanggal     : " + Tanggal);
-//            if (JCTujuan.getSelectedItem().equals("PAAL 5") || JCTujuan.getSelectedItem().equals("WESAN")) {
-//                OutFormat += format("%-54s%-26s%n", " Ke Gudang : " + Tujuan, " ");
-//            } else {
-//                OutFormat += format("%-54s%-26s%n", " Kepada    : " + Tujuan, " ");
-//            }
-//            OutFormat += format("%-54s%-26s%n", " Plat      : " + Plat, "No DO       : " + NoDO);
-//            OutFormat += format("%-54s%-26s%n", " Kendaraan : " + JenisKendaraan, " ");
-//            //                              12345678901234567890123456789012345678901234567890123456789012345678901234567890
-//            OutFormat += format("%-80s%n", " +---+----------+--------------------------------------------------------------+");
-//            OutFormat += format("%-80s%n", " | NO|  JUMLAH  | NAMA BARANG                                                  |");
-//            OutFormat += format("%-80s%n", " +---+----------+--------------------------------------------------------------+");
-//            for (int i = 0; i < 10; i++) {
-//                if (i < JTable.getRowCount()) {
-//                    String satuan;
-//                    if (Barang[i].toUpperCase().contains("PARTAI") || Barang[i].toUpperCase().contains("@50 KG")) {
-//                        satuan = " SAK";
-//                    } else {
-//                        satuan = " PAK";
-//                    }
-//                    OutFormat += format(leftAlignFormat, " | " + (i + 1), "|" + format("%9s", Jumlah[i] + satuan), "| " + Barang[i], "|");
-//                } else {
-//                    OutFormat += format(leftAlignFormat, " | " + (i + 1), "|" + " ", "|" + " ", "|");
-//                }
-//            }
-//            OutFormat += format("%-80s%n", " +-----------------------------------------------------------------------------+");
-//            OutFormat += format("%-80s%n", " Ket : " + Keterangan);
-//            OutFormat += format("%n", "");
-//            OutFormat += format("%-67s%-24s%n", " Disiapkan Oleh", "Diterima Oleh \n \n ");
-//            OutFormat += format("%-67s%-24s%n", " HENDRI", NamaSupir);
-//            OutFormat += format("%-80s%n", " ______________________________________________________________________________");
-//            OutFormat += format("%n", "");
-//            OutFormat += format("%n", "");
-//            OutFormat += format("%n", "");
-//            //System.out.println(OutFormat);
-//            directprinting(OutFormat);
-//        } else {
-//            String leftAlignFormat = "%-5s%-37s%-9s%-15s%-13s%-1s%n";
-//            String OutFormat = "";
-//            OutFormat += format("%-81s%n", " _____________________________________________________________________________");
-//            OutFormat += format("%-54s%-26s%n", " FAKTUR PENJUALAN", "No Transaksi: " + NoTransaksi);
-//            OutFormat += format("%-54s%-26s%n", " ", "Tanggal     : " + Tanggal);
-//            if (JCJenisPenjualan.getSelectedItem().equals("MUTASI GUDANG")) {
-//                OutFormat += format("%-54s%-26s%n", " Ke Gudang : " + Tujuan, " ");
-//            } else {
-//                OutFormat += format("%-54s%-26s%n", " Kepada    : " + Tujuan, " ");
-//            }
-//            OutFormat += format("%-54s%-26s%n", " Plat      : " + Plat, " ");
-//            OutFormat += format("%-54s%-26s%n", " Kendaraan : " + JenisKendaraan, " ");
-//            //                              12341234567890123456789012345678901234567812345678912345678901234512345678901234
-//            //                              12345678901234567890123456789012345678901234567890123456789012345678901234567890
-//            OutFormat += format("%-80s%n", " +---+------------------------------------+--------+--------------+------------+");
-//            OutFormat += format("%-80s%n", " | NO| NAMA BARANG                        | JUMLAH | HARGA SATUAN |  SUB TOTAL |");
-//            OutFormat += format("%-80s%n", " +---+------------------------------------+--------+--------------+------------+");
-//            for (int i = 0; i < 6; i++) {
-//                if (i < JTable.getRowCount()) {
-//                    OutFormat += format(leftAlignFormat, " | " + (i + 1), "| " + Barang[i], "|" + format("%7s", Jumlahs[i]), "|" + format("%13s", Hargas[i]), "|" + format("%11s", Subs[i]), "|");
-//                } else {
-//                    OutFormat += format(leftAlignFormat, " | " + (i + 1), "|" + " ", "|" + " ", "|" + " ", "|" + " ", "|");
-//                }
-//            }
-//            OutFormat += format("%-80s%n", " +---+------------------------------------+--------+--------------+------------+");
-//            OutFormat += format("%-23s%-43s%-13s%-1s%n", " | GRAND TOTAL", " ", "|" + format("%11s", Totals), "|");
-//            OutFormat += format("%-80s%n", " +----------------------------------------------------------------+------------+");
-//            OutFormat += format("%-80s%n", " Ket : " + Keterangan);
-//            OutFormat += format("%n", "");
-//            OutFormat += format("%-80s%n", " Terbilang : " + terbilang);
-//            OutFormat += format("%n", "");
-//            OutFormat += format("%-67s%-24s%n", " Disiapkan Oleh", "Diterima Oleh \n \n ");
-//            OutFormat += format("%-67s%-24s%n", " HENDRI", NamaSupir);
-//            OutFormat += format("%-80s%n", " ______________________________________________________________________________");
-//            OutFormat += format("%n", "");
-//            OutFormat += format("%n", "");
-//            OutFormat += format("%n", "");
-//            //System.out.println(OutFormat);
-//            directprinting(OutFormat);
-//        }
     }
 
     /**
@@ -1401,7 +1245,7 @@ public class BarangMasuk extends javax.swing.JFrame {
         if (!JTNamaBarang.getText().replace(" ", "").equals("")) {
             DRunSelctOne dRunSelctOne = new DRunSelctOne();
             dRunSelctOne.seterorm("Gagal Menampilkan Data Stok Barang");
-            dRunSelctOne.setQuery("SELECT `IdBarang`, SUM(`Jumlah`) as 'Stok' FROM( SELECT `IdBarang`, 0 as 'Jumlah' FROm `tbmbarang` WHERE 1 UNION ALL SELECT `IdBarang`, `Jumlah` FROM `tbbarangmasukdetail` WHERE 1 UNION ALL SELECT `IdBarang`, `Jumlah` FROM `tbpermintaanstok` WHERE 1 UNION ALL SELECT `IdBarang`, `Jumlah` FROM `tbpenyesuaianstokgudangbesar` WHERE 1) t1 WHERE `IdBarang` = (SELECT `IdBarang` FROM `tbmbarang` WHERE `NamaBarang` = '" + JTNamaBarang.getText() + "') GROUP BY `IdBarang`");
+            dRunSelctOne.setQuery("SELECT `IdBarang`, SUM(`Jumlah`) as 'Stok' FROM( SELECT `IdBarang`, 0 as 'Jumlah' FROm `tbmbarang` WHERE 1 UNION ALL SELECT `IdBarang`, `Jumlah` FROM `tbbarangmasukdetail` WHERE 1 UNION ALL SELECT `IdBarang`, `Jumlah`*-1 FROM `tbpermintaanstok` WHERE 1 UNION ALL SELECT `IdBarang`, `Jumlah` FROM `tbpenyesuaianstokgudangbesar` WHERE 1) t1 WHERE `IdBarang` = (SELECT `IdBarang` FROM `tbmbarang` WHERE `NamaBarang` = '" + JTNamaBarang.getText() + "') GROUP BY `IdBarang`");
             ArrayList<String> list = dRunSelctOne.excute();
             String Stok = list.get(1);
             JTStock.setText(Stok);

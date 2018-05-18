@@ -49,8 +49,24 @@ import static javax.print.attribute.standard.OrientationRequested.LANDSCAPE;
 import javax.print.event.PrintJobAdapter;
 import javax.print.event.PrintJobEvent;
 import FunctionGUI.JOptionPaneF;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
+import java.awt.print.PageFormat;
+import java.awt.print.Paper;
+import java.awt.print.Printable;
+import static java.awt.print.Printable.NO_SUCH_PAGE;
+import static java.awt.print.Printable.PAGE_EXISTS;
+import java.awt.print.PrinterException;
+import java.awt.print.PrinterJob;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import javax.imageio.ImageIO;
+import javax.swing.JTable;
 import javax.swing.UIManager;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
 
 /**
  *
@@ -69,10 +85,11 @@ public class Penjualan extends javax.swing.JFrame {
         setTitle("Tambah Penjualan");
         setLocationRelativeTo(null);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-        jbuttonF3.setVisible(false);
-        jbuttonF9.setVisible(false);
+        JBUbah.setVisible(false);
+        JBUbahPrint.setVisible(false);
         JCPasien.requestFocus();
         JTNoTransaksi.setText(getNoPenjualan());
+        setPoin(0);
     }
 
     public Penjualan(Object idEdit) {
@@ -82,9 +99,9 @@ public class Penjualan extends javax.swing.JFrame {
         setTitle("Ubah Penjualan");
         setLocationRelativeTo(null);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-        jbuttonF1.setVisible(false);
-        jbuttonF2.setVisible(false);
-        jbuttonF8.setVisible(false);
+        JBTambah.setVisible(false);
+        JBTambahTutup.setVisible(false);
+        JBTambahPrint.setVisible(false);
         loadeditdata();
         JCPasien.requestFocus();
     }
@@ -100,13 +117,15 @@ public class Penjualan extends javax.swing.JFrame {
 
     void loadeditdata() {
         DRunSelctOne dRunSelctOne = new DRunSelctOne();
-        dRunSelctOne.seterorm("Eror gagal Menampilkan Data Penjualan");
-        dRunSelctOne.setQuery("SELECT `IdPenjualan` as 'ID', `NoTransaksi` as 'No. Transaksi', DATE_FORMAT(`Tanggal`,'%d-%m-%Y') as 'Tanggal', IFNULL(`NamaPasien`,'-') as 'Nama Pasien', a.`Keterangan` FROM `tbpenjualan`a LEFT JOIN `tbmpasien`b ON a.`IdPasien`=b.`IdPasien` WHERE `IdPenjualan` = '" + IdEdit + "'");
+        dRunSelctOne.seterorm("Eror Gagal Menampilkan Data Penjualan");
+        dRunSelctOne.setQuery("SELECT `IdPenjualan` as 'ID', `NoTransaksi` as 'No. Transaksi', DATE_FORMAT(`Tanggal`,'%d-%m-%Y') as 'Tanggal', IFNULL(CONCAT('(', `KodePasien`,') ',`NamaPasien`),'-') as 'Nama Pasien', a.`Keterangan`, FORMAT(`Bayar`,0) as 'Jumlah Bayar', `Diskon`, IF(`StatusPoin`=1,'Poin','Cash'), `Poin` FROM `tbpenjualan`a LEFT JOIN `tbmpasien`b ON a.`IdPasien`=b.`IdPasien` WHERE `IdPenjualan` = '" + IdEdit + "'");
         ArrayList<String> list = dRunSelctOne.excute();
         JTNoTransaksi.setText(list.get(1));
         JDTanggal.setDate(FDateF.strtodate(list.get(2), "dd-MM-yyyy"));
         JCPasien.setSelectedItem(list.get(3));
         JTAKeterangan.setText(list.get(4));
+        JTBayar.setInt(list.get(5).replace(",", ""));
+        JCBPakaiPoin.setSelected(list.get(7).equals("Poin"));
         DefaultTableModel model = (DefaultTableModel) JTable.getModel();
         model.getDataVector().removeAllElements();
         RunSelct runSelct = new RunSelct();
@@ -130,14 +149,36 @@ public class Penjualan extends javax.swing.JFrame {
             runSelct.closecon();
         }
         JTGrandTotal.setText(String.valueOf(getGrandTotal()));
+        if (JCBPakaiPoin.isSelected()) {
+            JTSetelahPotong.setVisible(true);
+            jlableF12.setVisible(true);
+            jlableF24.setVisible(true);
+            setPoin(Integer.valueOf(list.get(8)));
+            JTSetelahPotong.setText(String.valueOf(JTGrandTotal.getInt() - Integer.valueOf(list.get(8)) * 5000));
+        } else {
+            JTSetelahPotong.setVisible(false);
+            jlableF12.setVisible(false);
+            jlableF24.setVisible(false);
+            JLPoin.setText("Poin (0)");
+            JCBPakaiPoin.setEnabled(false);
+        }
     }
 
     Boolean checkInput() {
         if (JDTanggal.getDate() == null) {
             JOptionPaneF.showMessageDialog(this, "Gagal. Tanggal Penjualan Tidak Boleh Kosong");
             return false;
-        } else if (JTable.getRowCount() < 1) {
+        } else if (JTNoTransaksi.getText().isEmpty()) {
+            JOptionPaneF.showMessageDialog(this, "Gagal. No. Transaksi Boleh Kosong");
+            return false;
+        } else if (JTable.getRowCount() == 0) {
             JOptionPaneF.showMessageDialog(this, "Gagal. Detail Penjualan Tidak Boleh Kosong");
+            return false;
+        } else if (JTBayar.getInt() < JTGrandTotal.getInt() && !JCBPakaiPoin.isSelected()) {
+            JOptionPaneF.showMessageDialog(this, "Gagal. Jumlah Bayar Tidak Mencukupi.");
+            return false;
+        } else if (JTBayar.getInt() < JTSetelahPotong.getInt() && JCBPakaiPoin.isSelected()) {
+            JOptionPaneF.showMessageDialog(this, "Gagal. Jumlah Bayar Tidak Mencukupi.");
             return false;
         } else {
             return true;
@@ -234,7 +275,7 @@ public class Penjualan extends javax.swing.JFrame {
         JTJumlah.setText("0");
         JTHargaSatuan.setText("0");
         JTSubTotal.setText("0");
-        //JTStock.setText("0,00");
+        JTStock.setText("0");
     }
 
     void setHarga() {
@@ -256,6 +297,33 @@ public class Penjualan extends javax.swing.JFrame {
         JTSubTotal.setText(String.valueOf(subtotal));
     }
 
+    String getSetelahPotong() {
+        if (JTGrandTotal.getInt() - (Integer.valueOf(JLPoin.getText().split("\\(")[1].split("\\)")[0]) * 5000) <= 0) {
+            return "0";
+        } else {
+            return String.valueOf(JTGrandTotal.getInt() - ((Integer.valueOf(JLPoin.getText().split("\\(")[1].split("\\)")[0]) * 5000)));
+        }
+    }
+
+    Integer getPoinTerpakai() {
+        if (JCBPakaiPoin.isSelected()) {
+            return (JTGrandTotal.getInt() - JTSetelahPotong.getInt()) / 5000;
+        } else {
+            return 0;
+        }
+    }
+
+    void setKembalian() {
+        if (!JTBayar.getText().isEmpty()) {
+            if (JCBPakaiPoin.isSelected()) {
+                JTKembali.setInt(JTBayar.getInt() - JTSetelahPotong.getInt());
+            } else {
+                JTKembali.setInt(JTBayar.getInt() - JTGrandTotal.getInt());
+            }
+
+        }
+    }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -271,12 +339,12 @@ public class Penjualan extends javax.swing.JFrame {
         jlableF10 = new KomponenGUI.JlableF();
         jlableF3 = new KomponenGUI.JlableF();
         JTNoTransaksi = new KomponenGUI.JtextF();
-        jbuttonF1 = new KomponenGUI.JbuttonF();
-        jbuttonF2 = new KomponenGUI.JbuttonF();
+        JBTambah = new KomponenGUI.JbuttonF();
+        JBTambahTutup = new KomponenGUI.JbuttonF();
         jbuttonF4 = new KomponenGUI.JbuttonF();
         jlableF6 = new KomponenGUI.JlableF();
         jlableF8 = new KomponenGUI.JlableF();
-        jbuttonF3 = new KomponenGUI.JbuttonF();
+        JBUbah = new KomponenGUI.JbuttonF();
         jlableF21 = new KomponenGUI.JlableF();
         jlableF22 = new KomponenGUI.JlableF();
         JDTanggal = new KomponenGUI.JdateCF();
@@ -295,20 +363,31 @@ public class Penjualan extends javax.swing.JFrame {
         JTStock = new KomponenGUI.JtextF();
         jlabelF11 = new KomponenGUI.JtextF();
         JTHargaSatuan = new KomponenGUI.JRibuanTextField();
-        jbuttonF5 = new KomponenGUI.JbuttonF();
         JTSubTotal = new KomponenGUI.JRibuanTextField();
         JCPasien = new KomponenGUI.JcomboboxF();
         jScrollPane1 = new javax.swing.JScrollPane();
         JTAKeterangan = new KomponenGUI.JTextAreaF();
         JTGrandTotal = new KomponenGUI.JRibuanTextField();
         jbuttonF7 = new KomponenGUI.JbuttonF();
-        jbuttonF8 = new KomponenGUI.JbuttonF();
-        jbuttonF9 = new KomponenGUI.JbuttonF();
+        JBTambahPrint = new KomponenGUI.JbuttonF();
+        JBUbahPrint = new KomponenGUI.JbuttonF();
         jlableF29 = new KomponenGUI.JlableF();
         JTNamaBarang = new KomponenGUI.JtextF();
         jbuttonF11 = new KomponenGUI.JbuttonF();
         JBSearchNamaBarang = new KomponenGUI.JbuttonF();
         JTJumlah = new KomponenGUI.JRibuanTextField();
+        JTKembali = new KomponenGUI.JRibuanTextField();
+        jlableF11 = new KomponenGUI.JlableF();
+        jlableF12 = new KomponenGUI.JlableF();
+        JTBayar = new KomponenGUI.JPlaceHolder();
+        JLPoin = new KomponenGUI.JlableF();
+        jlableF13 = new KomponenGUI.JlableF();
+        JCBPakaiPoin = new KomponenGUI.JCheckBoxF();
+        jlableF14 = new KomponenGUI.JlableF();
+        jlableF25 = new KomponenGUI.JlableF();
+        JTSetelahPotong = new KomponenGUI.JRibuanTextField();
+        jlableF26 = new KomponenGUI.JlableF();
+        jlableF27 = new KomponenGUI.JlableF();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
@@ -328,17 +407,17 @@ public class Penjualan extends javax.swing.JFrame {
 
         JTNoTransaksi.setEnabled(false);
 
-        jbuttonF1.setText("Tambah");
-        jbuttonF1.addActionListener(new java.awt.event.ActionListener() {
+        JBTambah.setText("Tambah");
+        JBTambah.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jbuttonF1ActionPerformed(evt);
+                JBTambahActionPerformed(evt);
             }
         });
 
-        jbuttonF2.setText("Tambah & Tutup");
-        jbuttonF2.addActionListener(new java.awt.event.ActionListener() {
+        JBTambahTutup.setText("Tambah & Tutup");
+        JBTambahTutup.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jbuttonF2ActionPerformed(evt);
+                JBTambahTutupActionPerformed(evt);
             }
         });
 
@@ -353,10 +432,10 @@ public class Penjualan extends javax.swing.JFrame {
 
         jlableF8.setText(":");
 
-        jbuttonF3.setText("Ubah");
-        jbuttonF3.addActionListener(new java.awt.event.ActionListener() {
+        JBUbah.setText("Ubah");
+        JBUbah.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jbuttonF3ActionPerformed(evt);
+                JBUbahActionPerformed(evt);
             }
         });
 
@@ -481,7 +560,6 @@ public class Penjualan extends javax.swing.JFrame {
         jlabelF11.setDisabledTextColor(new java.awt.Color(0, 0, 0));
         jlabelF11.setEnabled(false);
 
-        JTHargaSatuan.setEnabled(false);
         JTHargaSatuan.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusLost(java.awt.event.FocusEvent evt) {
                 JTHargaSatuanFocusLost(evt);
@@ -496,16 +574,14 @@ public class Penjualan extends javax.swing.JFrame {
             }
         });
 
-        jbuttonF5.setText("Print");
-        jbuttonF5.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jbuttonF5ActionPerformed(evt);
-            }
-        });
-
         JTSubTotal.setEnabled(false);
 
-        JCPasien.load("SELECT '-' as 'NamaPasien' UNION ALL SELECT `NamaPasien` FROM `tbmpasien` ORDER BY `NamaPasien` ");
+        JCPasien.load("SELECT '-' as 'NamaPasien' UNION ALL (SELECT CONCAT('(',`KodePasien`,') ',`NamaPasien`) as 'NamaPasien' FROM `tbmpasien` GROUP BY `KodePasien` ORDER BY `NamaPasien`) ");
+        JCPasien.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                JCPasienItemStateChanged(evt);
+            }
+        });
         JCPasien.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
                 JCPasienKeyPressed(evt);
@@ -525,17 +601,17 @@ public class Penjualan extends javax.swing.JFrame {
             }
         });
 
-        jbuttonF8.setText("Tambah & Print");
-        jbuttonF8.addActionListener(new java.awt.event.ActionListener() {
+        JBTambahPrint.setText("Tambah & Print");
+        JBTambahPrint.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jbuttonF8ActionPerformed(evt);
+                JBTambahPrintActionPerformed(evt);
             }
         });
 
-        jbuttonF9.setText("Ubah & Print");
-        jbuttonF9.addActionListener(new java.awt.event.ActionListener() {
+        JBUbahPrint.setText("Ubah & Print");
+        JBUbahPrint.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jbuttonF9ActionPerformed(evt);
+                JBUbahPrintActionPerformed(evt);
             }
         });
 
@@ -580,11 +656,68 @@ public class Penjualan extends javax.swing.JFrame {
             }
         });
 
+        JTJumlah.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                JTJumlahFocusGained(evt);
+            }
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                JTJumlahFocusLost(evt);
+            }
+        });
         JTJumlah.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
                 JTJumlahKeyPressed(evt);
             }
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                JTJumlahKeyReleased(evt);
+            }
         });
+
+        JTKembali.setEnabled(false);
+
+        jlableF11.setText("Bayar");
+
+        jlableF12.setText(":");
+
+        JTBayar.setPlaceholder("Bayar");
+        JTBayar.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                JTBayarFocusGained(evt);
+            }
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                JTBayarFocusLost(evt);
+            }
+        });
+        JTBayar.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                JTBayarKeyPressed(evt);
+            }
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                JTBayarKeyReleased(evt);
+            }
+        });
+
+        JLPoin.setText("Poin (000)");
+
+        jlableF13.setText(":");
+
+        JCBPakaiPoin.setSelected(false);
+        JCBPakaiPoin.setText("Pakai Poin");
+        JCBPakaiPoin.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                JCBPakaiPoinActionPerformed(evt);
+            }
+        });
+
+        jlableF14.setText("Setelah Potong");
+
+        jlableF25.setText(":");
+
+        JTSetelahPotong.setEnabled(false);
+
+        jlableF26.setText("Kembali");
+
+        jlableF27.setText(":");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -596,32 +729,59 @@ public class Penjualan extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jbuttonF4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jbuttonF5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(JBUbahPrint, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jbuttonF9, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(JBUbah, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jbuttonF3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(JBTambahPrint, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jbuttonF8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(JBTambahTutup, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jbuttonF2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jbuttonF1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(JBTambah, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jScrollPane2)
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jlableF3, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(jlableF6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 605, Short.MAX_VALUE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jlableF4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jlableF10, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(JTGrandTotal, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 487, Short.MAX_VALUE)
+                                .addGap(18, 18, 18)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                            .addComponent(jlableF4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                            .addComponent(JLPoin, javax.swing.GroupLayout.PREFERRED_SIZE, 119, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addGroup(layout.createSequentialGroup()
+                                                .addComponent(jlableF10, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(JTGrandTotal, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                            .addGroup(layout.createSequentialGroup()
+                                                .addComponent(jlableF13, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                                .addComponent(JCBPakaiPoin, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                            .addComponent(jlableF26, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                            .addComponent(jlableF11, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                            .addComponent(jlableF14, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addGroup(layout.createSequentialGroup()
+                                                .addComponent(jlableF25, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(JTSetelahPotong, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                            .addGroup(layout.createSequentialGroup()
+                                                .addComponent(jlableF12, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(JTBayar, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                            .addGroup(layout.createSequentialGroup()
+                                                .addComponent(jlableF27, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(JTKembali, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE))))))
+                            .addComponent(jScrollPane2))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(hapustable, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -735,27 +895,45 @@ public class Penjualan extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 226, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 9, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                .addComponent(jlableF6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(jlableF3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(18, 18, 18)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jbuttonF4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jbuttonF1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jbuttonF2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jbuttonF3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jbuttonF5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jbuttonF8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jbuttonF9, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(jlableF4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(jlableF10, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(JTGrandTotal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(jlableF6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jlableF3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jlableF4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jlableF10, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(JTGrandTotal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(JLPoin, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jlableF13, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(JCBPakaiPoin, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jlableF14, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jlableF25, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(JTSetelahPotong, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jlableF11, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jlableF12, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(JTBayar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jlableF26, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jlableF27, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(JTKembali, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jbuttonF4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(JBTambah, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(JBTambahTutup, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(JBUbah, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(JBTambahPrint, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(JBUbahPrint, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap())
         );
 
@@ -764,17 +942,17 @@ public class Penjualan extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jbuttonF1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbuttonF1ActionPerformed
+    private void JBTambahActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBTambahActionPerformed
         tambahData(false, false);
-    }//GEN-LAST:event_jbuttonF1ActionPerformed
+    }//GEN-LAST:event_JBTambahActionPerformed
 
-    private void jbuttonF2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbuttonF2ActionPerformed
+    private void JBTambahTutupActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBTambahTutupActionPerformed
         tambahData(true, false);
-    }//GEN-LAST:event_jbuttonF2ActionPerformed
+    }//GEN-LAST:event_JBTambahTutupActionPerformed
 
-    private void jbuttonF3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbuttonF3ActionPerformed
+    private void JBUbahActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBUbahActionPerformed
         ubahData(false);
-    }//GEN-LAST:event_jbuttonF3ActionPerformed
+    }//GEN-LAST:event_JBUbahActionPerformed
 
     private void jbuttonF4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbuttonF4ActionPerformed
         dispose();
@@ -814,10 +992,6 @@ public class Penjualan extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_JTableMouseClicked
 
-    private void jbuttonF5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbuttonF5ActionPerformed
-        printing();
-    }//GEN-LAST:event_jbuttonF5ActionPerformed
-
     private void JCPasienKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_JCPasienKeyPressed
         if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
             JTNamaBarang.requestFocus();
@@ -837,13 +1011,13 @@ public class Penjualan extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_jbuttonF7ActionPerformed
 
-    private void jbuttonF8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbuttonF8ActionPerformed
+    private void JBTambahPrintActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBTambahPrintActionPerformed
         tambahData(false, true);
-    }//GEN-LAST:event_jbuttonF8ActionPerformed
+    }//GEN-LAST:event_JBTambahPrintActionPerformed
 
-    private void jbuttonF9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbuttonF9ActionPerformed
+    private void JBUbahPrintActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBUbahPrintActionPerformed
         ubahData(true);
-    }//GEN-LAST:event_jbuttonF9ActionPerformed
+    }//GEN-LAST:event_JBUbahPrintActionPerformed
 
     private void JTNamaBarangKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_JTNamaBarangKeyPressed
         if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
@@ -873,7 +1047,7 @@ public class Penjualan extends javax.swing.JFrame {
     }//GEN-LAST:event_JBSearchNamaBarangActionPerformed
 
     private void formWindowClosed(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosed
-        if (jbuttonF1.isVisible()) {
+        if (JBTambah.isVisible()) {
             tambahPenjualan = null;
         } else {
             ubahPenjualan = null;
@@ -907,14 +1081,66 @@ public class Penjualan extends javax.swing.JFrame {
     }//GEN-LAST:event_JTHargaSatuanKeyPressed
 
     private void JTNamaBarangFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_JTNamaBarangFocusLost
-        setHarga();
-        setStok();
+
     }//GEN-LAST:event_JTNamaBarangFocusLost
 
     private void JBSearchNamaBarangFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_JBSearchNamaBarangFocusLost
         setHarga();
         setStok();
     }//GEN-LAST:event_JBSearchNamaBarangFocusLost
+
+    private void JTJumlahKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_JTJumlahKeyReleased
+        setSubTotal();
+    }//GEN-LAST:event_JTJumlahKeyReleased
+
+    private void JTJumlahFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_JTJumlahFocusLost
+        setSubTotal();
+    }//GEN-LAST:event_JTJumlahFocusLost
+
+    private void JTBayarFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_JTBayarFocusGained
+        setKembalian();
+    }//GEN-LAST:event_JTBayarFocusGained
+
+    private void JTBayarFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_JTBayarFocusLost
+        setKembalian();
+    }//GEN-LAST:event_JTBayarFocusLost
+
+    private void JTBayarKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_JTBayarKeyPressed
+        if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
+            if (JBTambah.isVisible()) {
+                tambahData(false, false);
+            } else {
+                ubahData(false);
+            }
+        }
+    }//GEN-LAST:event_JTBayarKeyPressed
+
+    private void JTBayarKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_JTBayarKeyReleased
+        setKembalian();
+    }//GEN-LAST:event_JTBayarKeyReleased
+
+    private void JCBPakaiPoinActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JCBPakaiPoinActionPerformed
+        if (JCBPakaiPoin.isSelected()) {
+            JTSetelahPotong.setVisible(true);
+            jlableF25.setVisible(true);
+            jlableF14.setVisible(true);
+            JTSetelahPotong.setText(getSetelahPotong());
+        } else {
+            JTSetelahPotong.setVisible(false);
+            jlableF25.setVisible(false);
+            jlableF14.setVisible(false);
+        }
+        JTBayar.requestFocus();
+    }//GEN-LAST:event_JCBPakaiPoinActionPerformed
+
+    private void JTJumlahFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_JTJumlahFocusGained
+        setHarga();
+        setStok();
+    }//GEN-LAST:event_JTJumlahFocusGained
+
+    private void JCPasienItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_JCPasienItemStateChanged
+        setPoin(0);
+    }//GEN-LAST:event_JCPasienItemStateChanged
 
     /**
      * @param args the command line arguments
@@ -954,14 +1180,24 @@ public class Penjualan extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private KomponenGUI.JbuttonF JBSearchNamaBarang;
+    private KomponenGUI.JbuttonF JBTambah;
+    private KomponenGUI.JbuttonF JBTambahPrint;
+    private KomponenGUI.JbuttonF JBTambahTutup;
+    private KomponenGUI.JbuttonF JBUbah;
+    private KomponenGUI.JbuttonF JBUbahPrint;
+    private KomponenGUI.JCheckBoxF JCBPakaiPoin;
     public static KomponenGUI.JcomboboxF JCPasien;
     private KomponenGUI.JdateCF JDTanggal;
+    private KomponenGUI.JlableF JLPoin;
     private KomponenGUI.JTextAreaF JTAKeterangan;
+    private KomponenGUI.JPlaceHolder JTBayar;
     private KomponenGUI.JRibuanTextField JTGrandTotal;
     private KomponenGUI.JRibuanTextField JTHargaSatuan;
     private KomponenGUI.JRibuanTextField JTJumlah;
+    private KomponenGUI.JRibuanTextField JTKembali;
     private KomponenGUI.JtextF JTNamaBarang;
     private KomponenGUI.JtextF JTNoTransaksi;
+    private KomponenGUI.JRibuanTextField JTSetelahPotong;
     private KomponenGUI.JtextF JTStock;
     private KomponenGUI.JRibuanTextField JTSubTotal;
     private KomponenGUI.JtableF JTable;
@@ -970,25 +1206,26 @@ public class Penjualan extends javax.swing.JFrame {
     private KomponenGUI.JbuttonF hapustable1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
-    private KomponenGUI.JbuttonF jbuttonF1;
     private KomponenGUI.JbuttonF jbuttonF11;
-    private KomponenGUI.JbuttonF jbuttonF2;
-    private KomponenGUI.JbuttonF jbuttonF3;
     private KomponenGUI.JbuttonF jbuttonF4;
-    private KomponenGUI.JbuttonF jbuttonF5;
     private KomponenGUI.JbuttonF jbuttonF7;
-    private KomponenGUI.JbuttonF jbuttonF8;
-    private KomponenGUI.JbuttonF jbuttonF9;
     private KomponenGUI.JtextF jlabelF10;
     private KomponenGUI.JtextF jlabelF11;
     private KomponenGUI.JtextF jlabelF7;
     private KomponenGUI.JtextF jlabelF8;
     private KomponenGUI.JtextF jlabelF9;
     private KomponenGUI.JlableF jlableF10;
+    private KomponenGUI.JlableF jlableF11;
+    private KomponenGUI.JlableF jlableF12;
+    private KomponenGUI.JlableF jlableF13;
+    private KomponenGUI.JlableF jlableF14;
     private KomponenGUI.JlableF jlableF21;
     private KomponenGUI.JlableF jlableF22;
     private KomponenGUI.JlableF jlableF23;
     private KomponenGUI.JlableF jlableF24;
+    private KomponenGUI.JlableF jlableF25;
+    private KomponenGUI.JlableF jlableF26;
+    private KomponenGUI.JlableF jlableF27;
     private KomponenGUI.JlableF jlableF29;
     private KomponenGUI.JlableF jlableF3;
     private KomponenGUI.JlableF jlableF4;
@@ -1031,7 +1268,7 @@ public class Penjualan extends javax.swing.JFrame {
             if (Berhasil) {
                 Berhasil = multiInsert.setautocomit(false);
                 if (Berhasil) {
-                    Berhasil = multiInsert.Excute("INSERT INTO `tbpenjualan`(`NoTransaksi`, `Tanggal`, `IdPasien`, `Keterangan`) VALUES ('" + JTNoTransaksi.getText() + "','" + FDateF.datetostr(JDTanggal.getDate(), "yyyy-MM-dd") + "',(SELECT `IdPasien` FROM `tbmpasien` WHERE `NamaPasien` = '" + JCPasien.getSelectedItem() + "'),'" + JTAKeterangan.getText() + "')", null);
+                    Berhasil = multiInsert.Excute("INSERT INTO `tbpenjualan`(`NoTransaksi`, `Tanggal`, `IdPasien`, `Keterangan`, `Bayar`, `Diskon`, `StatusPoin`, `Poin`, `Kasir`) VALUES ('" + JTNoTransaksi.getText() + "','" + FDateF.datetostr(JDTanggal.getDate(), "yyyy-MM-dd") + "',(SELECT `IdPasien` FROM `tbmpasien` WHERE `KodePasien` = '" + JCPasien.getSelectedItem().toString().split("\\(")[1].split("\\)")[0] + "'),'" + JTAKeterangan.getText() + "', '" + JTBayar.getNumberFormattedText() + "', 0, " + JCBPakaiPoin.isSelected() + ", '" + getPoinTerpakai() + "', '" + GlobalVar.VarL.username + "')", null);
                     if (Berhasil) {
                         for (int i = 0; i < JTable.getRowCount(); i++) {
                             Berhasil = multiInsert.Excute("INSERT INTO `tbpenjualandetail`(`NoTransaksi`, `NoKolom`, `IdBarang`, `Jumlah`, `Harga`) VALUES ('" + JTNoTransaksi.getText() + "','" + JTable.getValueAt(i, 0) + "',(SELECT `IdBarang` FROM `tbmbarang` WHERE `NamaBarang` = '" + JTable.getValueAt(i, 1) + "'),'" + JTable.getValueAt(i, 2).toString().replace(".", "") + "','" + JTable.getValueAt(i, 3).toString().replace(".", "") + "')", null);
@@ -1058,6 +1295,7 @@ public class Penjualan extends javax.swing.JFrame {
                     dispose();
                 } else {
                     JTAKeterangan.setText("");
+
                     JTable.setModel(new javax.swing.table.DefaultTableModel(
                             new Object[][]{},
                             new String[]{
@@ -1070,6 +1308,11 @@ public class Penjualan extends javax.swing.JFrame {
                     JTable.getColumnModel().getColumn(2).setPreferredWidth(85);
                     JTable.getColumnModel().getColumn(3).setPreferredWidth(115);
                     JTNoTransaksi.setText(getNoPenjualan());
+                    JTGrandTotal.setText("");
+                    setPoin(0);
+                    JTSetelahPotong.setText("0");
+                    JTBayar.setText("0");
+                    JTKembali.setText("0");
                 }
             }
         }
@@ -1083,7 +1326,7 @@ public class Penjualan extends javax.swing.JFrame {
             if (Berhasil) {
                 Berhasil = multiInsert.setautocomit(false);
                 if (Berhasil) {
-                    Berhasil = multiInsert.Excute("UPDATE `tbpenjualan` SET `NoTransaksi`='" + JTNoTransaksi.getText() + "',`Tanggal`='" + FDateF.datetostr(JDTanggal.getDate(), "yyyy-MM-dd") + "',`IdPasien`=(SELECT `IdPasien` FROM `tbmpasien` WHERE `NamaPasien` = '" + JCPasien.getSelectedItem() + "'),`Keterangan`='" + JTAKeterangan.getText() + "' WHERE `IdPenjualan` = '" + IdEdit + "'", null);
+                    Berhasil = multiInsert.Excute("UPDATE `tbpenjualan` SET `NoTransaksi`='" + JTNoTransaksi.getText() + "',`Tanggal`='" + FDateF.datetostr(JDTanggal.getDate(), "yyyy-MM-dd") + "',`IdPasien`=(SELECT `IdPasien` FROM `tbmpasien` WHERE `KodePasien` = '" + JCPasien.getSelectedItem().toString().split("\\(")[1].split("\\)")[0] + "'),`Keterangan`='" + JTAKeterangan.getText() + "', `Bayar`='" + JTBayar.getNumberFormattedText() + "', `Diskon`=0, `StatusPoin`=" + JCBPakaiPoin.isSelected() + ", `Poin`='" + getPoinTerpakai() + "', `Kasir`='" + GlobalVar.VarL.username + "' WHERE `IdPenjualan` = '" + IdEdit + "'", null);
                     if (Berhasil) {
                         Berhasil = multiInsert.Excute("DELETE FROM `tbpenjualandetail` WHERE `NoTransaksi` = '" + JTNoTransaksi.getText() + "'", null);
                         if (Berhasil) {
@@ -1115,211 +1358,10 @@ public class Penjualan extends javax.swing.JFrame {
         }
     }
 
-    void printing() {
-//        String NamaSupir = JTNamaSupir.getText();
-//        if (JTNamaSupir.getText().length() > 13) {
-//            NamaSupir = JTNamaSupir.getText().substring(0, 13);
-//        }
-//        String Plat = JCPasien.getSelectedItem().toString();
-//        String JenisKendaraan = JTJenisKendaraan.getText();
-//        String NoTransaksi = JTNoTransaksi.getText();
-//        String NoDO = JTNoDO.getText();
-//        String Tujuan = JCTujuan.getSelectedItem().toString();
-//        String Tanggal = datetostr(JDTanggal.getDate(), "dd-MM-yyyy");
-//        String Keterangan = JTAKeterangan.getText();
-//
-//        String[] Barang = new String[JTable.getRowCount()];
-//        int[] Jumlah = new int[JTable.getRowCount()];
-//        String[] Jumlahs = new String[JTable.getRowCount()];
-//        int[] Harga = new int[JTable.getRowCount()];
-//        String[] Hargas = new String[JTable.getRowCount()];
-//        int[] Sub = new int[JTable.getRowCount()];
-//        String[] Subs = new String[JTable.getRowCount()];
-//
-//        for (int i = 0; i < JTable.getRowCount(); i++) {
-//            Barang[i] = JTable.getValueAt(i, 1).toString().split(" \\(PARTAI ")[0];
-//            Jumlah[i] = Integer.parseInt(JTable.getValueAt(i, 2).toString().replace(".", ""));
-//            Jumlahs[i] = Intformatdigit(Jumlah[i]);
-//            Harga[i] = Integer.parseInt(JTable.getValueAt(i, 3).toString().replace(".", ""));
-//            Hargas[i] = Intformatdigit(Harga[i]);
-//            Sub[i] = Integer.parseInt(JTable.getValueAt(i, 4).toString().replace(".", ""));
-//            Subs[i] = Intformatdigit(Sub[i]);
-//        }
-//
-//        int Total = getGrandTotal();
-//        String Totals = Intformatdigit(Total);
-//        String terbilang = angkaToTerbilang(Long.valueOf(Total)) + "RUPIAH";
-//        if (terbilang.length() > 66) {
-//            terbilang = terbilang.substring(0, 66);
-//        }
-//
-//        if (JCJenisPenjualan.getSelectedItem().equals("MUTASI GUDANG")) {
-//            String leftAlignFormat = "%-5s%-11s%-63s%-1s%n";
-//            String OutFormat = "";
-//            OutFormat += format("%-81s%n", " _____________________________________________________________________________");
-//            OutFormat += format("%-54s%-26s%n", " SURAT JALAN", "No Transaksi: " + NoTransaksi);
-//            OutFormat += format("%-54s%-26s%n", " ", "Tanggal     : " + Tanggal);
-//            if (JCTujuan.getSelectedItem().equals("PAAL 5") || JCTujuan.getSelectedItem().equals("WESAN")) {
-//                OutFormat += format("%-54s%-26s%n", " Ke Gudang : " + Tujuan, " ");
-//            } else {
-//                OutFormat += format("%-54s%-26s%n", " Kepada    : " + Tujuan, " ");
-//            }
-//            OutFormat += format("%-54s%-26s%n", " Plat      : " + Plat, "No DO       : " + NoDO);
-//            OutFormat += format("%-54s%-26s%n", " Kendaraan : " + JenisKendaraan, " ");
-//            //                              12345678901234567890123456789012345678901234567890123456789012345678901234567890
-//            OutFormat += format("%-80s%n", " +---+----------+--------------------------------------------------------------+");
-//            OutFormat += format("%-80s%n", " | NO|  JUMLAH  | NAMA BARANG                                                  |");
-//            OutFormat += format("%-80s%n", " +---+----------+--------------------------------------------------------------+");
-//            for (int i = 0; i < 10; i++) {
-//                if (i < JTable.getRowCount()) {
-//                    String satuan;
-//                    if (Barang[i].toUpperCase().contains("PARTAI") || Barang[i].toUpperCase().contains("@50 KG")) {
-//                        satuan = " SAK";
-//                    } else {
-//                        satuan = " PAK";
-//                    }
-//                    OutFormat += format(leftAlignFormat, " | " + (i + 1), "|" + format("%9s", Jumlah[i] + satuan), "| " + Barang[i], "|");
-//                } else {
-//                    OutFormat += format(leftAlignFormat, " | " + (i + 1), "|" + " ", "|" + " ", "|");
-//                }
-//            }
-//            OutFormat += format("%-80s%n", " +-----------------------------------------------------------------------------+");
-//            OutFormat += format("%-80s%n", " Ket : " + Keterangan);
-//            OutFormat += format("%n", "");
-//            OutFormat += format("%-67s%-24s%n", " Disiapkan Oleh", "Diterima Oleh \n \n ");
-//            OutFormat += format("%-67s%-24s%n", " HENDRI", NamaSupir);
-//            OutFormat += format("%-80s%n", " ______________________________________________________________________________");
-//            OutFormat += format("%n", "");
-//            OutFormat += format("%n", "");
-//            OutFormat += format("%n", "");
-//            //System.out.println(OutFormat);
-//            directprinting(OutFormat);
-//        } else {
-//            String leftAlignFormat = "%-5s%-37s%-9s%-15s%-13s%-1s%n";
-//            String OutFormat = "";
-//            OutFormat += format("%-81s%n", " _____________________________________________________________________________");
-//            OutFormat += format("%-54s%-26s%n", " FAKTUR PENJUALAN", "No Transaksi: " + NoTransaksi);
-//            OutFormat += format("%-54s%-26s%n", " ", "Tanggal     : " + Tanggal);
-//            if (JCJenisPenjualan.getSelectedItem().equals("MUTASI GUDANG")) {
-//                OutFormat += format("%-54s%-26s%n", " Ke Gudang : " + Tujuan, " ");
-//            } else {
-//                OutFormat += format("%-54s%-26s%n", " Kepada    : " + Tujuan, " ");
-//            }
-//            OutFormat += format("%-54s%-26s%n", " Plat      : " + Plat, " ");
-//            OutFormat += format("%-54s%-26s%n", " Kendaraan : " + JenisKendaraan, " ");
-//            //                              12341234567890123456789012345678901234567812345678912345678901234512345678901234
-//            //                              12345678901234567890123456789012345678901234567890123456789012345678901234567890
-//            OutFormat += format("%-80s%n", " +---+------------------------------------+--------+--------------+------------+");
-//            OutFormat += format("%-80s%n", " | NO| NAMA BARANG                        | JUMLAH | HARGA SATUAN |  SUB TOTAL |");
-//            OutFormat += format("%-80s%n", " +---+------------------------------------+--------+--------------+------------+");
-//            for (int i = 0; i < 6; i++) {
-//                if (i < JTable.getRowCount()) {
-//                    OutFormat += format(leftAlignFormat, " | " + (i + 1), "| " + Barang[i], "|" + format("%7s", Jumlahs[i]), "|" + format("%13s", Hargas[i]), "|" + format("%11s", Subs[i]), "|");
-//                } else {
-//                    OutFormat += format(leftAlignFormat, " | " + (i + 1), "|" + " ", "|" + " ", "|" + " ", "|" + " ", "|");
-//                }
-//            }
-//            OutFormat += format("%-80s%n", " +---+------------------------------------+--------+--------------+------------+");
-//            OutFormat += format("%-23s%-43s%-13s%-1s%n", " | GRAND TOTAL", " ", "|" + format("%11s", Totals), "|");
-//            OutFormat += format("%-80s%n", " +----------------------------------------------------------------+------------+");
-//            OutFormat += format("%-80s%n", " Ket : " + Keterangan);
-//            OutFormat += format("%n", "");
-//            OutFormat += format("%-80s%n", " Terbilang : " + terbilang);
-//            OutFormat += format("%n", "");
-//            OutFormat += format("%-67s%-24s%n", " Disiapkan Oleh", "Diterima Oleh \n \n ");
-//            OutFormat += format("%-67s%-24s%n", " HENDRI", NamaSupir);
-//            OutFormat += format("%-80s%n", " ______________________________________________________________________________");
-//            OutFormat += format("%n", "");
-//            OutFormat += format("%n", "");
-//            OutFormat += format("%n", "");
-//            //System.out.println(OutFormat);
-//            directprinting(OutFormat);
-//        }
-    }
-
     /**
      *
      * @param Teks
      */
-    public static void directprinting(String Teks) {
-        String testprint = Teks;
-        String defaultPrinter = lookupDefaultPrintService().getName();
-        PrintService service = lookupDefaultPrintService();
-        try {
-            InputStream in = new ByteArrayInputStream(testprint.getBytes());
-            PrintRequestAttributeSet pras = new HashPrintRequestAttributeSet();
-            pras.add(LANDSCAPE);
-            pras.add(findMedia(8.5f, 5.5f, INCH));
-            pras.add(new Copies(1));
-            DocAttributeSet docs = new HashDocAttributeSet();
-            docs.add(LANDSCAPE);
-            docs.add(findMedia(8.5f, 5.5f, INCH));
-            try {
-                DocFlavor flavor = AUTOSENSE;
-                Doc doc = new SimpleDoc(in, flavor, docs);
-                DocPrintJob job = service.createPrintJob();
-                PrintJobWatcher pjw = new PrintJobWatcher(job);
-                job.print(doc, pras);
-                pjw.waitForDone();
-                in.close();
-
-            } catch (PrintException e) {
-            }
-        } catch (IOException e) {
-        }
-    }
-
-    /**
-     *
-     */
-    public static class PrintJobWatcher {
-
-        private boolean done = false;
-
-        PrintJobWatcher(DocPrintJob job) {
-            job.addPrintJobListener(new PrintJobAdapter() {
-                @Override
-                public void printJobCanceled(PrintJobEvent pje) {
-                    allDone();
-                }
-
-                @Override
-                public void printJobCompleted(PrintJobEvent pje) {
-                    allDone();
-                }
-
-                @Override
-                public void printJobFailed(PrintJobEvent pje) {
-                    allDone();
-                }
-
-                @Override
-                public void printJobNoMoreEvents(PrintJobEvent pje) {
-                    allDone();
-                }
-
-                void allDone() {
-                    synchronized (PrintJobWatcher.this) {
-                        done = true;
-                        PrintJobWatcher.this.notify();
-                    }
-                }
-            });
-        }
-
-        /**
-         *
-         */
-        public synchronized void waitForDone() {
-            try {
-                while (!done) {
-                    wait();
-                }
-            } catch (InterruptedException e) {
-            }
-        }
-    }
-
     String Intformatdigit(int Number) {
         int value = 0;
         value = Number;
@@ -1406,10 +1448,239 @@ public class Penjualan extends javax.swing.JFrame {
         if (!JTNamaBarang.getText().replace(" ", "").equals("")) {
             DRunSelctOne dRunSelctOne = new DRunSelctOne();
             dRunSelctOne.seterorm("Gagal Menampilkan Data Stok Barang");
-            dRunSelctOne.setQuery("SELECT `IdBarang`, IFNULL(SUM(`Jumlah`),0) as 'Stok' FROM( SELECT `IdBarang`, 0 as 'Jumlah' FROM `tbmbarang` WHERE 1 UNION ALL SELECT `IdBarang`, `Jumlah` FROM `tbpermintaanstok` WHERE 1 UNION ALL SELECT `IdBarang`, `Jumlah` FROM `tbpenjualandetail` WHERE 1 UNION ALL SELECT `IdBarang`, `Jumlah` FROM `tbpenyesuaianstok` WHERE 1) t1 WHERE `IdBarang` = (SELECT `IdBarang` FROM `tbmbarang` WHERE `NamaBarang` = '" + JTNamaBarang.getText() + "') GROUP BY `IdBarang`");
+            dRunSelctOne.setQuery("SELECT `IdBarang`, IFNULL(SUM(`Jumlah`),0) as 'Stok' FROM( SELECT `IdBarang`, 0 as 'Jumlah' FROM `tbmbarang` WHERE 1 UNION ALL SELECT `IdBarang`, `Jumlah` FROM `tbpermintaanstok` WHERE 1 UNION ALL SELECT `IdBarang`, `Jumlah`*-1 FROM `tbpenjualandetail` WHERE 1 UNION ALL SELECT `IdBarang`, `Jumlah` FROM `tbpenyesuaianstok` WHERE 1) t1 WHERE `IdBarang` = (SELECT `IdBarang` FROM `tbmbarang` WHERE `NamaBarang` = '" + JTNamaBarang.getText() + "') GROUP BY `IdBarang`");
             ArrayList<String> list = dRunSelctOne.excute();
             String Stok = list.get(1);
             JTStock.setText(Stok);
+        }
+    }
+
+    void printing() {
+        PrintResep pr = new PrintResep();
+        Object printitem[][] = getTableData(JTable);
+        setItems(printitem);
+        total_item_count = itemsTable.getRowCount();
+        PrinterJob pj = PrinterJob.getPrinterJob();
+        pj.setPrintable(pr, getPageFormat(pj));
+        try {
+            pj.print();
+
+        } catch (PrinterException ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    void setItems(Object[][] printitem) {
+        Object data[][] = printitem;
+        DefaultTableModel model = new DefaultTableModel();
+        model.addColumn(title[0]);
+        model.addColumn(title[1]);
+        model.addColumn(title[2]);
+        model.addColumn(title[3]);
+
+        int rowcount = printitem.length;
+
+        addtomodel(model, data, rowcount);
+
+        itemsTable = new JTable(model);
+    }
+
+    void addtomodel(DefaultTableModel model, Object[][] data, int rowcount) {
+        int count = 0;
+        while (count < rowcount) {
+            model.addRow(data[count]);
+            count++;
+        }
+        if (model.getRowCount() != rowcount) {
+            addtomodel(model, data, rowcount);
+        }
+
+        System.out.println("Check Passed.");
+    }
+
+    Object[][] getTableData(JTable table1) {
+        int itemcount = table1.getRowCount();
+        System.out.println("Item Count:" + itemcount);
+
+        DefaultTableModel dtm = (DefaultTableModel) table1.getModel();
+        int nRow = dtm.getRowCount(), nCol = dtm.getColumnCount();
+        Object[][] tableData = new Object[nRow][nCol - 1];
+        if (itemcount == nRow) {
+            for (int i = 0; i < nRow; i++) {
+                for (int j = 0; j < nCol - 1; j++) {
+                    tableData[i][j] = dtm.getValueAt(i, j + 1);
+                }
+            }
+            if (tableData.length != itemcount) {
+                getTableData(table1);
+            }
+            System.out.println("Data check passed");
+        } else {
+            getTableData(table1);
+        }
+        return tableData;
+    }
+
+    PageFormat getPageFormat(PrinterJob pj) {
+        PageFormat pf = pj.defaultPage();
+        Paper paper = pf.getPaper();
+
+        double middleHeight = total_item_count * 13;
+        double headerHeight = 5.4694448;
+        double footerHeight = 2.575932;
+        if (JCBPakaiPoin.isSelected()) {
+            footerHeight = 3.705;
+        }
+
+        double width = convert_CM_To_PPI(7);
+        double height = (convert_CM_To_PPI(headerHeight + footerHeight)) + middleHeight;
+        paper.setSize(width, height);
+        paper.setImageableArea(convert_CM_To_PPI(0.25), convert_CM_To_PPI(0.5), width - convert_CM_To_PPI(0.35), height - convert_CM_To_PPI(1));
+
+        pf.setOrientation(PageFormat.PORTRAIT);
+        pf.setPaper(paper);
+
+        return pf;
+    }
+
+    double convert_CM_To_PPI(double cm) {
+        return toPPI(cm * 0.393600787);
+    }
+
+    double toPPI(double inch) {
+        return inch * 72d;
+    }
+
+    String now() {
+        Calendar cal = Calendar.getInstance();
+        SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT_NOW);
+        return sdf.format(cal.getTime());
+
+    }
+
+    static JTable itemsTable;
+    int total_item_count = 0;
+    String DATE_FORMAT_NOW = "dd/MM/yyyy HH:mm:ss a";
+    String title[] = new String[]{"Nama Barang", "Jml", "Harga", "Total"};
+    String Poin, PoinTerpakai, SetelahPotong, Bayar;
+
+    class PrintResep implements Printable {
+
+        @Override
+        public int print(Graphics graphics, PageFormat pageFormat, int pageIndex) throws PrinterException {
+            int result = NO_SUCH_PAGE;
+            if (pageIndex == 0) {
+                Graphics2D g2d = (Graphics2D) graphics;
+                g2d.translate((int) pageFormat.getImageableX(), (int) pageFormat.getImageableY());
+                Font font;
+                try {
+                    int x = 5;
+                    int y = 0;
+                    int w = 180;
+                    int imagewidth = 120;
+                    int imageheight = 40;
+                    BufferedImage read = ImageIO.read(getClass().getResource("/Resource/logo.png"));
+                    g2d.drawImage(read, x + ((w - imagewidth) / 2), y, imagewidth, imageheight, null);
+                    font = new Font("Times New Roman", Font.PLAIN, 7);
+                    g2d.setFont(font);
+                    g2d.drawString("Jl. Kompol Zainal Abidin No.05-06 (0741-7553068)", x + ((w - g2d.getFontMetrics().stringWidth("Jl. Kompol Zainal Abidin No.05-06 (0741-7553068)")) / 2), y + 45);
+                    g2d.drawString("Tanjung Pinang - Jambi", x + ((w - g2d.getFontMetrics().stringWidth("Tanjung Pinang - Jambi")) / 2), y + 55);
+                    g2d.drawLine(x, y + 65, 180, y + 65);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                try {
+                    int x = 5;
+                    int y = 55;
+                    int w = 188;
+                    font = new Font("Times New Roman", Font.PLAIN, 10);
+                    g2d.setFont(font);
+                    g2d.drawString("Tanggal : " + now(), x, y + 20);
+                    g2d.drawString("Cashier : " + GlobalVar.VarL.username, x, y + 33);
+
+                    g2d.drawLine(x, y + 40, 180, y + 40);
+
+                    font = new Font("Times New Roman", Font.PLAIN, 9);
+                    g2d.setFont(font);
+                    g2d.drawString(title[0], x, y + 50);
+                    g2d.drawString(title[1], 85, y + 50);
+                    g2d.drawString(title[2], 110, y + 50);
+                    g2d.drawString(title[3], 155, y + 50);
+                    g2d.drawLine(x, y + 55, 180, y + 55);
+
+                    int cH = 0;
+                    TableModel mod = itemsTable.getModel();
+                    for (int i = 0; i < mod.getRowCount(); i++) {
+                        String NamaBarang = mod.getValueAt(i, 0).toString();
+                        String Jumlah = mod.getValueAt(i, 1).toString();
+                        String Harga = mod.getValueAt(i, 2).toString();
+                        String SubTotal = mod.getValueAt(i, 3).toString();
+
+                        cH = (y + 65) + (13 * i);
+                        g2d.drawString(NamaBarang, x, cH);
+                        g2d.drawString(Jumlah, 82 + (13 - g2d.getFontMetrics().stringWidth(Jumlah)), cH);
+                        g2d.drawString(Harga, 100 + (36 - g2d.getFontMetrics().stringWidth(Harga)), cH);
+                        g2d.drawString(SubTotal, 134 + (46 - g2d.getFontMetrics().stringWidth(SubTotal)), cH);
+                    }
+                    g2d.drawLine(80, cH + 5, 180, cH + 5);
+                    g2d.drawString("Total", 80, cH + 15);
+                    g2d.drawString(":", 140, cH + 15);
+                    g2d.drawString(JTGrandTotal.getText(), 134 + (46 - g2d.getFontMetrics().stringWidth(JTGrandTotal.getText())), cH + 15);
+                    if (JCBPakaiPoin.isSelected()) {
+                        g2d.drawString("Poin Anda", 80, cH + 25);
+                        g2d.drawString(":", 140, cH + 25);
+                        g2d.drawString(JLPoin.getText().split("\\(")[1].split("\\)")[0], 134 + (46 - g2d.getFontMetrics().stringWidth(JLPoin.getText().split("\\(")[1].split("\\)")[0])), cH + 25);
+                        g2d.drawString("Poin Dipakai", 80, cH + 35);
+                        g2d.drawString(":", 140, cH + 35);
+                        g2d.drawString(String.valueOf(getPoinTerpakai()), 134 + (46 - g2d.getFontMetrics().stringWidth(String.valueOf(getPoinTerpakai()))), cH + 35);
+                        g2d.drawString("Setelah Potong", 80, cH + 45);
+                        g2d.drawString(":", 140, cH + 45);
+                        g2d.drawString(JTSetelahPotong.getText(), 134 + (46 - g2d.getFontMetrics().stringWidth(JTSetelahPotong.getText())), cH + 45);
+                        g2d.drawString("Bayar", 80, cH + 55);
+                        g2d.drawString(":", 140, cH + 55);
+                        g2d.drawString(JTBayar.getText(), 134 + (46 - g2d.getFontMetrics().stringWidth(JTBayar.getText())), cH + 55);
+                        g2d.drawString("Kembali", 80, cH + 65);
+                        g2d.drawString(":", 140, cH + 65);
+                        g2d.drawString(JTKembali.getText(), 134 + (46 - g2d.getFontMetrics().stringWidth(JTKembali.getText())), cH + 65);
+                        font = new Font("Arial", Font.BOLD, 10);
+                        g2d.setFont(font);
+                        g2d.drawString("Thank You Come Again", x + ((w - g2d.getFontMetrics().stringWidth("Thank You Come Again")) / 2), cH + 95);
+                    } else {
+                        g2d.drawString("Bayar", 80, cH + 25);
+                        g2d.drawString(":", 140, cH + 25);
+                        g2d.drawString(JTBayar.getText(), 134 + (46 - g2d.getFontMetrics().stringWidth(JTBayar.getText())), cH + 25);
+                        g2d.drawString("Kembali", 80, cH + 35);
+                        g2d.drawString(":", 140, cH + 35);
+                        g2d.drawString(JTKembali.getText(), 134 + (46 - g2d.getFontMetrics().stringWidth(JTKembali.getText())), cH + 33);
+                        font = new Font("Arial", Font.BOLD, 10);
+                        g2d.setFont(font);
+                        g2d.drawString("Thank You Come Again", x + ((w - g2d.getFontMetrics().stringWidth("Thank You Come Again")) / 2), cH + 63);
+                    }
+
+                } catch (Exception r) {
+                    r.printStackTrace();
+                }
+                result = PAGE_EXISTS;
+            }
+            return result;
+        }
+    }
+
+    void setPoin(int poin) {
+        if (JCPasien.getSelectedIndex() == 0) {
+            JLPoin.setText("Poin (0)");
+            JCBPakaiPoin.setEnabled(false);
+        } else {
+            DRunSelctOne dRunSelctOne = new DRunSelctOne();
+            dRunSelctOne.seterorm("Gagal setPoin()");
+            dRunSelctOne.setQuery("SELECT `IdPasien`, IFNULL(SUM(`Poin`),0) as 'Poin' FROM (SELECT `IdPasien`, 0 as 'Jumlah Belanja', 0 as 'Poin' FROM `tbmpasien` WHERE 1 AND `KodePasien` = '" + JCPasien.getSelectedItem().toString().split("\\(")[1].split("\\)")[0] + "' UNION ALL SELECT d.`IdPasien`, (SUM(e.`Jumlah`*e.`Harga`)+SUM(f.`Jumlah`*f.`Harga`) - (`Poin` * 5000)) as 'Total Belanja', FLOOR((SUM(e.`Jumlah`*e.`Harga`)+SUM(f.`Jumlah`*f.`Harga`) - (`Poin` * 5000)) / 50000) as 'Poin' FROM `tbbilling`a JOIN `tbperawatan`b ON a.`NoInvoice`=b.`NoInvoice` JOIN `tbantrian`c ON b.`NoAntrian`=c.`NoAntrian` AND b.`Tanggal`=c.`Tanggal` JOIN `tbmpasien`d ON c.`IdPasien`=d.`IdPasien` JOIN `tbbillingobat`e ON a.`NoBilling`=e.`NoBilling` JOIN `tbbillingtindakan`f ON a.`NoBilling`=f.`NoBilling` WHERE 1 AND d.`IdPasien` = (SELECT `IdPasien` FROM `tbmpasien` WHERE `KodePasien` = '" + JCPasien.getSelectedItem().toString().split("\\(")[1].split("\\)")[0] + "') GROUP BY d.`IdPasien`, a.`NoBilling` UNION ALL SELECT d.`IdPasien`, a.`Poin`*5000*-1 as 'Total Belanja', `Poin`*-1 FROM `tbbilling`a JOIN `tbperawatan`b ON a.`NoInvoice`=b.`NoInvoice` JOIN `tbantrian`c ON b.`NoAntrian`=c.`NoAntrian` AND b.`Tanggal`=c.`Tanggal` JOIN `tbmpasien`d ON c.`IdPasien`=d.`IdPasien` JOIN `tbbillingobat`e ON a.`NoBilling`=e.`NoBilling` JOIN `tbbillingtindakan`f ON a.`NoBilling`=f.`NoBilling` WHERE 1 AND a.`StatusPoin` = 1 AND d.`IdPasien` = (SELECT `IdPasien` FROM `tbmpasien` WHERE `KodePasien` = '" + JCPasien.getSelectedItem().toString().split("\\(")[1].split("\\)")[0] + "') GROUP BY d.`IdPasien`, a.`NoBilling` UNION ALL SELECT b.`IdPasien`, (SUM(a.`Jumlah`*a.`Harga`) - (`Poin` * 5000)) as 'Total Belanja', FLOOR((SUM(a.`Jumlah`*a.`Harga`) - (`Poin` * 5000)) / 50000) as 'Poin' FROM `tbpenjualandetail`a JOIN `tbpenjualan`b ON a.`NoTransaksi`=b.`NoTransaksi` WHERE 1 AND b.`IdPasien` = (SELECT `IdPasien` FROM `tbmpasien` WHERE `KodePasien` = '" + JCPasien.getSelectedItem().toString().split("\\(")[1].split("\\)")[0] + "') GROUP BY b.`IdPasien`, a.`NoTransaksi` UNION ALL SELECT b.`IdPasien`, b.`Poin`*5000*-1 as 'Total Belanja', `Poin`*-1 FROM `tbpenjualandetail`a JOIN `tbpenjualan`b ON a.`NoTransaksi`=b.`NoTransaksi` WHERE 1 AND b.`StatusPoin` = 1 AND b.`IdPasien` = (SELECT `IdPasien` FROM `tbmpasien` WHERE `KodePasien` = '" + JCPasien.getSelectedItem().toString().split("\\(")[1].split("\\)")[0] + "') GROUP BY b.`IdPasien`, a.`NoTransaksi`) t1 WHERE 1 GROUP BY `IdPasien`");
+            ArrayList<String> list = dRunSelctOne.excute();
+            JLPoin.setText("Poin (" + (Integer.parseInt(list.get(1)) + poin) + ")");
+            if (list.get(1).equals("0")) {
+                JCBPakaiPoin.setEnabled(false);
+            } else {
+                JCBPakaiPoin.setEnabled(true);
+            }
         }
     }
 
