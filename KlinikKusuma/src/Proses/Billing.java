@@ -316,7 +316,7 @@ public class Billing extends javax.swing.JFrame {
         } else if (JTHargaTindakan.getNumberFormattedText().replace("0", "").isEmpty()) {
             JOptionPaneF.showMessageDialog(this, "Gagal. Sub Total Tidak Boleh Kosong.");
             return false;
-        } else if (cekDoubleTindakan(JCTindakan.getSelectedItem().toString()) && JBTambahTindakan.getText().equals("Tambah")) {
+        } else if (cekDoubleTindakan(JCTindakan.getSelectedItem().toString())) {
             JOptionPaneF.showMessageDialog(this, "Gagal. Tidak Bisa Input Tindakan Yang Sama.");
             JCTindakan.requestFocus();
             return false;
@@ -327,7 +327,7 @@ public class Billing extends javax.swing.JFrame {
 
     boolean cekDoubleTindakan(String item) {
         for (int i = 0; i < JTableTindakan.getRowCount(); i++) {
-            if (item.equals(JTableTindakan.getValueAt(i, 0))) {
+            if (item.equals(JTableTindakan.getValueAt(i, 0)) && i != JTableTindakan.getSelectedRow()) {
                 return true;
             }
         }
@@ -347,7 +347,7 @@ public class Billing extends javax.swing.JFrame {
         } else if (JTSubTotalObat.getNumberFormattedText().replace("0", "").isEmpty()) {
             JOptionPaneF.showMessageDialog(this, "Gagal. Sub Total Tidak Boleh Kosong.");
             return false;
-        } else if (cekDoubleObat(JCObat.getSelectedItem().toString()) && JBTambahObat.getText().equals("Tambah")) {
+        } else if (cekDoubleObat(JCObat.getSelectedItem().toString())) {
             JOptionPaneF.showMessageDialog(this, "Gagal. Tidak Bisa Input Obat Yang Sama.");
             JCObat.requestFocus();
             return false;
@@ -358,7 +358,7 @@ public class Billing extends javax.swing.JFrame {
 
     boolean cekDoubleObat(String item) {
         for (int i = 0; i < JTableObat.getRowCount(); i++) {
-            if (item.equals(JTableObat.getValueAt(i, 0))) {
+            if (item.equals(JTableObat.getValueAt(i, 0)) && i != JTableTindakan.getSelectedRow()) {
                 return true;
             }
         }

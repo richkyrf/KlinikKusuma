@@ -38,6 +38,51 @@ public class MenuUtama extends javax.swing.JFrame {
         setVisible(true);
         new Threading(jlableF1, "SELECT COUNT(*) FROM `tbantrian` WHERE `Status` = 0 AND `Tanggal` = '" + FDateF.datetostr(new Date(), "yyyy-MM-dd") + "'", "Pasien Hari Ini: ", 500);
         new Threading(jlableF5, "SELECT COUNT(*) FROM `tbantrian`a JOIN `tbperawatan`b ON a.`NoAntrian`=b.`NoAntrian` AND a.`Tanggal`=b.`Tanggal` LEFT JOIN `tbbilling`c ON b.`NoInvoice`=c.`NoInvoice` WHERE a.`Status` = 1 AND a.`Tanggal` = '" + FDateF.datetostr(new Date(), "yyyy-MM-dd") + "' AND c.`IdBilling` IS NULL", "Antrian Billing: ", 500);
+        switch (GlobalVar.VarL.level) {
+            case "Kasir":
+                jPanel4.setVisible(false);
+                jPanel6.setVisible(false);
+                JMIMasterKendaraan.setVisible(false);
+                
+                jMenuItem4.setVisible(false);
+                jMenuItem5.setVisible(false);
+                jMenuItem11.setVisible(false);
+                jMenuItem7.setVisible(false);
+                jMenuItem18.setVisible(false);
+                
+                jMenuItem6.setVisible(false);
+                jMenuItem12.setVisible(false);
+                jMenuItem8.setVisible(false);
+                jMenuItem19.setVisible(false);
+                
+                jMenuItem13.setVisible(false);
+                jMenuItem14.setVisible(false);
+                break;
+            case "Gudang":
+                jPanel1.setVisible(false);
+                jPanel3.setVisible(false);
+                jPanel5.setVisible(false);
+                
+                JMIMasterKaryawan.setVisible(false);
+                jMenuItem1.setVisible(false);
+                jMenuItem2.setVisible(false);
+                jMenuItem3.setVisible(false);
+                
+                JMIProsesPacking.setVisible(false);
+                jMenuItem9.setVisible(false);
+                JMIProsesAbsenKaryawan.setVisible(false);
+                
+                JMIListPacking.setVisible(false);
+                JMIListPerawatan.setVisible(false);
+                jMenuItem10.setVisible(false);
+                
+                jMenuItem17.setVisible(false);
+                jMenuItem16.setVisible(false);
+                jMenuItem15.setVisible(false);
+                break;
+            default:
+                break;
+        }
     }
 
     /**
@@ -104,7 +149,7 @@ public class MenuUtama extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
 
-        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Antrian", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.ABOVE_TOP, new java.awt.Font("Tahoma", 0, 12))); // NOI18N
+        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Antrian", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.TOP, new java.awt.Font("Tahoma", 0, 12))); // NOI18N
 
         jlableF1.setText("Pasien Hari Ini: 0");
 
@@ -136,7 +181,7 @@ public class MenuUtama extends javax.swing.JFrame {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        jPanel3.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Pasien", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.ABOVE_TOP, new java.awt.Font("Tahoma", 0, 12))); // NOI18N
+        jPanel3.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Pasien", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.TOP, new java.awt.Font("Tahoma", 0, 12))); // NOI18N
 
         jlableF3.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jlableF3.setText("List Pasien");
@@ -169,7 +214,7 @@ public class MenuUtama extends javax.swing.JFrame {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        jPanel5.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Billing", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.ABOVE_TOP, new java.awt.Font("Tahoma", 0, 12))); // NOI18N
+        jPanel5.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Billing", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.TOP, new java.awt.Font("Tahoma", 0, 12))); // NOI18N
 
         jlableF5.setText("Antrian Billing: 0");
 
@@ -201,7 +246,7 @@ public class MenuUtama extends javax.swing.JFrame {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        jPanel4.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Gudang Kecil", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.ABOVE_TOP, new java.awt.Font("Tahoma", 0, 12))); // NOI18N
+        jPanel4.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Gudang", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.TOP, new java.awt.Font("Tahoma", 0, 12))); // NOI18N
 
         jlableF4.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jlableF4.setText("Laporan");
@@ -234,7 +279,7 @@ public class MenuUtama extends javax.swing.JFrame {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        jPanel6.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Gudang Besar", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.ABOVE_TOP, new java.awt.Font("Tahoma", 0, 12))); // NOI18N
+        jPanel6.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Gudang", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.TOP, new java.awt.Font("Tahoma", 0, 12))); // NOI18N
 
         jlableF6.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jlableF6.setText("Laporan");
@@ -559,7 +604,7 @@ public class MenuUtama extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(338, Short.MAX_VALUE))
+                .addContainerGap(342, Short.MAX_VALUE))
         );
 
         pack();
