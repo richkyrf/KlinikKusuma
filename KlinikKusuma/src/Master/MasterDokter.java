@@ -187,6 +187,12 @@ public class MasterDokter extends javax.swing.JFrame {
 
         JCBStatus.setText("Aktif");
 
+        JTNoTelpon.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                JTNoTelponKeyPressed(evt);
+            }
+        });
+
         jlableF12.setText("No. SIP");
 
         jlableF13.setText(":");
@@ -344,6 +350,12 @@ public class MasterDokter extends javax.swing.JFrame {
             JTNoTelpon.requestFocus();
         }
     }//GEN-LAST:event_JTNoSIPKeyPressed
+
+    private void JTNoTelponKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_JTNoTelponKeyPressed
+        if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
+            JTAlamat.requestFocus();
+        }
+    }//GEN-LAST:event_JTNoTelponKeyPressed
 
     /**
      * @param args the command line arguments

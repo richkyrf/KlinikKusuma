@@ -182,6 +182,12 @@ public class MasterBeautician extends javax.swing.JFrame {
 
         JCBStatus.setText("Aktif");
 
+        JTNoTelpon.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                JTNoTelponKeyPressed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -313,6 +319,12 @@ public class MasterBeautician extends javax.swing.JFrame {
             JTAKeterangan.requestFocus();
         }
     }//GEN-LAST:event_JTAlamatKeyPressed
+
+    private void JTNoTelponKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_JTNoTelponKeyPressed
+        if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
+            JTAlamat.requestFocus();
+        }
+    }//GEN-LAST:event_JTNoTelponKeyPressed
 
     /**
      * @param args the command line arguments

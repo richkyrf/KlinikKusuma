@@ -280,6 +280,12 @@ public class MasterPasien extends javax.swing.JFrame {
             }
         });
 
+        JTNoTelpon.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                JTNoTelponKeyPressed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -509,6 +515,12 @@ public class MasterPasien extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_JTCatatanKeyPressed
 
+    private void JTNoTelponKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_JTNoTelponKeyPressed
+        if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
+            JTPekerjaan.requestFocus();
+        }
+    }//GEN-LAST:event_JTNoTelponKeyPressed
+
     /**
      * @param args the command line arguments
      */
@@ -613,6 +625,8 @@ public class MasterPasien extends javax.swing.JFrame {
                     JTPekerjaan.setText("");
                     JTEmail.setText("");
                     JTAlamat.setText("");
+                    JTCatatan.setText("");
+                    JTNoKartu.setText("");
                     JTNamaPasien.requestFocus();
                 }
             }

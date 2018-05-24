@@ -39,6 +39,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import javax.imageio.ImageIO;
+import javax.print.PrintService;
+import javax.print.PrintServiceLookup;
 import javax.swing.JTable;
 import javax.swing.table.TableModel;
 
@@ -1219,11 +1221,16 @@ public class Perawatan extends javax.swing.JFrame {
         total_item_count = itemsTable.getRowCount();
         PrinterJob pj = PrinterJob.getPrinterJob();
         pj.setPrintable(pr, getPageFormat(pj));
-        try {
-            pj.print();
-
-        } catch (PrinterException ex) {
-            ex.printStackTrace();
+        PrintService[] printServices = PrintServiceLookup.lookupPrintServices(null, null);
+        for (PrintService printer : printServices) {
+            if (printer.getName().equals("Microsoft Print to PDF")) {
+                try {
+                    pj.setPrintService(printer);
+                    pj.print();
+                } catch (PrinterException ex) {
+                    ex.printStackTrace();
+                }
+            }
         }
     }
 

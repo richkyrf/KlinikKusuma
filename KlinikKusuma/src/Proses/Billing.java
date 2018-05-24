@@ -52,6 +52,7 @@ import static javax.print.DocFlavor.INPUT_STREAM.AUTOSENSE;
 import javax.print.DocPrintJob;
 import javax.print.PrintException;
 import javax.print.PrintService;
+import javax.print.PrintServiceLookup;
 import static javax.print.PrintServiceLookup.lookupDefaultPrintService;
 import javax.print.SimpleDoc;
 import javax.print.attribute.DocAttributeSet;
@@ -1341,9 +1342,9 @@ public class Billing extends javax.swing.JFrame {
     private void JTBayarKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_JTBayarKeyPressed
         if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
             if (JBTambah.isVisible()) {
-                tambahData(false);
+                tambahData(true);
             } else {
-                ubahData(false);
+                ubahData(true);
             }
         }
     }//GEN-LAST:event_JTBayarKeyPressed
@@ -1734,11 +1735,16 @@ public class Billing extends javax.swing.JFrame {
         total_item_count = itemsTable.getRowCount();
         PrinterJob pj = PrinterJob.getPrinterJob();
         pj.setPrintable(pr, getPageFormat(pj));
-        try {
-            pj.print();
-
-        } catch (PrinterException ex) {
-            ex.printStackTrace();
+        PrintService[] printServices = PrintServiceLookup.lookupPrintServices(null, null);
+        for (PrintService printer : printServices) {
+            if (printer.getName().equals("Microsoft Print to PDF")) {
+                try {
+                    pj.setPrintService(printer);
+                    pj.print();
+                } catch (PrinterException ex) {
+                    ex.printStackTrace();
+                }
+            }
         }
     }
 
