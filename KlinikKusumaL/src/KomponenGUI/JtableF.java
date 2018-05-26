@@ -63,7 +63,7 @@ public class JtableF extends JTable {
                 comp.setForeground(Color.white);
             } else {
                 comp.setForeground(Color.black);
-                comp.setBackground(row % 2 == 0 ? Color.white : new Color(225, 225, 225));
+                comp.setBackground(row % 2 == 0 ? Color.white : new Color(240, 240, 240));
             }
         } else {
             if (isRowSelected(row)) {

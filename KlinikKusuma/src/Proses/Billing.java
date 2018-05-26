@@ -290,9 +290,9 @@ public class Billing extends javax.swing.JFrame {
         } else if (JTableTindakan.getRowCount() == 0) {
             JOptionPaneF.showMessageDialog(this, "Gagal. Silahkan Isi Tindakan Terlebih Dahulu.");
             return false;
-        } else if (JTableObat.getRowCount() == 0) {
-            JOptionPaneF.showMessageDialog(this, "Gagal. Silahkan Isi Obat Terlebih Dahulu.");
-            return false;
+//        } else if (JTableObat.getRowCount() == 0) {
+//            JOptionPaneF.showMessageDialog(this, "Gagal. Silahkan Isi Obat Terlebih Dahulu.");
+//            return false;
         } else if (JTBayar.getInt() < JTGrandTotal.getInt() && !JCBPakaiPoin.isSelected()) {
             JOptionPaneF.showMessageDialog(this, "Gagal. Jumlah Bayar Tidak Mencukupi.");
             return false;

@@ -189,9 +189,9 @@ public class Perawatan extends javax.swing.JFrame {
         } else if (JTableTindakan.getRowCount() == 0) {
             JOptionPaneF.showMessageDialog(this, "Gagal. Silahkan Isi Tindakan Terlebih Dahulu.");
             return false;
-        } else if (JTableObat.getRowCount() == 0) {
-            JOptionPaneF.showMessageDialog(this, "Gagal. Silahkan Isi Obat Terlebih Dahulu.");
-            return false;
+//        } else if (JTableObat.getRowCount() == 0) {
+//            JOptionPaneF.showMessageDialog(this, "Gagal. Silahkan Isi Obat Terlebih Dahulu.");
+//            return false;
         } else {
             return true;
         }

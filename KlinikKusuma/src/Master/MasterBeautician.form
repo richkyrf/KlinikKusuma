@@ -242,9 +242,10 @@
         <Property name="text" type="java.lang.String" value="Aktif"/>
       </Properties>
     </Component>
-    <Component class="KomponenGUI.JNumberOnly" name="JTNoTelpon">
+    <Component class="KomponenGUI.JtextF" name="JTNoTelpon">
       <Events>
         <EventHandler event="keyPressed" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="JTNoTelponKeyPressed"/>
+        <EventHandler event="keyTyped" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="JTNoTelponKeyTyped"/>
       </Events>
     </Component>
   </SubComponents>

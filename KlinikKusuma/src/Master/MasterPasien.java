@@ -89,10 +89,21 @@ public class MasterPasien extends javax.swing.JFrame {
         if (!JTNamaPasien.getText().equals("")) {
             DRunSelctOne dRunSelctOne = new DRunSelctOne();
             dRunSelctOne.seterorm("Gagal Select Kode Pasien");
-            dRunSelctOne.setQuery("SELECT CONCAT(LEFT('" + JTNamaPasien.getText().toUpperCase() + "',1),' ',LPAD(COUNT('" + JTNamaPasien.getText() + "')+1,'4','0')) as 'Kode' FROM `tbmpasien` WHERE `NamaPasien` LIKE '" + JTNamaPasien.getText().substring(0, 1) + "%' ");
+            //dRunSelctOne.setQuery("SELECT CONCAT(LEFT('" + JTNamaPasien.getText().toUpperCase() + "',1),' ',LPAD(COUNT('" + JTNamaPasien.getText() + "')+1,'4','0')) as 'Kode' FROM `tbmpasien` WHERE `NamaPasien` LIKE '" + JTNamaPasien.getText().substring(0, 1) + "%' ");
+            dRunSelctOne.setQuery("SELECT CONCAT(LEFT('" + JTNamaPasien.getText().toUpperCase() + "',1),' ',RIGHT(`KodePasien`,4)+1) FROM `tbmpasien` WHERE `KodePasien` LIKE CONCAT(LEFT('" + JTNamaPasien.getText().toUpperCase() + "',1),'%') ORDER BY `KodePasien` DESC");
             ArrayList<String> list = dRunSelctOne.excute();
             JTKodePasien.setText(list.get(0));
         }
+    }
+
+    boolean isAlphanumeric(String str) {
+        for (int i = 0; i < str.length(); i++) {
+            char c = str.charAt(i);
+            if (c < 0x30 || (c >= 0x3a && c <= 0x40) || (c > 0x5a && c <= 0x60) || c > 0x7a) {
+                return false;
+            }
+        }
+        return true;
     }
 
     /**
@@ -140,7 +151,7 @@ public class MasterPasien extends javax.swing.JFrame {
         jlableF25 = new KomponenGUI.JlableF();
         jlableF26 = new KomponenGUI.JlableF();
         JTNoKartu = new KomponenGUI.JtextF();
-        JTNoTelpon = new KomponenGUI.JNumberOnly();
+        JTNoTelpon = new KomponenGUI.JtextF();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
@@ -283,6 +294,9 @@ public class MasterPasien extends javax.swing.JFrame {
         JTNoTelpon.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
                 JTNoTelponKeyPressed(evt);
+            }
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                JTNoTelponKeyTyped(evt);
             }
         });
 
@@ -521,6 +535,12 @@ public class MasterPasien extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_JTNoTelponKeyPressed
 
+    private void JTNoTelponKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_JTNoTelponKeyTyped
+        if (evt.getKeyChar() < 0x30 || evt.getKeyChar() > 0x39) {
+            evt.consume();
+        }
+    }//GEN-LAST:event_JTNoTelponKeyTyped
+
     /**
      * @param args the command line arguments
      */
@@ -569,7 +589,7 @@ public class MasterPasien extends javax.swing.JFrame {
     private KomponenGUI.JtextF JTKodePasien;
     private KomponenGUI.JtextF JTNamaPasien;
     private KomponenGUI.JtextF JTNoKartu;
-    private KomponenGUI.JNumberOnly JTNoTelpon;
+    private KomponenGUI.JtextF JTNoTelpon;
     private KomponenGUI.JtextF JTPekerjaan;
     private KomponenGUI.JbuttonF jbuttonF1;
     private KomponenGUI.JbuttonF jbuttonF2;

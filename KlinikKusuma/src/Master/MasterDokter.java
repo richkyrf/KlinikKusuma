@@ -103,10 +103,10 @@ public class MasterDokter extends javax.swing.JFrame {
         jlableF4 = new KomponenGUI.JlableF();
         jlableF11 = new KomponenGUI.JlableF();
         JCBStatus = new KomponenGUI.JCheckBoxF();
-        JTNoTelpon = new KomponenGUI.JNumberOnly();
         jlableF12 = new KomponenGUI.JlableF();
         jlableF13 = new KomponenGUI.JlableF();
         JTNoSIP = new KomponenGUI.JtextF();
+        JTNoTelpon = new KomponenGUI.JtextF();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
@@ -187,12 +187,6 @@ public class MasterDokter extends javax.swing.JFrame {
 
         JCBStatus.setText("Aktif");
 
-        JTNoTelpon.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyPressed(java.awt.event.KeyEvent evt) {
-                JTNoTelponKeyPressed(evt);
-            }
-        });
-
         jlableF12.setText("No. SIP");
 
         jlableF13.setText(":");
@@ -200,6 +194,15 @@ public class MasterDokter extends javax.swing.JFrame {
         JTNoSIP.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
                 JTNoSIPKeyPressed(evt);
+            }
+        });
+
+        JTNoTelpon.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                JTNoTelponKeyPressed(evt);
+            }
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                JTNoTelponKeyTyped(evt);
             }
         });
 
@@ -357,6 +360,12 @@ public class MasterDokter extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_JTNoTelponKeyPressed
 
+    private void JTNoTelponKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_JTNoTelponKeyTyped
+        if (evt.getKeyChar() < 0x30 || evt.getKeyChar() > 0x39) {
+            evt.consume();
+        }
+    }//GEN-LAST:event_JTNoTelponKeyTyped
+
     /**
      * @param args the command line arguments
      */
@@ -401,7 +410,7 @@ public class MasterDokter extends javax.swing.JFrame {
     private KomponenGUI.JtextF JTAlamat;
     private KomponenGUI.JtextF JTNamaDokter;
     private KomponenGUI.JtextF JTNoSIP;
-    private KomponenGUI.JNumberOnly JTNoTelpon;
+    private KomponenGUI.JtextF JTNoTelpon;
     private javax.swing.JScrollPane jScrollPane1;
     private KomponenGUI.JbuttonF jbuttonF1;
     private KomponenGUI.JbuttonF jbuttonF2;

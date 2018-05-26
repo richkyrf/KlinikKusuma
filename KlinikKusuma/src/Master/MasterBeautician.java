@@ -101,7 +101,7 @@ public class MasterBeautician extends javax.swing.JFrame {
         jlableF4 = new KomponenGUI.JlableF();
         jlableF11 = new KomponenGUI.JlableF();
         JCBStatus = new KomponenGUI.JCheckBoxF();
-        JTNoTelpon = new KomponenGUI.JNumberOnly();
+        JTNoTelpon = new KomponenGUI.JtextF();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
@@ -185,6 +185,9 @@ public class MasterBeautician extends javax.swing.JFrame {
         JTNoTelpon.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
                 JTNoTelponKeyPressed(evt);
+            }
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                JTNoTelponKeyTyped(evt);
             }
         });
 
@@ -326,6 +329,12 @@ public class MasterBeautician extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_JTNoTelponKeyPressed
 
+    private void JTNoTelponKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_JTNoTelponKeyTyped
+        if (evt.getKeyChar() < 0x30 || evt.getKeyChar() > 0x39) {
+            evt.consume();
+        }
+    }//GEN-LAST:event_JTNoTelponKeyTyped
+
     /**
      * @param args the command line arguments
      */
@@ -373,7 +382,7 @@ public class MasterBeautician extends javax.swing.JFrame {
     private KomponenGUI.JTextAreaF JTAKeterangan;
     private KomponenGUI.JtextF JTAlamat;
     private KomponenGUI.JtextF JTNamaBeautician;
-    private KomponenGUI.JNumberOnly JTNoTelpon;
+    private KomponenGUI.JtextF JTNoTelpon;
     private javax.swing.JScrollPane jScrollPane1;
     private KomponenGUI.JbuttonF jbuttonF1;
     private KomponenGUI.JbuttonF jbuttonF2;

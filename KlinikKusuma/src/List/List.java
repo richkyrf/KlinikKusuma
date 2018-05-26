@@ -517,6 +517,7 @@ public class List extends javax.swing.JFrame {
 
     void refreshAll() {
 //        jcomCari1.refresh();
+        jtextF1.setText("");
         load();
     }
 

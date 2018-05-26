@@ -165,7 +165,7 @@
   <SubComponents>
     <Component class="KomponenGUI.JlableF" name="jlableF1">
       <Properties>
-        <Property name="text" type="java.lang.String" value="No. Penyesuaian"/>
+        <Property name="text" type="java.lang.String" value="No. Permintaan"/>
       </Properties>
     </Component>
     <Component class="KomponenGUI.JlableF" name="jlableF2">

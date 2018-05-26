@@ -46,7 +46,7 @@
                       <Group type="103" groupAlignment="0" max="-2" attributes="0">
                           <Component id="JTNamaDokter" max="32767" attributes="0"/>
                           <Component id="jScrollPane1" alignment="0" max="32767" attributes="0"/>
-                          <Component id="JTNoTelpon" alignment="0" max="32767" attributes="0"/>
+                          <Component id="JTNoTelpon" max="32767" attributes="0"/>
                       </Group>
                   </Group>
                   <Group type="102" attributes="0">
@@ -253,11 +253,6 @@
         <Property name="text" type="java.lang.String" value="Aktif"/>
       </Properties>
     </Component>
-    <Component class="KomponenGUI.JNumberOnly" name="JTNoTelpon">
-      <Events>
-        <EventHandler event="keyPressed" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="JTNoTelponKeyPressed"/>
-      </Events>
-    </Component>
     <Component class="KomponenGUI.JlableF" name="jlableF12">
       <Properties>
         <Property name="text" type="java.lang.String" value="No. SIP"/>
@@ -271,6 +266,12 @@
     <Component class="KomponenGUI.JtextF" name="JTNoSIP">
       <Events>
         <EventHandler event="keyPressed" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="JTNoSIPKeyPressed"/>
+      </Events>
+    </Component>
+    <Component class="KomponenGUI.JtextF" name="JTNoTelpon">
+      <Events>
+        <EventHandler event="keyPressed" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="JTNoTelponKeyPressed"/>
+        <EventHandler event="keyTyped" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="JTNoTelponKeyTyped"/>
       </Events>
     </Component>
   </SubComponents>

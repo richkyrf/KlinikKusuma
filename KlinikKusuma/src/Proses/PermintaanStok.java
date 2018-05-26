@@ -152,7 +152,7 @@ public class PermintaanStok extends javax.swing.JFrame {
             }
         });
 
-        jlableF1.setText("No. Penyesuaian");
+        jlableF1.setText("No. Permintaan");
 
         jlableF2.setText(":");
 
