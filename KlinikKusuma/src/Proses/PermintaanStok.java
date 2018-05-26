@@ -44,9 +44,8 @@ public class PermintaanStok extends javax.swing.JFrame {
         setVisible(true);
         setTitle("Pemintaan Stok");
         setLocationRelativeTo(null);
-        jbuttonF1.setVisible(true);
-        jbuttonF3.setVisible(false);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        jbuttonF4.setVisible(false);
     }
 
     public PermintaanStok(Object idEdit) {
@@ -58,8 +57,8 @@ public class PermintaanStok extends javax.swing.JFrame {
         setTitle("Pemintaan Stok");
         setLocationRelativeTo(null);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-        jbuttonF3.setVisible(true);
         jbuttonF1.setVisible(false);
+        jbuttonF3.setVisible(false);
         loadData(idEdit);
     }
 
@@ -84,7 +83,7 @@ public class PermintaanStok extends javax.swing.JFrame {
             JOptionPaneF.showMessageDialog(this, "Gagal. Tanggal Tidak Boleh Kosong.");
             return false;
         } else if (JTJumlah.getInt() > JTStok.getInt()) {
-            JOptionPaneF.showMessageDialog(this, "Gagal. Tanggal Tidak Boleh Kosong.");
+            JOptionPaneF.showMessageDialog(this, "Gagal. Stok Tidak Mencukupi.");
             return false;
         } else {
             return true;
@@ -315,10 +314,10 @@ public class PermintaanStok extends javax.swing.JFrame {
                                         .addGap(0, 0, Short.MAX_VALUE)
                                         .addComponent(jbuttonF4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(jbuttonF1, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(jbuttonF1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(jbuttonF3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addComponent(jScrollPane1))))
+                                        .addComponent(jbuttonF3, javax.swing.GroupLayout.PREFERRED_SIZE, 167, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 372, Short.MAX_VALUE))))
                         .addGap(10, 10, 10))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jlableF15, javax.swing.GroupLayout.PREFERRED_SIZE, 131, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -371,7 +370,7 @@ public class PermintaanStok extends javax.swing.JFrame {
                     .addComponent(jbuttonF3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jbuttonF1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jbuttonF4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
         );
 
         pack();
