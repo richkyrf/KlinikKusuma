@@ -302,7 +302,7 @@ public class Laporan extends javax.swing.JFrame {
             System.out.println("E6" + e);
             JOptionPaneF.showMessageDialog(null, "Gagal Panggil Tampilkan Data");
         } finally {
-            runSelct.closecon();
+//            runSelct.closecon();
         }
         sql = null;
         if (getTitle().equals("Laporan Tindakan")) {

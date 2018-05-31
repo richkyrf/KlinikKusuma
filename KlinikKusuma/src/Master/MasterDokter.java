@@ -67,10 +67,10 @@ public class MasterDokter extends javax.swing.JFrame {
             JOptionPaneF.showMessageDialog(null, "Gagal. Nama Tidak Boleh Kosong");
             JTNamaDokter.requestFocus();
             return false;
-        } else if (JTNoTelpon.getText().replace(" ", "").equals("")) {
-            JOptionPaneF.showMessageDialog(null, "Gagal. No. Telpon Tidak Boleh Kosong");
-            JTNoTelpon.requestFocus();
-            return false;
+//        } else if (JTNoTelpon.getText().replace(" ", "").equals("")) {
+//            JOptionPaneF.showMessageDialog(null, "Gagal. No. Telpon Tidak Boleh Kosong");
+//            JTNoTelpon.requestFocus();
+//            return false;
         }
         return true;
     }

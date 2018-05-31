@@ -57,7 +57,7 @@ public class JcomboboxF extends JComboBox {
                     pstmt.close();
                 }
                 if (con != null) {
-                    con.close();
+//                    con.close();
                 }
             } catch (SQLException ex) {
                 LogEror.SaveEror(ex);
@@ -98,7 +98,7 @@ public class JcomboboxF extends JComboBox {
                     pstmt.close();
                 }
                 if (con != null) {
-                    con.close();
+//                    con.close();
                 }
             } catch (SQLException ex) {
                 LogEror.SaveEror(ex);
@@ -143,7 +143,7 @@ public class JcomboboxF extends JComboBox {
                     pstmt.close();
                 }
                 if (con != null) {
-                    con.close();
+//                    con.close();
                 }
             } catch (SQLException ex) {
                 LogEror.SaveEror(ex);

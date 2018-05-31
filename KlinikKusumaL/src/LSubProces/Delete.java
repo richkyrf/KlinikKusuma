@@ -16,7 +16,7 @@ public class Delete {
         Koneksi koneksi = new Koneksi();
         con = koneksi.getConnection();
         boolean berhasilhapus = false;
-        int reply = JOptionPaneF.showConfirmDialog(Parent, "Apakah Anda Yakin Akan Menghapus Data " + JenisData + " Dengan ID " + ID + " ?", "Konfirmasi", YES_NO_OPTION);
+        int reply = JOptionPaneF.showConfirmDialog(Parent, "Apakah Anda Yakin Akan Menghapus Data " + JenisData + " Dengan " + ID + " ?", "Konfirmasi", YES_NO_OPTION);
         if (reply == JOptionPane.YES_OPTION) {
             PreparedStatement pstmt = null;
             try {
@@ -40,7 +40,7 @@ public class Delete {
                         pstmt.close();
                     }
                     if (con != null) {
-                        con.close();
+//                        con.close();
                     }
                 } catch (SQLException ex) {
                     Eror.LogEror.SaveEror(ex);

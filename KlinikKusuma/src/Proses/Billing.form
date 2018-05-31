@@ -44,57 +44,56 @@
                               </Group>
                               <EmptySpace max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="0" attributes="0">
-                                  <Group type="102" attributes="0">
+                                  <Group type="102" alignment="0" attributes="0">
+                                      <Component id="jlableF5" min="-2" max="-2" attributes="0"/>
+                                      <EmptySpace max="-2" attributes="0"/>
+                                      <Component id="JCNamaDokter" min="-2" pref="400" max="-2" attributes="0"/>
+                                  </Group>
+                                  <Group type="102" alignment="0" attributes="0">
+                                      <Component id="jlableF7" min="-2" max="-2" attributes="0"/>
+                                      <EmptySpace max="-2" attributes="0"/>
+                                      <Component id="JCNamaBeautician" min="-2" pref="400" max="-2" attributes="0"/>
+                                  </Group>
+                                  <Group type="102" alignment="0" attributes="0">
                                       <Component id="jlableF3" min="-2" max="-2" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Component id="JTNamaPasien" min="-2" pref="400" max="-2" attributes="0"/>
-                                      <EmptySpace max="32767" attributes="0"/>
-                                      <Component id="jlableF15" min="-2" pref="90" max="-2" attributes="0"/>
+                                  </Group>
+                              </Group>
+                              <EmptySpace min="180" max="32767" attributes="0"/>
+                              <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                                  <Group type="102" attributes="0">
+                                      <Component id="jlableF15" max="32767" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Component id="jlableF14" min="-2" max="-2" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Component id="JDTanggal" min="-2" pref="140" max="-2" attributes="0"/>
                                   </Group>
-                                  <Group type="102" alignment="1" attributes="0">
-                                      <Group type="103" groupAlignment="0" attributes="0">
-                                          <Group type="102" alignment="0" attributes="0">
-                                              <Component id="jlableF5" min="-2" max="-2" attributes="0"/>
-                                              <EmptySpace max="-2" attributes="0"/>
-                                              <Component id="JCNamaDokter" min="-2" pref="400" max="-2" attributes="0"/>
-                                          </Group>
-                                          <Group type="102" alignment="0" attributes="0">
-                                              <Component id="jlableF7" min="-2" max="-2" attributes="0"/>
-                                              <EmptySpace max="-2" attributes="0"/>
-                                              <Component id="JCNamaBeautician" min="-2" pref="400" max="-2" attributes="0"/>
-                                          </Group>
+                                  <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                                      <Group type="102" alignment="1" attributes="0">
+                                          <Component id="jlableF20" max="32767" attributes="0"/>
+                                          <EmptySpace max="-2" attributes="0"/>
+                                          <Component id="jlableF21" min="-2" max="-2" attributes="0"/>
+                                          <EmptySpace max="-2" attributes="0"/>
+                                          <Component id="JTNoAntrian" min="-2" pref="140" max="-2" attributes="0"/>
                                       </Group>
-                                      <EmptySpace max="32767" attributes="0"/>
-                                      <Group type="103" groupAlignment="0" attributes="0">
-                                          <Group type="102" alignment="0" attributes="0">
-                                              <Component id="jlableF20" min="-2" max="-2" attributes="0"/>
-                                              <EmptySpace max="-2" attributes="0"/>
-                                              <Component id="jlableF21" min="-2" max="-2" attributes="0"/>
-                                              <EmptySpace max="-2" attributes="0"/>
-                                              <Component id="JTNoAntrian" min="-2" pref="140" max="-2" attributes="0"/>
+                                      <Group type="102" alignment="0" attributes="0">
+                                          <Group type="103" groupAlignment="1" max="-2" attributes="0">
+                                              <Group type="102" attributes="0">
+                                                  <Component id="jlableF17" min="-2" max="-2" attributes="0"/>
+                                                  <EmptySpace max="-2" attributes="0"/>
+                                                  <Component id="jlableF16" min="-2" max="-2" attributes="0"/>
+                                              </Group>
+                                              <Group type="102" attributes="0">
+                                                  <Component id="jlableF23" max="32767" attributes="0"/>
+                                                  <EmptySpace max="-2" attributes="0"/>
+                                                  <Component id="jlableF22" min="-2" max="-2" attributes="0"/>
+                                              </Group>
                                           </Group>
-                                          <Group type="102" alignment="0" attributes="0">
-                                              <Group type="103" groupAlignment="1" max="-2" attributes="0">
-                                                  <Group type="102" attributes="0">
-                                                      <Component id="jlableF17" min="-2" max="-2" attributes="0"/>
-                                                      <EmptySpace max="-2" attributes="0"/>
-                                                      <Component id="jlableF16" min="-2" max="-2" attributes="0"/>
-                                                  </Group>
-                                                  <Group type="102" attributes="0">
-                                                      <Component id="jlableF23" max="32767" attributes="0"/>
-                                                      <EmptySpace max="-2" attributes="0"/>
-                                                      <Component id="jlableF22" min="-2" max="-2" attributes="0"/>
-                                                  </Group>
-                                              </Group>
-                                              <EmptySpace max="-2" attributes="0"/>
-                                              <Group type="103" groupAlignment="0" attributes="0">
-                                                  <Component id="JTNoBilling" alignment="0" min="-2" pref="140" max="-2" attributes="0"/>
-                                                  <Component id="JTNoInvoice" min="-2" pref="140" max="-2" attributes="0"/>
-                                              </Group>
+                                          <EmptySpace max="-2" attributes="0"/>
+                                          <Group type="103" groupAlignment="0" attributes="0">
+                                              <Component id="JTNoBilling" alignment="0" min="-2" pref="140" max="-2" attributes="0"/>
+                                              <Component id="JTNoTransaksi" min="-2" pref="140" max="-2" attributes="0"/>
                                           </Group>
                                       </Group>
                                   </Group>
@@ -196,7 +195,7 @@
                   <Component id="JCNamaBeautician" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="jlableF17" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="jlableF16" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="JTNoInvoice" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="JTNoTransaksi" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
@@ -290,7 +289,7 @@
         <EventHandler event="keyPressed" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="JCNamaDokterKeyPressed"/>
       </Events>
       <AuxValues>
-        <AuxValue name="JavaCodeGenerator_InitCodePre" type="java.lang.String" value="JCNamaDokter.load(&quot;SELECT &apos;-- Pilih Nama Dokter --&apos; as &apos;NamaDokter&apos; UNION ALL SELECT `NamaDokter` FROM `tbmdokter`&quot;);"/>
+        <AuxValue name="JavaCodeGenerator_InitCodePre" type="java.lang.String" value="JCNamaDokter.load(&quot;SELECT &apos;-- Pilih Nama Dokter --&apos; as &apos;NamaDokter&apos; UNION ALL SELECT `NamaDokter` FROM `tbmdokter` WHERE `Status` = 1 &quot;);"/>
       </AuxValues>
     </Component>
     <Component class="KomponenGUI.JlableF" name="jlableF6">
@@ -308,7 +307,7 @@
         <EventHandler event="keyPressed" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="JCNamaBeauticianKeyPressed"/>
       </Events>
       <AuxValues>
-        <AuxValue name="JavaCodeGenerator_InitCodePre" type="java.lang.String" value="JCNamaBeautician.load(&quot;SELECT &apos;-- Pilih Nama Beautician --&apos; as &apos;Nama Beautician&apos; UNION ALL SELECT `NamaBeautician` FROM `tbmbeautician`&quot;);"/>
+        <AuxValue name="JavaCodeGenerator_InitCodePre" type="java.lang.String" value="JCNamaBeautician.load(&quot;SELECT &apos;-- Pilih Nama Beautician --&apos; as &apos;Nama Beautician&apos; UNION ALL SELECT `NamaBeautician` FROM `tbmbeautician` WHERE `Status` = 1 &quot;);"/>
       </AuxValues>
     </Component>
     <Container class="javax.swing.JPanel" name="jPanel1">
@@ -336,7 +335,7 @@
                       <Component id="JBTambahTindakan" max="32767" attributes="0"/>
                       <Component id="JBRefreshTindakan" alignment="0" max="32767" attributes="0"/>
                   </Group>
-                  <EmptySpace pref="20" max="32767" attributes="0"/>
+                  <EmptySpace max="32767" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
@@ -391,7 +390,7 @@
             <EventHandler event="keyPressed" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="JCTindakanKeyPressed"/>
           </Events>
           <AuxValues>
-            <AuxValue name="JavaCodeGenerator_InitCodePre" type="java.lang.String" value="JCTindakan.load(&quot;SELECT &apos;-- Pilih Tindakan --&apos; as &apos;NamaTindakan&apos; UNION ALL SELECT `NamaTindakan` FROM `tbmtindakan`&quot;);"/>
+            <AuxValue name="JavaCodeGenerator_InitCodePre" type="java.lang.String" value="JCTindakan.load(&quot;SELECT &apos;-- Pilih Tindakan --&apos; as &apos;NamaTindakan&apos; UNION ALL (SELECT `NamaTindakan` FROM `tbmtindakan` WHERE `Status` = 1 ORDER BY `NamaTindakan`)&quot;);"/>
           </AuxValues>
         </Component>
         <Container class="javax.swing.JScrollPane" name="jScrollPane1">
@@ -449,6 +448,9 @@
           <Properties>
             <Property name="text" type="java.lang.String" value="Hapus"/>
           </Properties>
+          <BindingProperties>
+            <BindingProperty name="enabled" source="JTableTindakan" sourcePath="${selectedElement != null}" target="JBHapusTindakan" targetPath="enabled" updateStrategy="0" immediately="false"/>
+          </BindingProperties>
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="JBHapusTindakanActionPerformed"/>
           </Events>
@@ -564,7 +566,7 @@
             <EventHandler event="keyPressed" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="JCObatKeyPressed"/>
           </Events>
           <AuxValues>
-            <AuxValue name="JavaCodeGenerator_InitCodePre" type="java.lang.String" value="JCObat.load(&quot;SELECT &apos;-- Pilih Obat --&apos; as &apos;NamaBarang&apos; UNION ALL SELECT `NamaBarang` FROM `tbmbarang`&quot;);"/>
+            <AuxValue name="JavaCodeGenerator_InitCodePre" type="java.lang.String" value="JCObat.load(&quot;SELECT &apos;-- Pilih Obat --&apos; as &apos;NamaBarang&apos; UNION ALL (SELECT `NamaBarang` FROM `tbmbarang` WHERE `Status` = 1 ORDER BY `NamaBarang`)&quot;);"/>
           </AuxValues>
         </Component>
         <Container class="javax.swing.JScrollPane" name="jScrollPane2">
@@ -622,6 +624,9 @@
           <Properties>
             <Property name="text" type="java.lang.String" value="Hapus"/>
           </Properties>
+          <BindingProperties>
+            <BindingProperty name="enabled" source="JTableObat" sourcePath="${selectedElement != null}" target="JBHapusObat" targetPath="enabled" updateStrategy="0" immediately="false"/>
+          </BindingProperties>
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="JBHapusObatActionPerformed"/>
           </Events>
@@ -695,14 +700,14 @@
         <Property name="text" type="java.lang.String" value=":"/>
       </Properties>
     </Component>
-    <Component class="KomponenGUI.JtextF" name="JTNoInvoice">
+    <Component class="KomponenGUI.JtextF" name="JTNoTransaksi">
       <Properties>
         <Property name="enabled" type="boolean" value="false"/>
       </Properties>
     </Component>
     <Component class="KomponenGUI.JlableF" name="jlableF17">
       <Properties>
-        <Property name="text" type="java.lang.String" value="No. Invoice"/>
+        <Property name="text" type="java.lang.String" value="No. Transaksi"/>
       </Properties>
     </Component>
     <Component class="KomponenGUI.JbuttonF" name="JBKembali">
@@ -877,6 +882,9 @@
     </Component>
     <Component class="KomponenGUI.JRibuanTextField" name="JTKembali">
       <Properties>
+        <Property name="disabledTextColor" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+          <Color blue="0" green="0" red="ff" type="rgb"/>
+        </Property>
         <Property name="enabled" type="boolean" value="false"/>
       </Properties>
     </Component>

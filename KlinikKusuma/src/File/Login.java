@@ -19,6 +19,7 @@ import static GlobalVar.Var.*;
 import KomponenGUI.FDateF;
 import java.util.Date;
 import javax.swing.JOptionPane;
+import org.opencv.core.Core;
 
 /**
  *
@@ -175,6 +176,7 @@ public class Login extends javax.swing.JFrame {
      * @param args the command line arguments
      */
     public static void main(String args[]) {
+        System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
         try {
             setLookAndFeel("com.jtattoo.plaf.acryl.AcrylLookAndFeel");
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | javax.swing.UnsupportedLookAndFeelException ex) {
@@ -201,7 +203,7 @@ public class Login extends javax.swing.JFrame {
             GlobalVar.VarL.password = list.get(1);
             GlobalVar.VarL.level = list.get(2);
             if (list.get(0) != null) {
-                new MenuUtama();
+                new Snapshot().setVisible(true);
                 dispose();
             } else {
                 JOptionPaneF.showMessageDialog(this, "Gagal Login. Silahkan Ulangi . . .", "Error", JOptionPane.ERROR_MESSAGE);

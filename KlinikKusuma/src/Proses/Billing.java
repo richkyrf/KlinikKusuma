@@ -19,7 +19,6 @@ import static KomponenGUI.FDateF.datetostr;
 import LSubProces.DRunSelctOne;
 import LSubProces.MultiInsert;
 import LSubProces.RunSelct;
-import static Proses.Penjualan.JCPasien;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
@@ -87,16 +86,20 @@ public class Billing extends javax.swing.JFrame {
         setLocationRelativeTo(null);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setVisible(true);
-        JTNoInvoice.setText(getNoBilling());
         UIManager.put("ComboBox.disabledForeground", Color.blue);
         JCNamaDokter.setEnabled(false);
         JCNamaBeautician.setEnabled(false);
-        if (dari.equals("Antrian Billing")) {
+        if (dari.contains("Antrian")) {
+            if (dari.contains("Billing")) {
+                loadPerawatan(parameter);
+            } else {
+                loadPenjualan(parameter);
+                JTNoTransaksi.setText(getNoTransaksi());
+            }
             setTitle("Tambah Billing");
-            loadPerawatan(parameter);
+            JTNoBilling.setText(getNoBilling());
             JBUbah.setVisible(false);
             JBUbahPrint.setVisible(false);
-            JTNoBilling.setText(getNoBilling());
             JTSetelahPotong.setVisible(false);
             jlableF12.setVisible(false);
             jlableF24.setVisible(false);
@@ -105,19 +108,97 @@ public class Billing extends javax.swing.JFrame {
             setTitle("Ubah Billing");
             JBTambah.setVisible(false);
             JBTambahPrint.setVisible(false);
-            loadData(parameter);
+            if (dari.contains("Perawatan")) {
+                loadEditDataPerawatan(parameter);
+            } else {
+                loadEditDataPenjualan(parameter);
+            }
         }
         JTBayar.requestFocus();
     }
 
-    void loadData(Object idEdit) {
+    void loadPenjualan(Object idAntrian) {
+        DRunSelctOne dRunSelctOne = new DRunSelctOne();
+        dRunSelctOne.seterorm("Gagal loadPasien()");
+        dRunSelctOne.setQuery("SELECT CONCAT('(',`KodePasien`,') ',`NamaPasien`), `NoAntrian` FROM `tbmpasien`a LEFT JOIN `tbantrian`b ON a.`IdPasien`=b.`IdPasien` WHERE 1 AND `IdAntrian` IS NOT NULL AND `Tanggal` = CURDATE() AND b.`Status` = 0 AND `IdAntrian` = '" + idAntrian + "'");
+        ArrayList<String> list = dRunSelctOne.excute();
+        JTNamaPasien.setText(list.get(0));
+        JTNoAntrian.setText(list.get(1));
+        JCNamaDokter.setEnabled(false);
+        JCNamaBeautician.setEnabled(false);
+        JBTambahTindakan.setEnabled(false);
+        JBRefreshTindakan.setEnabled(false);
+        JCTindakan.setEnabled(false);
+        JCTindakan.setSelectedItem("-");
+        JTJumlahTindakan.setEnabled(false);
+        JTHargaTindakan.setEnabled(false);
+        setPoin(0);
+    }
+
+    void loadPerawatan(Object idAntrian) {
+        DRunSelctOne dRunSelctOne = new DRunSelctOne();
+        dRunSelctOne.seterorm("Gagal loadPerawatan()");
+        dRunSelctOne.setQuery("SELECT `IdPerawatan` as 'ID', CONCAT('(',`KodePasien`,') ',`NamaPasien`) as 'Nama Pasien', DATE_FORMAT(a.`Tanggal`,'%d-%m-%Y') as 'Tanggal', `NoAntrian` as 'No. Antrian', `NoTransaksi` as 'No. Transaksi', IFNULL(`NamaDokter`,'-- Pilih Nama Dokter --') as 'Nama Dokter', IFNULL(`NamaBeautician`,'-- Pilih Nama Beautician --') as 'Nama Beautician' FROM `tbperawatan`a JOIN `tbantrian`b ON a.`IdAntrian`=b.`IdAntrian` JOIN `tbmpasien`c ON b.`IdPasien`=c.`IdPasien` LEFT JOIN `tbmdokter`d ON a.`IdDokter`=d.`IdDokter` LEFT JOIN `tbmbeautician`e ON a.`IdBeautician`=e.`IdBeautician` WHERE a.`IdAntrian` = '" + idAntrian + "'");
+        ArrayList<String> list = dRunSelctOne.excute();
+        JTNamaPasien.setText(list.get(1));
+        JDTanggal.setDate(FDateF.strtodate(list.get(2), "dd-MM-yyyy"));
+        JTNoAntrian.setText(list.get(3));
+        JTNoTransaksi.setText(list.get(4));
+        JCNamaDokter.setSelectedItem(list.get(5));
+        JCNamaBeautician.setSelectedItem(list.get(6));
+        DefaultTableModel model = (DefaultTableModel) JTableTindakan.getModel();
+        model.getDataVector().removeAllElements();
+        RunSelct runSelct = new RunSelct();
+        runSelct.setQuery("SELECT `IdPerawatanDetail` as 'ID', `NoTransaksi` as 'No. Transaksi', `NamaTindakan` as 'Nama Tindakan', FORMAT(`Jumlah`,0) as 'Jumlah', FORMAT(`Harga`,0) as 'Harga', FORMAT(`Jumlah`*`Harga`,0) as 'Sub Total' FROM `tbperawatandetail`a JOIN `tbmtindakan`b ON a.`IdTindakan`=b.`IdTindakan` WHERE `NoTransaksi` = '" + JTNoTransaksi.getText() + "'");
+        try {
+            ResultSet rs = runSelct.excute();
+            int row = 0;
+            while (rs.next()) {
+                model.addRow(new Object[]{"", "", "", "", ""});
+                JTableTindakan.setValueAt(rs.getString(3), row, 0);
+                JTableTindakan.setValueAt(rs.getString(4).replace(",", "."), row, 1);
+                JTableTindakan.setValueAt(rs.getString(5).replace(",", "."), row, 2);
+                JTableTindakan.setValueAt(rs.getString(6).replace(",", "."), row, 3);
+                row++;
+            }
+        } catch (SQLException e) {
+            out.println("E6" + e);
+            JOptionPaneF.showMessageDialog(null, "Gagal Panggil Data Detail Tindakan");
+        } finally {
+//            runSelct.closecon();
+        }
+        DefaultTableModel model2 = (DefaultTableModel) JTableObat.getModel();
+        model2.getDataVector().removeAllElements();
+        RunSelct runSelct2 = new RunSelct();
+        runSelct2.setQuery("SELECT `IdObatDetail` as 'ID', `NoTransaksi` as 'No. Transaksi', `NamaBarang` as 'Nama Obat', FORMAT(`Jumlah`,0) as 'Jumlah', FORMAT(`Harga`,0) as 'Harga', FORMAT(`Jumlah`*`Harga`,0) as 'Sub Total' FROM `tbobatdetail`a JOIN `tbmbarang`b ON a.`IdObat`=b.`IdBarang` WHERE `NoTransaksi` = '" + JTNoTransaksi.getText() + "'");
+        try {
+            ResultSet rs2 = runSelct2.excute();
+            int row2 = 0;
+            while (rs2.next()) {
+                model2.addRow(new Object[]{"", "", "", "", ""});
+                JTableObat.setValueAt(rs2.getString(3), row2, 0);
+                JTableObat.setValueAt(rs2.getString(4).replace(",", "."), row2, 1);
+                JTableObat.setValueAt(rs2.getString(5).replace(",", "."), row2, 2);
+                JTableObat.setValueAt(rs2.getString(6).replace(",", "."), row2, 3);
+                row2++;
+            }
+        } catch (SQLException e) {
+            out.println("E6" + e);
+            JOptionPaneF.showMessageDialog(null, "Gagal Panggil Data Detail Obat");
+        } finally {
+//            runSelct2.closecon();
+        }
+        setGrandTotal();
+    }
+
+    void loadEditDataPerawatan(Object idEdit) {
         DRunSelctOne dRunSelctOne = new DRunSelctOne();
         dRunSelctOne.seterorm("Eror Gagal Menampilkan Data Billing");
-        dRunSelctOne.setQuery("SELECT `IdBilling` as 'ID', `NoBilling` as 'No. Billing', DATE_FORMAT(a.`Tanggal`,'%d-%m-%Y') as 'Tanggal', a.`NoInvoice` as 'No. Invoice', b.`NoAntrian` as 'No. Antrian', `NamaDokter` as 'Dokter', IFNULL(`NamaBeautician`,'-- Pilih Nama Beautician --') as 'Beautician', CONCAT('(',`KodePasien`,') ',`NamaPasien`) as 'Pasien', FORMAT(`Bayar`,0) as 'Jumlah Bayar', IF(`StatusPoin`=1,'Poin','Cash') as 'Bayar', `Poin` FROM `tbbilling`a JOIN `tbperawatan`b ON a.`NoInvoice`=b.`NoInvoice` JOIN `tbantrian`c ON b.`NoAntrian`=c.`NoAntrian` AND b.`Tanggal`=c.`Tanggal` JOIN `tbmpasien`d ON c.`IdPasien`=d.`IdPasien` JOIN `tbmdokter`e ON b.`IdDokter`=e.`IdDokter` LEFT JOIN `tbmbeautician`f ON b.`IdBeautician`=f.`IdBeautician` WHERE `IdBilling` = '" + Parameter + "'");
+        dRunSelctOne.setQuery("SELECT `IdBilling` as 'ID', `NoBilling` as 'No. Billing', DATE_FORMAT(a.`Tanggal`,'%d-%m-%Y') as 'Tanggal', a.`NoTransaksi` as 'No. Transaksi', `NoAntrian` as 'No. Antrian', `NamaDokter` as 'Dokter', IFNULL(`NamaBeautician`,'-- Pilih Nama Beautician --') as 'Beautician', CONCAT('(',`KodePasien`,') ',`NamaPasien`) as 'Pasien', FORMAT(`Bayar`,0) as 'Jumlah Bayar', IF(`StatusPoin`=1,'Poin','Cash') as 'Bayar', `Poin` FROM `tbbilling`a JOIN `tbperawatan`b ON a.`NoTransaksi`=b.`NoTransaksi` JOIN `tbantrian`c ON b.`IdAntrian`=c.`IdAntrian` JOIN `tbmpasien`d ON c.`IdPasien`=d.`IdPasien` JOIN `tbmdokter`e ON b.`IdDokter`=e.`IdDokter` LEFT JOIN `tbmbeautician`f ON b.`IdBeautician`=f.`IdBeautician` WHERE `IdBilling` = '" + Parameter + "'");
         ArrayList<String> list = dRunSelctOne.excute();
         JTNoBilling.setText(list.get(1));
         JDTanggal.setDate(FDateF.strtodate(list.get(2), "dd-MM-yyyy"));
-        JTNoInvoice.setText(list.get(3));
+        JTNoTransaksi.setText(list.get(3));
         JTNoAntrian.setText(list.get(4));
         JCNamaDokter.setSelectedItem(list.get(5));
         JCNamaBeautician.setSelectedItem(list.get(6));
@@ -143,7 +224,7 @@ public class Billing extends javax.swing.JFrame {
             out.println("E6" + e);
             JOptionPaneF.showMessageDialog(null, "Gagal Panggil Data Billing Tindakan");
         } finally {
-            runSelct.closecon();
+//            runSelct.closecon();
         }
         DefaultTableModel model2 = (DefaultTableModel) JTableObat.getModel();
         model2.getDataVector().removeAllElements();
@@ -164,7 +245,7 @@ public class Billing extends javax.swing.JFrame {
             out.println("E6" + e);
             JOptionPaneF.showMessageDialog(null, "Gagal Panggil Data Billing Obat");
         } finally {
-            runSelct2.closecon();
+//            runSelct2.closecon();
         }
         setGrandTotal();
         if (JCBPakaiPoin.isSelected()) {
@@ -182,42 +263,43 @@ public class Billing extends javax.swing.JFrame {
         }
     }
 
-    void loadPerawatan(Object noInvoice) {
+    void loadEditDataPenjualan(Object idEdit) {
         DRunSelctOne dRunSelctOne = new DRunSelctOne();
-        dRunSelctOne.seterorm("Gagal loadPerawatan()");
-        dRunSelctOne.setQuery("SELECT `IdPerawatan` as 'ID', CONCAT('(',`KodePasien`,') ',`NamaPasien`) as 'Nama Pasien', DATE_FORMAT(a.`Tanggal`,'%d-%m-%Y') as 'Tanggal', a.`NoAntrian` as 'No. Antrian', `NoInvoice` as 'No. Invoice', `NamaDokter` as 'Nama Dokter', `NamaBeautician` as 'Nama Beautician' FROM `tbperawatan`a JOIN `tbantrian`b ON a.`NoAntrian`=b.`NoAntrian` AND a.`Tanggal`=b.`Tanggal` JOIN `tbmpasien`c ON b.`IdPasien`=c.`IdPasien` JOIN `tbmdokter`d ON a.`IdDokter`=d.`IdDokter` LEFT JOIN `tbmbeautician`e ON a.`IdBeautician`=e.`IdBeautician` WHERE a.`NoInvoice` = '" + noInvoice + "'");
+        dRunSelctOne.seterorm("Eror Gagal Menampilkan Data Billing");
+        dRunSelctOne.setQuery("SELECT `IdBilling` as 'ID', `NoBilling` as 'No. Billing', DATE_FORMAT(a.`Tanggal`,'%d-%m-%Y') as 'Tanggal', a.`NoTransaksi` as 'No. Transaksi', `NoAntrian` as 'No. Antrian', CONCAT('(',`KodePasien`,') ',`NamaPasien`) as 'Pasien', FORMAT(`Bayar`,0) as 'Jumlah Bayar', IF(`StatusPoin`=1,'Poin','Cash') as 'Bayar', `Poin` FROM `tbbilling`a JOIN  `tbantrian`b ON a.`IdAntrian`=b.`IdAntrian` JOIN `tbmpasien`c ON b.`IdPasien`=c.`IdPasien` WHERE `IdBilling` = '" + Parameter + "'");
         ArrayList<String> list = dRunSelctOne.excute();
-        JTNamaPasien.setText(list.get(1));
+        JTNoBilling.setText(list.get(1));
         JDTanggal.setDate(FDateF.strtodate(list.get(2), "dd-MM-yyyy"));
-        JTNoAntrian.setText(list.get(3));
-        JTNoInvoice.setText(list.get(4));
-        JCNamaDokter.setSelectedItem(list.get(5));
-        JCNamaBeautician.setSelectedItem(list.get(6));
-        DefaultTableModel model = (DefaultTableModel) JTableTindakan.getModel();
-        model.getDataVector().removeAllElements();
-        RunSelct runSelct = new RunSelct();
-        runSelct.setQuery("SELECT `IdPerawatanDetail` as 'ID', `NoInvoice` as 'No. Invoice', `NamaTindakan` as 'Nama Tindakan', FORMAT(`Jumlah`,0) as 'Jumlah', FORMAT(`Harga`,0) as 'Harga', FORMAT(`Jumlah`*`Harga`,0) as 'Sub Total' FROM `tbperawatandetail`a JOIN `tbmtindakan`b ON a.`IdTindakan`=b.`IdTindakan` WHERE `NoInvoice` = '" + JTNoInvoice.getText() + "'");
-        try {
-            ResultSet rs = runSelct.excute();
-            int row = 0;
-            while (rs.next()) {
-                model.addRow(new Object[]{"", "", "", "", ""});
-                JTableTindakan.setValueAt(rs.getString(3), row, 0);
-                JTableTindakan.setValueAt(rs.getString(4).replace(",", "."), row, 1);
-                JTableTindakan.setValueAt(rs.getString(5).replace(",", "."), row, 2);
-                JTableTindakan.setValueAt(rs.getString(6).replace(",", "."), row, 3);
-                row++;
-            }
-        } catch (SQLException e) {
-            out.println("E6" + e);
-            JOptionPaneF.showMessageDialog(null, "Gagal Panggil Data Detail Tindakan");
-        } finally {
-            runSelct.closecon();
-        }
+        JTNoTransaksi.setText(list.get(3));
+        JTNoAntrian.setText(list.get(4));
+        JTNamaPasien.setText(list.get(5));
+        JTBayar.setInt(list.get(6).replace(",", ""));
+        JCBPakaiPoin.setSelected(list.get(7).equals("Poin"));
+//        DefaultTableModel model = (DefaultTableModel) JTableTindakan.getModel();
+//        model.getDataVector().removeAllElements();
+//        RunSelct runSelct = new RunSelct();
+//        runSelct.setQuery("SELECT `IdBillingTindakan` as 'ID', `NoBilling` as 'No. Billing', `NamaTindakan` as 'Nama Tindakan', FORMAT(`Jumlah`,0) as 'Jumlah', FORMAT(a.`Harga`,0) as 'Harga', FORMAT(`Jumlah`*a.`Harga`,0) as 'Sub Total' FROM `tbbillingtindakan`a JOIN `tbmtindakan`b ON a.`IdTindakan`=b.`IdTindakan` WHERE `NoBilling` = '" + JTNoBilling.getText() + "'");
+//        try {
+//            ResultSet rs = runSelct.excute();
+//            int row = 0;
+//            while (rs.next()) {
+//                model.addRow(new Object[]{"", "", "", "", ""});
+//                JTableTindakan.setValueAt(rs.getString(3), row, 0);
+//                JTableTindakan.setValueAt(rs.getString(4).replace(",", "."), row, 1);
+//                JTableTindakan.setValueAt(rs.getString(5).replace(",", "."), row, 2);
+//                JTableTindakan.setValueAt(rs.getString(6).replace(",", "."), row, 3);
+//                row++;
+//            }
+//        } catch (SQLException e) {
+//            out.println("E6" + e);
+//            JOptionPaneF.showMessageDialog(null, "Gagal Panggil Data Billing Tindakan");
+//        } finally {
+////            runSelct.closecon();
+//        }
         DefaultTableModel model2 = (DefaultTableModel) JTableObat.getModel();
         model2.getDataVector().removeAllElements();
         RunSelct runSelct2 = new RunSelct();
-        runSelct2.setQuery("SELECT `IdObatDetail` as 'ID', `NoInvoice` as 'No. Invoice', `NamaBarang` as 'Nama Obat', FORMAT(`Jumlah`,0) as 'Jumlah', FORMAT(`Harga`,0) as 'Harga', FORMAT(`Jumlah`*`Harga`,0) as 'Sub Total' FROM `tbobatdetail`a JOIN `tbmbarang`b ON a.`IdObat`=b.`IdBarang` WHERE `NoInvoice` = '" + JTNoInvoice.getText() + "'");
+        runSelct2.setQuery("SELECT `IdBillingObat` as 'ID', `NoBilling` as 'No. Billing', `NamaBarang` as 'Nama Obat', FORMAT(`Jumlah`,0) as 'Jumlah', FORMAT(a.`Harga`,0) as 'Harga', FORMAT(`Jumlah`*a.`Harga`,0) as 'Sub Total' FROM `tbbillingobat`a JOIN `tbmbarang`b ON a.`IdObat`=b.`IdBarang` WHERE `NoBilling` = '" + JTNoBilling.getText() + "'");
         try {
             ResultSet rs2 = runSelct2.excute();
             int row2 = 0;
@@ -231,47 +313,96 @@ public class Billing extends javax.swing.JFrame {
             }
         } catch (SQLException e) {
             out.println("E6" + e);
-            JOptionPaneF.showMessageDialog(null, "Gagal Panggil Data Detail Obat");
+            JOptionPaneF.showMessageDialog(null, "Gagal Panggil Data Billing Obat");
         } finally {
-            runSelct2.closecon();
+//            runSelct2.closecon();
         }
         setGrandTotal();
+        if (JCBPakaiPoin.isSelected()) {
+            JTSetelahPotong.setVisible(true);
+            jlableF12.setVisible(true);
+            jlableF24.setVisible(true);
+            setPoin(Integer.valueOf(list.get(8)));
+            JTSetelahPotong.setText(String.valueOf(JTGrandTotal.getInt() - Integer.valueOf(list.get(8)) * 5000));
+        } else {
+            JTSetelahPotong.setVisible(false);
+            jlableF12.setVisible(false);
+            jlableF24.setVisible(false);
+            JLPoin.setText("Poin (0)");
+            JCBPakaiPoin.setEnabled(false);
+        }
+    }
+
+    public static String getNoTransaksi() {
+        NumberFormat nf = new DecimalFormat("00000");
+        String NoTransaksi = null;
+        RunSelct runSelct = new RunSelct();
+        runSelct.setQuery("SELECT `NoTransaksi` FROM `tbbilling` WHERE `NoTransaksi` LIKE 'PJ-%' ORDER BY `NoTransaksi` DESC LIMIT 1");
+        try {
+            ResultSet rs = runSelct.excute();
+            if (!rs.isBeforeFirst()) {
+                NoTransaksi = "PJ-" + "00001" + "-" + FDateF.datetostr(new Date(), "YY");//PJ-00001-18
+            }
+            while (rs.next()) {
+                String nopenjualan = rs.getString("NoTransaksi");
+                String number = nopenjualan.substring(3, 8);
+                String year = nopenjualan.substring(9, 11);
+                int p;
+                if (year.equals(FDateF.datetostr(new Date(), "YY"))) {
+                    p = 1 + parseInt(number);
+                } else {
+                    p = 1;
+                }
+                if (p != 99999) {
+                    NoTransaksi = "PJ-" + nf.format(p) + "-" + FDateF.datetostr(new Date(), "YY");
+                } else if (p == 99999) {
+                    p = 1;
+                    NoTransaksi = "PJ-" + nf.format(p) + "-" + FDateF.datetostr(new Date(), "YY");
+                }
+            }
+        } catch (SQLException e) {
+            out.println("E6" + e);
+            JOptionPaneF.showMessageDialog(null, "Gagal Generate Nomor Transaksi");
+        } finally {
+//            runSelct.closecon();
+        }
+        return NoTransaksi;
     }
 
     public static String getNoBilling() {
-        NumberFormat nf = new DecimalFormat("000000");
-        String NoTransaksi = null;
+        NumberFormat nf = new DecimalFormat("00000");
+        String NoBilling = null;
         RunSelct runSelct = new RunSelct();
         runSelct.setQuery("SELECT `NoBilling` FROM `tbbilling` ORDER BY `NoBilling` DESC LIMIT 1");
         try {
             ResultSet rs = runSelct.excute();
             if (!rs.isBeforeFirst()) {
-                NoTransaksi = "KB-" + "000001" + "-BIL";
+                NoBilling = "BL-" + "00001" + "-" + FDateF.datetostr(new Date(), "YY");
             }
             while (rs.next()) {
-                String nobarangmasuk = rs.getString("NoBilling");
-                String number = nobarangmasuk.substring(3, 9);
-                //String month = nobarangmasuk.substring(8, 10);
-                int p = 1 + parseInt(number);
-                /*if (month.equals(FDateF.datetostr(new Date(), "MM"))) {
+                String NoTransaksi = rs.getString("NoBilling");
+                String number = NoTransaksi.substring(3, 8);
+                String year = NoTransaksi.substring(9, 11);
+                int p;
+                if (year.equals(FDateF.datetostr(new Date(), "YY"))) {
                     p = 1 + parseInt(number);
                 } else {
                     p = 1;
-                }*/
-                if (p != 999999) {
-                    NoTransaksi = "KB-" + nf.format(p) + "-BIL";
-                } else if (p == 999999) {
+                }
+                if (p != 99999) {
+                    NoBilling = "BL-" + nf.format(p) + "-" + FDateF.datetostr(new Date(), "YY");
+                } else if (p == 99999) {
                     p = 1;
-                    NoTransaksi = "KB-" + nf.format(p) + "-BIL";
+                    NoBilling = "BL-" + nf.format(p) + "-" + FDateF.datetostr(new Date(), "YY");
                 }
             }
         } catch (SQLException e) {
             out.println("E6" + e);
             JOptionPaneF.showMessageDialog(null, "Gagal Generate Nomor Billing");
         } finally {
-            runSelct.closecon();
+//            runSelct.closecon();
         }
-        return NoTransaksi;
+        return NoBilling;
     }
 
     boolean checkInput() {
@@ -281,15 +412,15 @@ public class Billing extends javax.swing.JFrame {
         } else if (JTNoAntrian.getText().isEmpty()) {
             JOptionPaneF.showMessageDialog(this, "Gagal. No. Antrian Boleh Kosong");
             return false;
-        } else if (JTNoInvoice.getText().isEmpty()) {
-            JOptionPaneF.showMessageDialog(this, "Gagal. No. Invoice Boleh Kosong");
+        } else if (JTNoTransaksi.getText().isEmpty()) {
+            JOptionPaneF.showMessageDialog(this, "Gagal. No. Transaksi Boleh Kosong");
             return false;
         } else if (JTNoBilling.getText().isEmpty()) {
             JOptionPaneF.showMessageDialog(this, "Gagal. No. Billing Boleh Kosong");
             return false;
-        } else if (JTableTindakan.getRowCount() == 0) {
-            JOptionPaneF.showMessageDialog(this, "Gagal. Silahkan Isi Tindakan Terlebih Dahulu.");
-            return false;
+//        } else if (JTableTindakan.getRowCount() == 0) {
+//            JOptionPaneF.showMessageDialog(this, "Gagal. Silahkan Isi Tindakan Terlebih Dahulu.");
+//            return false;
 //        } else if (JTableObat.getRowCount() == 0) {
 //            JOptionPaneF.showMessageDialog(this, "Gagal. Silahkan Isi Obat Terlebih Dahulu.");
 //            return false;
@@ -388,8 +519,8 @@ public class Billing extends javax.swing.JFrame {
     void setPoin(int poin) {
         DRunSelctOne dRunSelctOne = new DRunSelctOne();
         dRunSelctOne.seterorm("Gagal setPoin()");
-        //dRunSelctOne.setQuery("SELECT `IdPasien`, IFNULL(SUM(`Poin`),0) as 'Poin' FROM (SELECT `IdPasien`, 0 as 'Jumlah Belanja', 0 as 'Poin' FROM `tbmpasien` WHERE 1 AND `KodePasien` = '" + JTNamaPasien.getText().split("\\(")[1].split("\\)")[0] + "' UNION ALL SELECT d.`IdPasien`, (SUM(e.`Jumlah`*e.`Harga`)+SUM(f.`Jumlah`*f.`Harga`) - (`Poin` * 5000)) as 'Total Belanja', FLOOR((SUM(e.`Jumlah`*e.`Harga`)+SUM(f.`Jumlah`*f.`Harga`) - (`Poin` * 5000)) / 50000) as 'Poin' FROM `tbbilling`a JOIN `tbperawatan`b ON a.`NoInvoice`=b.`NoInvoice` JOIN `tbantrian`c ON b.`NoAntrian`=c.`NoAntrian` AND b.`Tanggal`=c.`Tanggal` JOIN `tbmpasien`d ON c.`IdPasien`=d.`IdPasien` JOIN `tbbillingobat`e ON a.`NoBilling`=e.`NoBilling` JOIN `tbbillingtindakan`f ON a.`NoBilling`=f.`NoBilling` WHERE 1 AND d.`IdPasien` = (SELECT `IdPasien` FROM `tbmpasien` WHERE `KodePasien` = '" + JTNamaPasien.getText().split("\\(")[1].split("\\)")[0] + "') GROUP BY d.`IdPasien`, a.`NoBilling` UNION ALL SELECT d.`IdPasien`, a.`Poin`*5000*-1 as 'Total Belanja', `Poin`*-1 FROM `tbbilling`a JOIN `tbperawatan`b ON a.`NoInvoice`=b.`NoInvoice` JOIN `tbantrian`c ON b.`NoAntrian`=c.`NoAntrian` AND b.`Tanggal`=c.`Tanggal` JOIN `tbmpasien`d ON c.`IdPasien`=d.`IdPasien` JOIN `tbbillingobat`e ON a.`NoBilling`=e.`NoBilling` JOIN `tbbillingtindakan`f ON a.`NoBilling`=f.`NoBilling` WHERE 1 AND a.`StatusPoin` = 1 AND d.`IdPasien` = (SELECT `IdPasien` FROM `tbmpasien` WHERE `KodePasien` = '" + JTNamaPasien.getText().split("\\(")[1].split("\\)")[0] + "') GROUP BY d.`IdPasien`, a.`NoBilling`) t1 WHERE 1 GROUP BY `IdPasien`");
-        dRunSelctOne.setQuery("SELECT `IdPasien`, IFNULL(SUM(`Poin`),0) as 'Poin' FROM (SELECT `IdPasien`, 0 as 'Jumlah Belanja', 0 as 'Poin' FROM `tbmpasien` WHERE 1 AND `KodePasien` = '" + JTNamaPasien.getText().split("\\(")[1].split("\\)")[0] + "' UNION ALL SELECT d.`IdPasien`, (SUM(e.`Jumlah`*e.`Harga`)+SUM(f.`Jumlah`*f.`Harga`) - (`Poin` * 5000)) as 'Total Belanja', FLOOR((SUM(e.`Jumlah`*e.`Harga`)+SUM(f.`Jumlah`*f.`Harga`) - (`Poin` * 5000)) / 50000) as 'Poin' FROM `tbbilling`a JOIN `tbperawatan`b ON a.`NoInvoice`=b.`NoInvoice` JOIN `tbantrian`c ON b.`NoAntrian`=c.`NoAntrian` AND b.`Tanggal`=c.`Tanggal` JOIN `tbmpasien`d ON c.`IdPasien`=d.`IdPasien` JOIN `tbbillingobat`e ON a.`NoBilling`=e.`NoBilling` JOIN `tbbillingtindakan`f ON a.`NoBilling`=f.`NoBilling` WHERE 1 AND d.`IdPasien` = (SELECT `IdPasien` FROM `tbmpasien` WHERE `KodePasien` = '" + JTNamaPasien.getText().split("\\(")[1].split("\\)")[0] + "') GROUP BY d.`IdPasien`, a.`NoBilling` UNION ALL SELECT d.`IdPasien`, a.`Poin`*5000*-1 as 'Total Belanja', `Poin`*-1 FROM `tbbilling`a JOIN `tbperawatan`b ON a.`NoInvoice`=b.`NoInvoice` JOIN `tbantrian`c ON b.`NoAntrian`=c.`NoAntrian` AND b.`Tanggal`=c.`Tanggal` JOIN `tbmpasien`d ON c.`IdPasien`=d.`IdPasien` JOIN `tbbillingobat`e ON a.`NoBilling`=e.`NoBilling` JOIN `tbbillingtindakan`f ON a.`NoBilling`=f.`NoBilling` WHERE 1 AND a.`StatusPoin` = 1 AND d.`IdPasien` = (SELECT `IdPasien` FROM `tbmpasien` WHERE `KodePasien` = '" + JTNamaPasien.getText().split("\\(")[1].split("\\)")[0] + "') GROUP BY d.`IdPasien`, a.`NoBilling` UNION ALL SELECT b.`IdPasien`, (SUM(a.`Jumlah`*a.`Harga`) - (`Poin` * 5000)) as 'Total Belanja', FLOOR((SUM(a.`Jumlah`*a.`Harga`) - (`Poin` * 5000)) / 50000) as 'Poin' FROM `tbpenjualandetail`a JOIN `tbpenjualan`b ON a.`NoTransaksi`=b.`NoTransaksi` WHERE 1 AND b.`IdPasien` = (SELECT `IdPasien` FROM `tbmpasien` WHERE `KodePasien` = '" + JTNamaPasien.getText().split("\\(")[1].split("\\)")[0] + "') GROUP BY b.`IdPasien`, a.`NoTransaksi` UNION ALL SELECT b.`IdPasien`, b.`Poin`*5000*-1 as 'Total Belanja', `Poin`*-1 FROM `tbpenjualandetail`a JOIN `tbpenjualan`b ON a.`NoTransaksi`=b.`NoTransaksi` WHERE 1 AND b.`StatusPoin` = 1 AND b.`IdPasien` = (SELECT `IdPasien` FROM `tbmpasien` WHERE `KodePasien` = '" + JTNamaPasien.getText().split("\\(")[1].split("\\)")[0] + "') GROUP BY b.`IdPasien`, a.`NoTransaksi`) t1 WHERE 1 GROUP BY `IdPasien`");
+        //dRunSelctOne.setQuery("SELECT `IdPasien`, IFNULL(SUM(`Poin`),0) as 'Poin' FROM (SELECT `IdPasien`, 0 as 'Jumlah Belanja', 0 as 'Poin' FROM `tbmpasien` WHERE 1 AND `KodePasien` = '" + JTNamaPasien.getText().split("\\(")[1].split("\\)")[0] + "' UNION ALL SELECT d.`IdPasien`, (SUM(e.`Jumlah`*e.`Harga`)+SUM(f.`Jumlah`*f.`Harga`) - (`Poin` * 5000)) as 'Total Belanja', FLOOR((SUM(e.`Jumlah`*e.`Harga`)+SUM(f.`Jumlah`*f.`Harga`) - (`Poin` * 5000)) / 50000) as 'Poin' FROM `tbbilling`a JOIN `tbperawatan`b ON a.`NoTransaksi`=b.`NoTransaksi` JOIN `tbantrian`c ON b.`IdAntrian`=c.`IdAntrian` JOIN `tbmpasien`d ON c.`IdPasien`=d.`IdPasien` JOIN `tbbillingobat`e ON a.`NoBilling`=e.`NoBilling` JOIN `tbbillingtindakan`f ON a.`NoBilling`=f.`NoBilling` WHERE 1 AND d.`IdPasien` = (SELECT `IdPasien` FROM `tbmpasien` WHERE `KodePasien` = '" + JTNamaPasien.getText().split("\\(")[1].split("\\)")[0] + "') GROUP BY d.`IdPasien`, a.`NoBilling` UNION ALL SELECT d.`IdPasien`, a.`Poin`*5000*-1 as 'Total Belanja', `Poin`*-1 FROM `tbbilling`a JOIN `tbperawatan`b ON a.`NoTransaksi`=b.`NoTransaksi` JOIN `tbantrian`c ON b.`IdAntrian`=c.`IdAntrian` JOIN `tbmpasien`d ON c.`IdPasien`=d.`IdPasien` JOIN `tbbillingobat`e ON a.`NoBilling`=e.`NoBilling` JOIN `tbbillingtindakan`f ON a.`NoBilling`=f.`NoBilling` WHERE 1 AND a.`StatusPoin` = 1 AND d.`IdPasien` = (SELECT `IdPasien` FROM `tbmpasien` WHERE `KodePasien` = '" + JTNamaPasien.getText().split("\\(")[1].split("\\)")[0] + "') GROUP BY d.`IdPasien`, a.`NoBilling`) t1 WHERE 1 GROUP BY `IdPasien`");
+        dRunSelctOne.setQuery("SELECT `IdPasien`, IFNULL(SUM(`Poin`),0) as 'Poin' FROM (    SELECT `IdPasien`, 0 as 'Jumlah Belanja', 0 as 'Poin' FROM `tbmpasien` WHERE 1 AND `KodePasien` = '" + JTNamaPasien.getText().split("\\(")[1].split("\\)")[0] + "'     UNION ALL     SELECT d.`IdPasien`, (SUM(IFNULL(e.`Jumlah`,0)*IFNULL(e.`Harga`,0))+SUM(IFNULL(f.`Jumlah`,0)*IFNULL(f.`Harga`,0)) - (`Poin` * 5000)) as 'Total Belanja', FLOOR((SUM(IFNULL(e.`Jumlah`,0)*IFNULL(e.`Harga`,0))+SUM(IFNULL(f.`Jumlah`,0)*IFNULL(f.`Harga`,0)) - (`Poin` * 5000)) / 50000) as 'Poin' FROM `tbbilling`a LEFT JOIN `tbperawatan`b ON a.`NoTransaksi`=b.`NoTransaksi` JOIN `tbantrian`c ON IF(b.`IdAntrian` IS NULL, a.`IdAntrian`, b.`IdAntrian`)=c.`IdAntrian` JOIN `tbmpasien`d ON c.`IdPasien`=d.`IdPasien` LEFT JOIN `tbbillingobat`e ON a.`NoBilling`=e.`NoBilling` LEFT JOIN `tbbillingtindakan`f ON a.`NoBilling`=f.`NoBilling` WHERE 1 AND `KodePasien` = '" + JTNamaPasien.getText().split("\\(")[1].split("\\)")[0] + "' GROUP BY d.`IdPasien`, a.`NoBilling`     UNION ALL     SELECT d.`IdPasien`, a.`Poin`*5000*-1 as 'Total Belanja', `Poin`*-1 FROM `tbbilling`a LEFT JOIN `tbperawatan`b ON a.`NoTransaksi`=b.`NoTransaksi` JOIN `tbantrian`c ON IF(b.`IdAntrian` IS NULL, a.`IdAntrian`, b.`IdAntrian`)=c.`IdAntrian` JOIN `tbmpasien`d ON c.`IdPasien`=d.`IdPasien` LEFT JOIN `tbbillingobat`e ON a.`NoBilling`=e.`NoBilling` LEFT JOIN `tbbillingtindakan`f ON a.`NoBilling`=f.`NoBilling` WHERE 1 AND a.`StatusPoin` = 1 AND d.`IdPasien` = `KodePasien` = '" + JTNamaPasien.getText().split("\\(")[1].split("\\)")[0] + "' GROUP BY d.`IdPasien`, a.`NoBilling`) t1 WHERE 1 GROUP BY `IdPasien`");
         ArrayList<String> list = dRunSelctOne.excute();
         JLPoin.setText("Poin (" + (Integer.parseInt(list.get(1)) + poin) + ")");
         if (list.get(1).equals("0")) {
@@ -458,6 +589,7 @@ public class Billing extends javax.swing.JFrame {
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
+        bindingGroup = new org.jdesktop.beansbinding.BindingGroup();
 
         jlableF2 = new KomponenGUI.JlableF();
         jlableF3 = new KomponenGUI.JlableF();
@@ -493,7 +625,7 @@ public class Billing extends javax.swing.JFrame {
         jlableF14 = new KomponenGUI.JlableF();
         jlableF15 = new KomponenGUI.JlableF();
         jlableF16 = new KomponenGUI.JlableF();
-        JTNoInvoice = new KomponenGUI.JtextF();
+        JTNoTransaksi = new KomponenGUI.JtextF();
         jlableF17 = new KomponenGUI.JlableF();
         JBKembali = new KomponenGUI.JbuttonF();
         JBUbah = new KomponenGUI.JbuttonF();
@@ -543,7 +675,7 @@ public class Billing extends javax.swing.JFrame {
 
         jlableF5.setText(":");
 
-        JCNamaDokter.load("SELECT '-- Pilih Nama Dokter --' as 'NamaDokter' UNION ALL SELECT `NamaDokter` FROM `tbmdokter`");
+        JCNamaDokter.load("SELECT '-- Pilih Nama Dokter --' as 'NamaDokter' UNION ALL SELECT `NamaDokter` FROM `tbmdokter` WHERE `Status` = 1 ");
         JCNamaDokter.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
                 JCNamaDokterKeyPressed(evt);
@@ -554,7 +686,7 @@ public class Billing extends javax.swing.JFrame {
 
         jlableF7.setText(":");
 
-        JCNamaBeautician.load("SELECT '-- Pilih Nama Beautician --' as 'Nama Beautician' UNION ALL SELECT `NamaBeautician` FROM `tbmbeautician`");
+        JCNamaBeautician.load("SELECT '-- Pilih Nama Beautician --' as 'Nama Beautician' UNION ALL SELECT `NamaBeautician` FROM `tbmbeautician` WHERE `Status` = 1 ");
         JCNamaBeautician.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
                 JCNamaBeauticianKeyPressed(evt);
@@ -583,7 +715,7 @@ public class Billing extends javax.swing.JFrame {
             }
         });
 
-        JCTindakan.load("SELECT '-- Pilih Tindakan --' as 'NamaTindakan' UNION ALL SELECT `NamaTindakan` FROM `tbmtindakan`");
+        JCTindakan.load("SELECT '-- Pilih Tindakan --' as 'NamaTindakan' UNION ALL (SELECT `NamaTindakan` FROM `tbmtindakan` WHERE `Status` = 1 ORDER BY `NamaTindakan`)");
         JCTindakan.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
                 JCTindakanItemStateChanged(evt);
@@ -628,6 +760,10 @@ public class Billing extends javax.swing.JFrame {
         JTableTindakan.setrender(new int[]{1,2,3}, new String[]{"Number","Number","Number"});
 
         JBHapusTindakan.setText("Hapus");
+
+        org.jdesktop.beansbinding.Binding binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, JTableTindakan, org.jdesktop.beansbinding.ELProperty.create("${selectedElement != null}"), JBHapusTindakan, org.jdesktop.beansbinding.BeanProperty.create("enabled"));
+        bindingGroup.addBinding(binding);
+
         JBHapusTindakan.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 JBHapusTindakanActionPerformed(evt);
@@ -685,7 +821,7 @@ public class Billing extends javax.swing.JFrame {
                     .addComponent(JBHapusTindakan, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(JBTambahTindakan, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(JBRefreshTindakan, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap(20, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -729,7 +865,7 @@ public class Billing extends javax.swing.JFrame {
             }
         });
 
-        JCObat.load("SELECT '-- Pilih Obat --' as 'NamaBarang' UNION ALL SELECT `NamaBarang` FROM `tbmbarang`");
+        JCObat.load("SELECT '-- Pilih Obat --' as 'NamaBarang' UNION ALL (SELECT `NamaBarang` FROM `tbmbarang` WHERE `Status` = 1 ORDER BY `NamaBarang`)");
         JCObat.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
                 JCObatItemStateChanged(evt);
@@ -774,6 +910,10 @@ public class Billing extends javax.swing.JFrame {
         JTableObat.setrender(new int[]{1,2,3}, new String[]{"Number","Number","Number"});
 
         JBHapusObat.setText("Hapus");
+
+        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, JTableObat, org.jdesktop.beansbinding.ELProperty.create("${selectedElement != null}"), JBHapusObat, org.jdesktop.beansbinding.BeanProperty.create("enabled"));
+        bindingGroup.addBinding(binding);
+
         JBHapusObat.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 JBHapusObatActionPerformed(evt);
@@ -879,9 +1019,9 @@ public class Billing extends javax.swing.JFrame {
 
         jlableF16.setText(":");
 
-        JTNoInvoice.setEnabled(false);
+        JTNoTransaksi.setEnabled(false);
 
-        jlableF17.setText("No. Invoice");
+        jlableF17.setText("No. Transaksi");
 
         JBKembali.setText("Kembali");
         JBKembali.addActionListener(new java.awt.event.ActionListener() {
@@ -987,6 +1127,7 @@ public class Billing extends javax.swing.JFrame {
 
         jlableF26.setText(":");
 
+        JTKembali.setDisabledTextColor(new java.awt.Color(255, 0, 0));
         JTKembali.setEnabled(false);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -1010,47 +1151,46 @@ public class Billing extends javax.swing.JFrame {
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addGroup(layout.createSequentialGroup()
+                                        .addComponent(jlableF5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(JCNamaDokter, javax.swing.GroupLayout.PREFERRED_SIZE, 400, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(jlableF7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(JCNamaBeautician, javax.swing.GroupLayout.PREFERRED_SIZE, 400, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addGroup(layout.createSequentialGroup()
                                         .addComponent(jlableF3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(JTNamaPasien, javax.swing.GroupLayout.PREFERRED_SIZE, 400, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addComponent(jlableF15, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(JTNamaPasien, javax.swing.GroupLayout.PREFERRED_SIZE, 400, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(jlableF15, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                         .addComponent(jlableF14, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                         .addComponent(JDTanggal, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addGroup(layout.createSequentialGroup()
-                                                .addComponent(jlableF5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                .addComponent(JCNamaDokter, javax.swing.GroupLayout.PREFERRED_SIZE, 400, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                            .addGroup(layout.createSequentialGroup()
-                                                .addComponent(jlableF7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                .addComponent(JCNamaBeautician, javax.swing.GroupLayout.PREFERRED_SIZE, 400, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addGroup(layout.createSequentialGroup()
-                                                .addComponent(jlableF20, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                .addComponent(jlableF21, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                .addComponent(JTNoAntrian, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                            .addGroup(layout.createSequentialGroup()
-                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                                    .addGroup(layout.createSequentialGroup()
-                                                        .addComponent(jlableF17, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                        .addComponent(jlableF16, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                                    .addGroup(layout.createSequentialGroup()
-                                                        .addComponent(jlableF23, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                        .addComponent(jlableF22, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                                    .addComponent(JTNoBilling, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                    .addComponent(JTNoInvoice, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)))))))
+                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                            .addComponent(jlableF20, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                            .addComponent(jlableF21, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                            .addComponent(JTNoAntrian, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                        .addGroup(layout.createSequentialGroup()
+                                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                                .addGroup(layout.createSequentialGroup()
+                                                    .addComponent(jlableF17, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                    .addComponent(jlableF16, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                                .addGroup(layout.createSequentialGroup()
+                                                    .addComponent(jlableF23, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                    .addComponent(jlableF22, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                .addComponent(JTNoBilling, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addComponent(JTNoTransaksi, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE))))))
                             .addGroup(layout.createSequentialGroup()
                                 .addGap(0, 0, Short.MAX_VALUE)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
@@ -1126,7 +1266,7 @@ public class Billing extends javax.swing.JFrame {
                     .addComponent(JCNamaBeautician, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jlableF17, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jlableF16, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(JTNoInvoice, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(JTNoTransaksi, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(JTNoBilling, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -1178,6 +1318,8 @@ public class Billing extends javax.swing.JFrame {
                     .addComponent(JBUbahPrint, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap())
         );
+
+        bindingGroup.bind();
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -1507,7 +1649,7 @@ public class Billing extends javax.swing.JFrame {
     private KomponenGUI.JtextF JTNamaPasien;
     private KomponenGUI.JtextF JTNoAntrian;
     private KomponenGUI.JtextF JTNoBilling;
-    private KomponenGUI.JtextF JTNoInvoice;
+    private KomponenGUI.JtextF JTNoTransaksi;
     private KomponenGUI.JRibuanTextField JTSetelahPotong;
     private KomponenGUI.JPlaceHolder JTSubTotalObat;
     private KomponenGUI.JPlaceHolder JTSubTotalTindakan;
@@ -1544,6 +1686,7 @@ public class Billing extends javax.swing.JFrame {
     private KomponenGUI.JlableF jlableF7;
     private KomponenGUI.JlableF jlableF8;
     private KomponenGUI.JlableF jlableF9;
+    private org.jdesktop.beansbinding.BindingGroup bindingGroup;
     // End of variables declaration//GEN-END:variables
 
     void tambahTableTindakan() {
@@ -1642,7 +1785,7 @@ public class Billing extends javax.swing.JFrame {
             if (Berhasil) {
                 Berhasil = multiInsert.setautocomit(false);
                 if (Berhasil) {
-                    Berhasil = multiInsert.Excute("INSERT INTO `tbbilling`(`NoBilling`, `Tanggal`, `NoInvoice`, `Bayar`, `StatusPoin`, `Poin`) VALUES ('" + JTNoBilling.getText() + "','" + FDateF.datetostr(JDTanggal.getDate(), "yyyy-MM-dd") + "','" + JTNoInvoice.getText() + "','" + JTBayar.getNumberFormattedText() + "', " + JCBPakaiPoin.isSelected() + ", '" + getPoinTerpakai() + "')", null);
+                    Berhasil = multiInsert.Excute("INSERT INTO `tbbilling`(`IdAntrian`, `NoBilling`, `Tanggal`, `NoTransaksi`, `Bayar`, `StatusPoin`, `Poin`) VALUES ('" + Parameter + "','" + JTNoBilling.getText() + "','" + FDateF.datetostr(JDTanggal.getDate(), "yyyy-MM-dd") + "','" + JTNoTransaksi.getText() + "','" + JTBayar.getNumberFormattedText() + "', " + JCBPakaiPoin.isSelected() + ", '" + getPoinTerpakai() + "')", null);
                     if (Berhasil) {
                         for (int i = 0; i < JTableTindakan.getRowCount(); i++) {
                             Berhasil = multiInsert.Excute("INSERT INTO `tbbillingtindakan`(`NoBilling`, `IdTindakan`, `Jumlah`, `Harga`) VALUES ('" + JTNoBilling.getText() + "',(SELECT `IdTindakan` FROM `tbmtindakan` WHERE `NamaTindakan` = '" + JTableTindakan.getValueAt(i, 0) + "'),'" + JTableTindakan.getValueAt(i, 1).toString().replace(".", "") + "','" + JTableTindakan.getValueAt(i, 2).toString().replace(".", "") + "')", null);
@@ -1651,18 +1794,21 @@ public class Billing extends javax.swing.JFrame {
                             for (int j = 0; j < JTableObat.getRowCount(); j++) {
                                 Berhasil = multiInsert.Excute("INSERT INTO `tbbillingobat`(`NoBilling`, `IdObat`, `Jumlah`, `Harga`) VALUES ('" + JTNoBilling.getText() + "',(SELECT `IdBarang` FROM `tbmbarang` WHERE `NamaBarang` = '" + JTableObat.getValueAt(j, 0) + "'),'" + JTableObat.getValueAt(j, 1).toString().replace(".", "") + "','" + JTableObat.getValueAt(j, 2).toString().replace(".", "") + "')", null);
                             }
+                            if (Berhasil) {
+                                Berhasil = multiInsert.Excute("UPDATE `tbantrian` SET `Status` = 1 WHERE `IdAntrian` = '" + Parameter + "'", null);
+                            }
                         }
                     }
                 }
                 if (Berhasil == false) {
                     multiInsert.rollback();
-                    multiInsert.closecon();
+//                    multiInsert.closecon();
                     JOptionPaneF.showMessageDialog(this, "Gagal Tambah Data Billing");
                 }
                 if (Berhasil == true) {
                     JOptionPaneF.showMessageDialog(this, "Berhasil Tambah Data Billing");
                     multiInsert.Commit();
-                    multiInsert.closecon();
+//                    multiInsert.closecon();
                     if (print) {
                         printing();
                     }
@@ -1673,6 +1819,12 @@ public class Billing extends javax.swing.JFrame {
                         listAntrianBilling.load();
                         if (listAntrianBilling.jcomCari1.jtablef.getRowCount() == 0) {
                             listAntrianBilling.dispose();
+                        }
+                    }
+                    if (listAntrian != null) {
+                        listAntrian.load();
+                        if (listAntrian.jcomCari1.jtablef.getRowCount() == 0) {
+                            listAntrian.dispose();
                         }
                     }
                     dispose();
@@ -1689,7 +1841,7 @@ public class Billing extends javax.swing.JFrame {
             if (Berhasil) {
                 Berhasil = multiInsert.setautocomit(false);
                 if (Berhasil) {
-                    Berhasil = multiInsert.Excute("UPDATE `tbbilling` SET `NoBilling`='" + JTNoBilling.getText() + "',`Tanggal`='" + FDateF.datetostr(JDTanggal.getDate(), "yyyy-MM-dd") + "',`NoInvoice`='" + JTNoInvoice.getText() + "',`Bayar`='" + JTBayar.getNumberFormattedText() + "', `StatusPoin` = " + JCBPakaiPoin.isSelected() + ", `Poin` = '" + getPoinTerpakai() + "' WHERE `IdBilling` = '" + Parameter + "'", null);
+                    Berhasil = multiInsert.Excute("UPDATE `tbbilling` SET `NoBilling`='" + JTNoBilling.getText() + "',`Tanggal`='" + FDateF.datetostr(JDTanggal.getDate(), "yyyy-MM-dd") + "',`NoTransaksi`='" + JTNoTransaksi.getText() + "',`Bayar`='" + JTBayar.getNumberFormattedText() + "', `StatusPoin` = " + JCBPakaiPoin.isSelected() + ", `Poin` = '" + getPoinTerpakai() + "' WHERE `IdBilling` = '" + Parameter + "'", null);
                     if (Berhasil) {
                         Berhasil = multiInsert.Excute("DELETE FROM `tbbillingtindakan` WHERE `NoBilling` = '" + JTNoBilling.getText() + "'", null);
                         if (Berhasil) {
@@ -1709,13 +1861,13 @@ public class Billing extends javax.swing.JFrame {
                 }
                 if (Berhasil == false) {
                     multiInsert.rollback();
-                    multiInsert.closecon();
+//                    multiInsert.closecon();
                     JOptionPaneF.showMessageDialog(this, "Gagal Ubah Data Billing");
                 }
                 if (Berhasil == true) {
                     JOptionPaneF.showMessageDialog(this, "Berhasil Ubah Data Billing");
                     multiInsert.Commit();
-                    multiInsert.closecon();
+//                    multiInsert.closecon();
                     if (print) {
                         printing();
                     }
@@ -1773,12 +1925,12 @@ public class Billing extends javax.swing.JFrame {
             addtomodel(model, data, rowcount);
         }
 
-        System.out.println("Check Passed.");
+//        System.out.println("Check Passed.");
     }
 
     Object[][] getTableData(JTable table1, JTable table2) {
         int itemcount = table1.getRowCount() + table2.getRowCount();
-        System.out.println("Item Count:" + itemcount);
+//        System.out.println("Item Count:" + itemcount);
 
         DefaultTableModel dtm1 = (DefaultTableModel) table1.getModel();
         DefaultTableModel dtm2 = (DefaultTableModel) table2.getModel();
@@ -1802,7 +1954,7 @@ public class Billing extends javax.swing.JFrame {
             if (tableData.length != itemcount) {
                 getTableData(table1, table2);
             }
-            System.out.println("Data check passed");
+//            System.out.println("Data check passed");
         } else {
             getTableData(table1, table2);
         }

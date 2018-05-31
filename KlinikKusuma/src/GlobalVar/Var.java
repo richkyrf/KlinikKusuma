@@ -36,7 +36,6 @@ public class Var {
     public static ListPoin cekPoin;
 
     public static Jcari jcari;
-    public static Penjualan tambahPenjualan, ubahPenjualan;
     public static BarangMasuk tambahBarangMasuk, ubahBarangMasuk;
     public static Perawatan tambahPerawatan, ubahPerawatan;
     public static PenyesuaianStok tambahPenyesuaianStok, tambahPenyesuaianStokGudangBesar;

@@ -39,7 +39,7 @@ public class DrunChekDuplicate {
                     pstmt.close();
                 }
                 if (con != null) {
-                    con.close();
+//                    con.close();
                 }
             } catch (SQLException ex) {
                 LogEror.SaveEror(ex);

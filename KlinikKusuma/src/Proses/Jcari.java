@@ -71,6 +71,7 @@ public class Jcari extends javax.swing.JFrame {
             JTCariNamaBarang.requestFocus();
         } else {
             caridengankode();
+            JTCariNamaBarang.requestFocus();
         }
         setTitle(Title);
         setLocationRelativeTo(null);

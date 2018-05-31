@@ -131,7 +131,7 @@ public class MultiInsert {
     public void closecon() {
         try {
             if (con != null) {
-                con.close();
+//                con.close();
             }
         } catch (Exception e) {
             Eror.LogEror.SaveEror(e);

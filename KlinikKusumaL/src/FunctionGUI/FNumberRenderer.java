@@ -32,7 +32,7 @@ public class FNumberRenderer extends FJtableFormatRender {
         DecimalFormat df = new DecimalFormat("#,###,###,###.00");
         return new FNumberRenderer(df, SwingConstants.RIGHT);
     }
-
+    
     public FNumberRenderer(NumberFormat formatter, int alignment) {
         super(formatter);
         setHorizontalAlignment(alignment);

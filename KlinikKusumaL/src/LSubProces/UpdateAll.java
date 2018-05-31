@@ -36,7 +36,7 @@ public class UpdateAll {
                     pstmt.close();
                 }
                 if (con != null) {
-                    con.close();
+//                    con.close();
                 }
             } catch (SQLException ex) {
                 Eror.LogEror.SaveEror(ex);

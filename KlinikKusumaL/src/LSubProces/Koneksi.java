@@ -10,10 +10,10 @@ import javax.swing.JOptionPane;
 public class Koneksi {
 
     private Connection Con = null;
-    //String url = "jdbc:mysql://192.168.1.20:1358/";
-    //String user = "databasedo";
-    //String pass = "Win32&serVer";
-    String url = "jdbc:mysql://localhost/";
+//    String url = "jdbc:mysql://118.97.150.178:33333/";
+//    String user = "databasedo";
+//    String pass = "Win32&serVer";
+    String url = "jdbc:mysql://localhost:3306/";
     String user = "root";
     String pass = "";
     String db = "dbkusuma";
@@ -35,14 +35,18 @@ public class Koneksi {
     }
 
     public Connection getConnection() {
-        try {
-            Class.forName("com.mysql.jdbc.Driver");
-            Con = DriverManager.getConnection(url + db, user, pass);
-        } catch (ClassNotFoundException | SQLException ex) {
-            LogEror.SaveEror(ex);
-            JOptionPaneF.showMessageDialog(null, "Koneksi Ke Server Database Gagal !!!");
-
+        if (GlobalVar.VarL.koneksi == null) {
+            try {
+                Class.forName("com.mysql.jdbc.Driver");
+                Con = DriverManager.getConnection(url + db, user, pass);
+            } catch (ClassNotFoundException | SQLException ex) {
+                LogEror.SaveEror(ex);
+                JOptionPaneF.showMessageDialog(null, "Koneksi Ke Server Database Gagal !!!");
+            }
+            GlobalVar.VarL.koneksi = Con;
+            return Con;
+        } else {
+            return GlobalVar.VarL.koneksi;
         }
-        return Con;
     }
 }

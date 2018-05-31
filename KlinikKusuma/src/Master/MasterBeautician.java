@@ -65,10 +65,10 @@ public class MasterBeautician extends javax.swing.JFrame {
             JOptionPaneF.showMessageDialog(null, "Gagal. Nama Tidak Boleh Kosong");
             JTNamaBeautician.requestFocus();
             return false;
-        } else if (JTNoTelpon.getText().replace(" ", "").equals("")) {
-            JOptionPaneF.showMessageDialog(null, "Gagal. No. Telpon Tidak Boleh Kosong");
-            JTNoTelpon.requestFocus();
-            return false;
+//        } else if (JTNoTelpon.getText().replace(" ", "").equals("")) {
+//            JOptionPaneF.showMessageDialog(null, "Gagal. No. Telpon Tidak Boleh Kosong");
+//            JTNoTelpon.requestFocus();
+//            return false;
         }
         return true;
     }

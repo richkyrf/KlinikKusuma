@@ -20,6 +20,8 @@ import java.util.Vector;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.SwingConstants;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
@@ -88,19 +90,22 @@ public class JtableF extends JTable {
     public void setrender(int[] x, String[] Type) {
         try {
             TableColumnModel m = this.getColumnModel();
+            DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+            centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
+            DefaultTableCellRenderer leftRenderer = new DefaultTableCellRenderer();
+            centerRenderer.setHorizontalAlignment(SwingConstants.LEFT);
+            DefaultTableCellRenderer rightRenderer = new DefaultTableCellRenderer();
+            centerRenderer.setHorizontalAlignment(SwingConstants.RIGHT);
             for (int i = 0; i < x.length; i++) {
                 if ("Date".equals(Type[i])) {
                     m.getColumn(x[i]).setCellRenderer(FormatRenderer.getDateTimeRenderer());
                 }
-
                 if ("Time".equals(Type[i])) {
                     m.getColumn(x[i]).setCellRenderer(FormatRenderer.getTimeRenderer());
                 }
-
                 if ("Percent".equals(Type[i])) {
                     m.getColumn(x[i]).setCellRenderer(FNumberRenderer.getPercentRenderer());
                 }
-
                 if ("Curency".equals(Type[i])) {
                     m.getColumn(x[i]).setCellRenderer(FNumberRenderer.getCurrencyRenderer());
                 }
@@ -109,6 +114,15 @@ public class JtableF extends JTable {
                 }
                 if ("CenteredNumber".equals(Type[i])) {
                     m.getColumn(x[i]).setCellRenderer(FNumberRenderer.getcenteredumberrender());
+                }
+                if ("Center".equals(Type[i])) {
+                    m.getColumn(x[i]).setCellRenderer(centerRenderer);
+                }
+                if ("Left".equals(Type[i])) {
+                    m.getColumn(x[i]).setCellRenderer(leftRenderer);
+                }
+                if ("Right".equals(Type[i])) {
+                    m.getColumn(x[i]).setCellRenderer(rightRenderer);
                 }
                 if ("Decimal".equals(Type[i])) {
                     m.getColumn(x[i]).setCellRenderer(FNumberRenderer.getdecimalrender());
@@ -228,7 +242,7 @@ public class JtableF extends JTable {
                     pstmt.close();
                 }
                 if (con != null) {
-                    con.close();
+//                    con.close();
                 }
             } catch (SQLException ex) {
                 LogEror.SaveEror(ex);

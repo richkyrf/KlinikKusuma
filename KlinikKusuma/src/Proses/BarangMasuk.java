@@ -7,14 +7,10 @@ package Proses;
 
 import static GlobalVar.Var.*;
 import KomponenGUI.FDateF;
-import static KomponenGUI.FDateF.datetostr;
 import Master.*;
 import LSubProces.DRunSelctOne;
-import LSubProces.Insert;
 import LSubProces.MultiInsert;
 import LSubProces.RunSelct;
-import LSubProces.Update;
-import java.awt.Color;
 import static java.awt.Frame.NORMAL;
 import java.awt.event.KeyEvent;
 import java.io.ByteArrayInputStream;
@@ -22,7 +18,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import static java.lang.Integer.parseInt;
 import static java.lang.Math.abs;
-import static java.lang.String.format;
 import static java.lang.System.out;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -49,7 +44,6 @@ import static javax.print.attribute.standard.OrientationRequested.LANDSCAPE;
 import javax.print.event.PrintJobAdapter;
 import javax.print.event.PrintJobEvent;
 import FunctionGUI.JOptionPaneF;
-import javax.swing.UIManager;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -89,7 +83,7 @@ public class BarangMasuk extends javax.swing.JFrame {
 
     void cariBarang(String keywordCari) {
         if (jcari == null) {
-            jcari = new Jcari("SELECT `JenisBarang`, `NamaBarang` FROM `tbmbarang`a JOIN `tbsmjenisbarang`b ON a.`IdJenisBarang`=b.`IdJenisBarang` WHERE `JenisBarang` ", "SELECT `JenisBarang`, `NamaBarang` FROM `tbmbarang`a JOIN `tbsmjenisbarang`b ON a.`IdJenisBarang`=b.`IdJenisBarang` WHERE `NamaBarang` ", "Jenis Barang", "Nama Barang", "Cari Barang", 1, JTNamaBarang, JTJumlah, keywordCari);
+            jcari = new Jcari("SELECT `JenisBarang`, `NamaBarang` FROM `tbmbarang`a JOIN `tbsmjenisbarang`b ON a.`IdJenisBarang`=b.`IdJenisBarang` WHERE `Status` = 1 AND `JenisBarang` ", "SELECT `JenisBarang`, `NamaBarang` FROM `tbmbarang`a JOIN `tbsmjenisbarang`b ON a.`IdJenisBarang`=b.`IdJenisBarang` WHERE `Status` = 1 AND `NamaBarang` ", "Jenis Barang", "Nama Barang", "Cari Barang", 1, JTNamaBarang, JTJumlah, keywordCari);
         } else {
             jcari.setState(NORMAL);
             jcari.toFront();
@@ -125,7 +119,7 @@ public class BarangMasuk extends javax.swing.JFrame {
             out.println("E6" + e);
             JOptionPaneF.showMessageDialog(null, "Gagal Panggil Data Detail Barang Masuk");
         } finally {
-            runSelct.closecon();
+//            runSelct.closecon();
         }
         JTGrandTotal.setText(String.valueOf(getGrandTotal()));
     }
@@ -143,37 +137,37 @@ public class BarangMasuk extends javax.swing.JFrame {
     }
 
     public static String getNoBarangMasuk() {
-        NumberFormat nf = new DecimalFormat("000000");
+        NumberFormat nf = new DecimalFormat("00000");
         String NoTransaksi = null;
         RunSelct runSelct = new RunSelct();
         runSelct.setQuery("SELECT `NoTransaksi` FROM `tbbarangmasuk` ORDER BY `NoTransaksi` DESC LIMIT 1");
         try {
             ResultSet rs = runSelct.excute();
             if (!rs.isBeforeFirst()) {
-                NoTransaksi = "KB-" + "000001" + "-BM";
+                NoTransaksi = "BM-" + "00001" + "-" + FDateF.datetostr(new Date(), "YY");
             }
             while (rs.next()) {
                 String nobarangmasuk = rs.getString("NoTransaksi");
-                String number = nobarangmasuk.substring(3, 9);
-                //String month = nobarangmasuk.substring(8, 10);
-                int p = 1 + parseInt(number);
-                /*if (month.equals(FDateF.datetostr(new Date(), "MM"))) {
+                String number = nobarangmasuk.substring(3, 8);
+                String year = nobarangmasuk.substring(9, 11);
+                int p;
+                if (year.equals(FDateF.datetostr(new Date(), "YY"))) {
                     p = 1 + parseInt(number);
                 } else {
                     p = 1;
-                }*/
-                if (p != 999999) {
-                    NoTransaksi = "KB-" + nf.format(p) + "-BM";
-                } else if (p == 999999) {
+                }
+                if (p != 99999) {
+                    NoTransaksi = "BM-" + nf.format(p) + "-" + FDateF.datetostr(new Date(), "YY");
+                } else if (p == 99999) {
                     p = 1;
-                    NoTransaksi = "KB-" + nf.format(p) + "-BM";
+                    NoTransaksi = "BM-" + nf.format(p) + "-" + FDateF.datetostr(new Date(), "YY");
                 }
             }
         } catch (SQLException e) {
             out.println("E6" + e);
             JOptionPaneF.showMessageDialog(null, "Gagal Generate Nomor Barang Masuk");
         } finally {
-            runSelct.closecon();
+//            runSelct.closecon();
         }
         return NoTransaksi;
     }
@@ -488,7 +482,7 @@ public class BarangMasuk extends javax.swing.JFrame {
 
         JTSubTotal.setEnabled(false);
 
-        JCPemasok.load("SELECT `NamaPemasok` FROM `tbmpemasok` ORDER BY `NamaPemasok` ASC ");
+        JCPemasok.load("SELECT `NamaPemasok` FROM `tbmpemasok` WHERE `Status` = 1 ORDER BY `NamaPemasok` ASC ");
         JCPemasok.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
                 JCPemasokKeyPressed(evt);
@@ -1009,13 +1003,13 @@ public class BarangMasuk extends javax.swing.JFrame {
             }
             if (Berhasil == false) {
                 multiInsert.rollback();
-                multiInsert.closecon();
+//                multiInsert.closecon();
                 JOptionPaneF.showMessageDialog(this, "Gagal Tambah Data Barang Masuk");
             }
             if (Berhasil == true) {
                 JOptionPaneF.showMessageDialog(this, "Berhasil Tambah Data Barang Masuk");
                 multiInsert.Commit();
-                multiInsert.closecon();
+//                multiInsert.closecon();
                 if (listBarangMasuk != null) {
                     listBarangMasuk.load();
                 }
@@ -1059,13 +1053,13 @@ public class BarangMasuk extends javax.swing.JFrame {
             }
             if (Berhasil == false) {
                 multiInsert.rollback();
-                multiInsert.closecon();
+//                multiInsert.closecon();
                 JOptionPaneF.showMessageDialog(this, "Gagal Ubah Data Barang Masuk");
             }
             if (Berhasil == true) {
                 JOptionPaneF.showMessageDialog(this, "Berhasil Ubah Data Barang Masuk");
                 multiInsert.Commit();
-                multiInsert.closecon();
+//                multiInsert.closecon();
                 dispose();
                 ubahBarangMasuk = null;
                 if (listBarangMasuk != null) {

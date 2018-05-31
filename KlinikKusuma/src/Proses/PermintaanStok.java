@@ -92,7 +92,7 @@ public class PermintaanStok extends javax.swing.JFrame {
 
     void cariBarang(String keywordCari) {
         if (jcari == null) {
-            jcari = new Jcari("SELECT `JenisBarang`, `NamaBarang` FROM `tbmbarang`a JOIN `tbsmjenisbarang`b ON a.`IdJenisBarang`=b.`IdJenisBarang` WHERE `JenisBarang` ", "SELECT `JenisBarang`, `NamaBarang` FROM `tbmbarang`a JOIN `tbsmjenisbarang`b ON a.`IdJenisBarang`=b.`IdJenisBarang` WHERE `NamaBarang` ", "Jenis Barang", "Nama Barang", "Cari Barang", 1, JTNamaBarang, JTJumlah, keywordCari);
+            jcari = new Jcari("SELECT `JenisBarang`, `NamaBarang` FROM `tbmbarang`a JOIN `tbsmjenisbarang`b ON a.`IdJenisBarang`=b.`IdJenisBarang` WHERE `Status` = 1 AND `JenisBarang` ", "SELECT `JenisBarang`, `NamaBarang` FROM `tbmbarang`a JOIN `tbsmjenisbarang`b ON a.`IdJenisBarang`=b.`IdJenisBarang` WHERE `Status` = 1 AND `NamaBarang` ", "Jenis Barang", "Nama Barang", "Cari Barang", 1, JTNamaBarang, JTJumlah, keywordCari);
         } else {
             jcari.setState(NORMAL);
             jcari.toFront();
@@ -189,6 +189,11 @@ public class PermintaanStok extends javax.swing.JFrame {
             }
         });
 
+        JTJumlah.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                JTJumlahFocusGained(evt);
+            }
+        });
         JTJumlah.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
                 JTJumlahKeyPressed(evt);
@@ -418,7 +423,7 @@ public class PermintaanStok extends javax.swing.JFrame {
     }//GEN-LAST:event_jbuttonF3ActionPerformed
 
     private void JTNamaBarangFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_JTNamaBarangFocusLost
-        setStok();
+        
     }//GEN-LAST:event_JTNamaBarangFocusLost
 
     private void JTNamaBarangKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_JTNamaBarangKeyPressed
@@ -436,7 +441,7 @@ public class PermintaanStok extends javax.swing.JFrame {
     }//GEN-LAST:event_JTNamaBarangKeyReleased
 
     private void JBSearchNamaBarangFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_JBSearchNamaBarangFocusLost
-        setStok();
+        
     }//GEN-LAST:event_JBSearchNamaBarangFocusLost
 
     private void JBSearchNamaBarangActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBSearchNamaBarangActionPerformed
@@ -456,6 +461,10 @@ public class PermintaanStok extends javax.swing.JFrame {
     private void jbuttonF4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbuttonF4ActionPerformed
         ubahData();
     }//GEN-LAST:event_jbuttonF4ActionPerformed
+
+    private void JTJumlahFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_JTJumlahFocusGained
+        setStok();
+    }//GEN-LAST:event_JTJumlahFocusGained
 
     /**
      * @param args the command line arguments
@@ -522,31 +531,37 @@ public class PermintaanStok extends javax.swing.JFrame {
     // End of variables declaration//GEN-END:variables
 
     public static String getNoPermintaanStok() {
-        NumberFormat nf = new DecimalFormat("000000");
+        NumberFormat nf = new DecimalFormat("00000");
         String NoPermintaan = null;
         RunSelct runSelct = new RunSelct();
         runSelct.setQuery("SELECT `NoPermintaan` FROM `tbpermintaanstok` ORDER BY `NoPermintaan` DESC LIMIT 1");
         try {
             ResultSet rs = runSelct.excute();
             if (!rs.isBeforeFirst()) {
-                NoPermintaan = "KB-" + "000001" + "-PN";
+                NoPermintaan = "PS-" + "00001" + "-" + FDateF.datetostr(new Date(), "YY");
             }
             while (rs.next()) {
                 String nopenjualan = rs.getString("NoPermintaan");
-                String number = nopenjualan.substring(3, 9);
-                int p = 1 + parseInt(number);
-                if (p != 999999) {
-                    NoPermintaan = "KB-" + nf.format(p) + "-PN";
-                } else if (p == 999999) {
+                String number = nopenjualan.substring(3, 8);
+                String year = nopenjualan.substring(9, 11);
+                int p;
+                if (year.equals(FDateF.datetostr(new Date(), "YY"))) {
+                    p = 1 + parseInt(number);
+                } else {
                     p = 1;
-                    NoPermintaan = "KB-" + nf.format(p) + "-PN";
+                }
+                if (p != 99999) {
+                    NoPermintaan = "PS-" + nf.format(p) + "-" + FDateF.datetostr(new Date(), "YY");
+                } else if (p == 99999) {
+                    p = 1;
+                    NoPermintaan = "PS-" + nf.format(p) + "-" + FDateF.datetostr(new Date(), "YY");
                 }
             }
         } catch (SQLException e) {
             out.println("E6" + e);
             JOptionPaneF.showMessageDialog(null, "Gagal Generate Nomor Permintaan");
         } finally {
-            runSelct.closecon();
+//            runSelct.closecon();
         }
         return NoPermintaan;
     }

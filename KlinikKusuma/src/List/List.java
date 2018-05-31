@@ -30,6 +30,8 @@ import javax.swing.table.TableRowSorter;
  */
 public class List extends javax.swing.JFrame {
 
+    int selectedrow = -2;
+
     /**
      * Creates new form ListKaryawan
      */
@@ -67,14 +69,16 @@ public class List extends javax.swing.JFrame {
                 JBTambah.setVisible(false);
                 JBUbah.setVisible(false);
                 JBHapus.setText("Batal");
+                JBCekPoin.setVisible(true);
+                JBCekPoin.setText("Billing");
                 break;
             case "Master Pemasok":
                 setTitle("List Master Pemasok");
                 break;
-            case "Penjualan":
-                setTitle("List Penjualan");
-                jCheckBoxF1.setVisible(true);
-                break;
+//            case "Penjualan":
+//                setTitle("List Penjualan");
+//                jCheckBoxF1.setVisible(true);
+//                break;
             case "Barang Masuk":
                 setTitle("List Barang Masuk");
                 jCheckBoxF1.setVisible(true);
@@ -147,6 +151,8 @@ public class List extends javax.swing.JFrame {
                     listAntrian.load();
                 }
                 jtextF1.setText("");
+                selectedrow = -2;
+                jcomCari1.jtablef.clearSelection();
             }
         }
     }
@@ -156,7 +162,7 @@ public class List extends javax.swing.JFrame {
             JOptionPaneF.showMessageDialog(this, "Gagal. Silahkan Pilih Data Terlebih Dahulu");
         } else {
             if (tambahPerawatan == null) {
-                tambahPerawatan = new Perawatan("Antrian", jcomCari1.GetIDTable1());
+                tambahPerawatan = new Perawatan("Antrian", jcomCari1.GetIDTable());
             } else {
                 tambahPerawatan.setState(NORMAL);
                 tambahPerawatan.toFront();
@@ -169,7 +175,7 @@ public class List extends javax.swing.JFrame {
             JOptionPaneF.showMessageDialog(this, "Gagal. Silahkan Pilih Data Terlebih Dahulu");
         } else {
             if (tambahBilling == null) {
-                tambahBilling = new Billing("Antrian Billing", jcomCari1.GetIDTable1());
+                tambahBilling = new Billing("Antrian Billing", jcomCari1.GetIDTable());
             } else {
                 tambahBilling.setState(NORMAL);
                 tambahBilling.toFront();
@@ -378,9 +384,9 @@ public class List extends javax.swing.JFrame {
             case "Master Pemasok":
                 listMasterPemasok = null;
                 break;
-            case "Penjualan":
-                listPenjualan = null;
-                break;
+//            case "Penjualan":
+//                listPenjualan = null;
+//                break;
             case "Barang Masuk":
                 listBarangMasuk = null;
                 break;
@@ -443,11 +449,20 @@ public class List extends javax.swing.JFrame {
         if (jcomCari1.getSelectedRow() < 0) {
             JOptionPaneF.showMessageDialog(this, "Gagal. Silahkan Pilih Data Terlebih Dahulu");
         } else {
-            if (cekPoin == null) {
-                cekPoin = new ListPoin(jcomCari1.GetIDTable().toString());
+            if (Type.equals("Master Pasien")) {
+                if (cekPoin == null) {
+                    cekPoin = new ListPoin(jcomCari1.GetIDTable().toString());
+                } else {
+                    cekPoin.setState(NORMAL);
+                    cekPoin.toFront();
+                }
             } else {
-                cekPoin.setState(NORMAL);
-                cekPoin.toFront();
+                if (tambahBilling == null) {
+                    tambahBilling = new Billing("Antrian", jcomCari1.GetIDTable());
+                } else {
+                    tambahBilling.setState(NORMAL);
+                    tambahBilling.toFront();
+                }
             }
         }
     }//GEN-LAST:event_JBCekPoinActionPerformed
@@ -462,6 +477,33 @@ public class List extends javax.swing.JFrame {
                 JBRegister.setText("Register");
             }
         }
+
+        if (jcomCari1.jtablef.getSelectedRow() == selectedrow) {
+            switch (Type) {
+                case "Master Barang":
+                case "Master Dokter":
+                case "Master Pasien":
+                case "Master Beautician":
+                case "Master Tindakan":
+                case "Master Pemasok":
+//                case "Penjualan":
+                case "Barang Masuk":
+                case "Perawatan":
+                case "Billing":
+                case "Permintaan Stok":
+                    ubah();
+                    break;
+                case "Antrian":
+                case "Antrian Billing":
+                    register();
+                    break;
+                default:
+                    throw new AssertionError();
+            }
+        } else {
+            selectedrow = jcomCari1.jtablef.getSelectedRow();
+        }
+
     }
 
     /**
@@ -589,14 +631,14 @@ public class List extends javax.swing.JFrame {
                     tambahMasterPemasok.toFront();
                 }
                 break;
-            case "Penjualan":
-                if (tambahPenjualan == null) {
-                    tambahPenjualan = new Penjualan();
-                } else {
-                    tambahPenjualan.setState(NORMAL);
-                    tambahPenjualan.toFront();
-                }
-                break;
+//            case "Penjualan":
+//                if (tambahPenjualan == null) {
+//                    tambahPenjualan = new Penjualan();
+//                } else {
+//                    tambahPenjualan.setState(NORMAL);
+//                    tambahPenjualan.toFront();
+//                }
+//                break;
             case "Barang Masuk":
                 if (tambahBarangMasuk == null) {
                     tambahBarangMasuk = new BarangMasuk();
@@ -668,9 +710,9 @@ public class List extends javax.swing.JFrame {
                 case "Master Pemasok":
                     berhasil = delete.Hapus("ID " + jcomCari1.GetIDTable(), "DELETE FROM `tbmpemasok` WHERE `IdPemasok` = " + jcomCari1.GetIDTable(), "Pemasok", this);
                     break;
-                case "Penjualan":
-                    berhasil = delete.Hapus("ID " + jcomCari1.GetIDTable(), "DELETE FROM `tbpenjualan` WHERE `IdPenjualan` = " + jcomCari1.GetIDTable(), "Penjualan", this);
-                    break;
+//                case "Penjualan":
+//                    berhasil = delete.Hapus("ID " + jcomCari1.GetIDTable(), "DELETE FROM `tbpenjualan` WHERE `IdPenjualan` = " + jcomCari1.GetIDTable(), "Penjualan", this);
+//                    break;
                 case "Barang Masuk":
                     berhasil = delete.Hapus("ID " + jcomCari1.GetIDTable(), "DELETE FROM `tbbarangmasuk` WHERE `IdBarangMasuk` = " + jcomCari1.GetIDTable(), "Barang Masuk", this);
                     break;
@@ -753,14 +795,8 @@ public class List extends javax.swing.JFrame {
                         ubahMasterPemasok.toFront();
                     }
                     break;
-                case "Penjualan":
-                    if (ubahPenjualan == null) {
-                        ubahPenjualan = new Penjualan(jcomCari1.GetIDTable());
-                    } else {
-                        ubahPenjualan.setState(NORMAL);
-                        ubahPenjualan.toFront();
-                    }
-                    break;
+//                case "Penjualan":
+//                    break;
                 case "Barang Masuk":
                     if (ubahBarangMasuk == null) {
                         ubahBarangMasuk = new BarangMasuk(jcomCari1.GetIDTable());
@@ -785,7 +821,11 @@ public class List extends javax.swing.JFrame {
                     break;
                 case "Billing":
                     if (ubahBilling == null) {
-                        ubahBilling = new Billing("Ubah", jcomCari1.GetIDTable());
+                        if (jcomCari1.jtablef.getValueAt(jcomCari1.jtablef.getSelectedRow(), 3).toString().contains("PR")) {
+                            ubahBilling = new Billing("Ubah Perawatan", jcomCari1.GetIDTable());
+                        } else {
+                            ubahBilling = new Billing("Ubah Penjualan", jcomCari1.GetIDTable());
+                        }
                     } else {
                         ubahBilling.setState(NORMAL);
                         ubahBilling.toFront();
@@ -809,84 +849,98 @@ public class List extends javax.swing.JFrame {
         switch (Type) {
             case "Master Barang":
                 jcomCari1.setQuery("SELECT `IdBarang` as 'ID', `NamaBarang` as 'Nama Barang', `JenisBarang`, `Harga`, a.`Keterangan`, IF(`Status`=1,'Aktif','Tidak Aktif') as 'Status' FROM `tbmbarang`a JOIN `tbsmjenisbarang`b ON a.`IdJenisBarang`=b.`IdJenisBarang` WHERE 1");
-                jcomCari1.setRender(new int[]{3}, new String[]{"Number"});
                 jcomCari1.setOrder(" ORDER BY `JenisBarang`, `NamaBarang` ");
+                jcomCari1.setRender(new int[]{0, 3}, new String[]{"Center", "Number"});
                 break;
             case "Master Dokter":
                 jcomCari1.setQuery("SELECT `IdDokter` as 'ID', `NamaDokter` as 'Nama Dokter', `NoSIP`, `NoTelepon` as 'No Telpon', `Alamat`, `Keterangan`, IF(`Status`=1,'Aktif','Tidak Aktif') as 'Status' FROM `tbmdokter` WHERE 1 ");
                 jcomCari1.setOrder(" ORDER BY `NamaDokter` ");
+                jcomCari1.setRender(new int[]{0, 3}, new String[]{"Center", "Center"});
                 break;
             case "Master Pasien":
                 jcomCari1.setQuery("SELECT a.`IdPasien` as 'ID', `KodePasien` as 'Kode', `NamaPasien` as 'Nama', `JenisKelamin` as 'Jenis Kelamin', DATE_FORMAT(`TanggalDaftar`,'%d-%m-%Y') as 'Tanggal Daftar', DATE_FORMAT(`TanggaLahir`,'%d-%m-%Y') as 'Tanggal Lahir', `NoTelpon` as 'No. Telpon', `Pekerjaan`, `Email`, `Alamat`, `Catatan`, `NoKartu`, IF((`NoAntrian` IS NOT NULL AND `Tanggal` = CURDATE()) AND b.`Status` = 0,'Antri','Tidak') as 'Antrian' FROM `tbmpasien`a LEFT JOIN `tbantrian`b ON a.`IdPasien`=b.`IdPasien` AND `Status` = 0 AND `Tanggal`=CURDATE() WHERE 1");
                 jcomCari1.jtablef.useColor(true);
                 jcomCari1.setOrder(" ORDER BY `NamaPasien`, a.`IdPasien` ");
+                jcomCari1.setRender(new int[]{0, 1, 3, 4, 5, 6}, new String[]{"Center", "Center", "Center", "Center", "Center", "Center"});
                 jcomCari1.setSelectedIndex(11);
                 break;
             case "Master Beautician":
                 jcomCari1.setQuery("SELECT `IdBeautician` as 'ID', `NamaBeautician` as 'Nama Beautician', `NoTelepon` as 'No Telpon', `Alamat`, `Keterangan`, IF(`Status`=1,'Aktif','Tidak Aktif') as 'Status' FROM `tbmbeautician` WHERE 1 ");
                 jcomCari1.setOrder(" ORDER BY `NamaBeautician` ");
+                jcomCari1.setRender(new int[]{0, 2}, new String[]{"Center", "Center"});
                 break;
             case "Master Tindakan":
                 jcomCari1.setQuery("SELECT `IdTindakan` as 'ID', `NamaTindakan` as 'Nama Tindakan', IFNULL(`TipeTindakan`,'') as 'Tipe', `Harga`, a.`Keterangan`, IF(`Status`=1,'Aktif','Tidak Aktif') as 'Status' FROM `tbmtindakan`a LEFT JOIN `tbsmtipetindakan`b ON a.`IdTipeTindakan`=b.`IdTipeTindakan` WHERE 1 ");
                 jcomCari1.setOrder(" ORDER BY `NamaTindakan` ");
+                jcomCari1.setRender(new int[]{0, 3}, new String[]{"Center", "Number"});
                 break;
             case "Antrian":
-                jcomCari1.setQuery("SELECT `NoAntrian`, `KodePasien` as 'Kode', `NamaPasien` as 'Nama', `JenisKelamin` as 'Jenis Kelamin', DATE_FORMAT(`TanggalDaftar`,'%d-%m-%Y') as 'Tanggal Daftar', DATE_FORMAT(`TanggaLahir`,'%d-%m-%Y') as 'Tanggal Lahir', `NoTelpon` as 'No. Telpon', `Pekerjaan`, `Email`, `Alamat`, `Catatan`, `NoKartu` FROM `tbmpasien`a LEFT JOIN `tbantrian`b ON a.`IdPasien`=b.`IdPasien` WHERE `IdAntrian` IS NOT NULL AND `Tanggal` = CURDATE() AND b.`Status` = 0");
+                jcomCari1.setQuery("SELECT `IdAntrian`, `NoAntrian`, `KodePasien` as 'Kode', `NamaPasien` as 'Nama', `JenisKelamin` as 'Jenis Kelamin', DATE_FORMAT(`TanggalDaftar`,'%d-%m-%Y') as 'Tanggal Daftar', DATE_FORMAT(`TanggaLahir`,'%d-%m-%Y') as 'Tanggal Lahir', `NoTelpon` as 'No. Telpon', `Pekerjaan`, `Email`, `Alamat`, `Catatan`, `NoKartu` FROM `tbmpasien`a LEFT JOIN `tbantrian`b ON a.`IdPasien`=b.`IdPasien` WHERE `IdAntrian` IS NOT NULL AND `Tanggal` = CURDATE() AND b.`Status` = 0");
                 jcomCari1.setOrder(" ORDER BY `NoAntrian` ");
                 break;
             case "Master Pemasok":
                 jcomCari1.setQuery("SELECT `IdPemasok` as 'ID', `NamaPemasok` as 'Nama Pemasok',  `NoTelpon`, `Alamat`, `Keterangan`, IF(`Status`=1,'Aktif','Tidak Aktif') as 'Status' FROM `tbmpemasok` WHERE 1 ");
                 jcomCari1.setOrder(" ORDER BY `NamaPemasok` ");
+                jcomCari1.setRender(new int[]{0}, new String[]{"Center"});
                 break;
-            case "Penjualan":
-                if (jCheckBoxF1.isSelected()) {
-                    jcomCari1.setQuery("SELECT `IdPenjualanDetail` as 'ID', a.`NoTransaksi` as 'No. Transaksi', DATE_FORMAT(`Tanggal`,'%d-%m-%Y') as 'Tanggal', `NamaPasien` as 'Nama Pasien',`NoKolom` as 'No.', `NamaBarang` as 'Nama Barang', FORMAT(`Jumlah`,0) as 'Jumlah', FORMAT(b.`Harga`,0) as 'Harga', FORMAT(`Jumlah`*b.`Harga`,0) as 'Sub Total', a.`Keterangan` FROM `tbpenjualan`a JOIN `tbpenjualandetail`b ON a.`NoTransaksi`=b.`NoTransaksi` JOIN `tbmpasien`c ON a.`IdPasien`=c.`IdPasien` JOIN `tbmbarang`d ON b.`IdBarang`=d.`IdBarang` WHERE 1");
-                } else {
-                    jcomCari1.setQuery("SELECT `IdPenjualan` as 'ID', `NoTransaksi` as 'No. Transaksi', DATE_FORMAT(`Tanggal`,'%d-%m-%Y') as 'Tanggal', IFNULL(`NamaPasien`,'-') as 'Nama Pasien', a.`Keterangan` FROM `tbpenjualan`a LEFT JOIN `tbmpasien`b ON a.`IdPasien`=b.`IdPasien` WHERE 1");
-                }
-                jcomCari1.setOrder(" ORDER BY a.`NoTransaksi` DESC ");
-                break;
+//            case "Penjualan":
+//                if (jCheckBoxF1.isSelected()) {
+//                    jcomCari1.setQuery("SELECT `IdPenjualanDetail` as 'ID', a.`NoTransaksi` as 'No. Transaksi', DATE_FORMAT(`Tanggal`,'%d-%m-%Y') as 'Tanggal', `NamaPasien` as 'Nama Pasien',`NoKolom` as 'No.', `NamaBarang` as 'Nama Barang', FORMAT(`Jumlah`,0) as 'Jumlah', FORMAT(b.`Harga`,0) as 'Harga', FORMAT(`Jumlah`*b.`Harga`,0) as 'Sub Total', a.`Keterangan` FROM `tbpenjualan`a JOIN `tbpenjualandetail`b ON a.`NoTransaksi`=b.`NoTransaksi` JOIN `tbmpasien`c ON a.`IdPasien`=c.`IdPasien` JOIN `tbmbarang`d ON b.`IdBarang`=d.`IdBarang` WHERE 1");
+//                } else {
+//                    jcomCari1.setQuery("SELECT `IdPenjualan` as 'ID', `NoTransaksi` as 'No. Transaksi', DATE_FORMAT(`Tanggal`,'%d-%m-%Y') as 'Tanggal', IFNULL(`NamaPasien`,'-') as 'Nama Pasien', a.`Keterangan` FROM `tbpenjualan`a LEFT JOIN `tbmpasien`b ON a.`IdPasien`=b.`IdPasien` WHERE 1");
+//                }
+//                jcomCari1.setOrder(" ORDER BY a.`NoTransaksi` DESC ");
+//                break;
             case "Barang Masuk":
                 if (jCheckBoxF1.isSelected()) {
-                    jcomCari1.setQuery("SELECT `IdBarangMasukDetail` as 'ID', a.`NoTransaksi` as 'No. Transaksi', DATE_FORMAT(`Tanggal`,'%d-%m-%Y') as 'Tanggal', `NamaPemasok` as 'Nama Pemasok', `NoKolom` as 'No', `NamaBarang` as 'Nama Barang', FORMAT(`Jumlah`,0) as 'Jumlah', FORMAT(b.`Harga`,0) as 'Harga', FORMAT(`Jumlah`*b.`Harga`,0) as 'Sub Total', a.`Keterangan` FROM `tbbarangmasuk`a JOIN `tbbarangmasukdetail`b ON a.`NoTransaksi`=b.`NoTransaksi` JOIN `tbmpemasok`c ON a.`IdPemasok`=c.`IdPemasok` JOIN `tbmbarang`d ON b.`IdBarang`=d.`IdBarang` WHERE 1");
+                    jcomCari1.setQuery("SELECT `IdBarangMasukDetail` as 'ID', a.`NoTransaksi` as 'No. Transaksi', DATE_FORMAT(`Tanggal`,'%d-%m-%Y') as 'Tanggal', `NamaPemasok` as 'Nama Pemasok', `NoKolom` as 'No', `NamaBarang` as 'Nama Barang', `Jumlah`, b.`Harga`, `Jumlah`*b.`Harga` as 'Sub Total', a.`Keterangan` FROM `tbbarangmasuk`a JOIN `tbbarangmasukdetail`b ON a.`NoTransaksi`=b.`NoTransaksi` JOIN `tbmpemasok`c ON a.`IdPemasok`=c.`IdPemasok` JOIN `tbmbarang`d ON b.`IdBarang`=d.`IdBarang` WHERE 1");
+                    jcomCari1.setRender(new int[]{0, 1, 2, 4, 6, 7, 8}, new String[]{"Center", "Center", "Center", "Center", "Center", "Center", "Center"});
                 } else {
                     jcomCari1.setQuery("SELECT `IdBarangMasuk` as 'ID', a.`NoTransaksi` as 'No. Transaksi', DATE_FORMAT(`Tanggal`,'%d-%m-%Y') as 'Tanggal', IFNULL(`NamaPemasok`,'-') as 'Nama Pemasok', a.`Keterangan` FROM `tbbarangmasuk`a LEFT JOIN `tbmpemasok`b ON a.`IdPemasok`=b.`IdPemasok` WHERE 1");
+                    jcomCari1.setRender(new int[]{0, 1, 2}, new String[]{"Center", "Center", "Center"});
                 }
                 jcomCari1.setOrder(" ORDER BY a.`NoTransaksi` DESC ");
                 break;
             case "Penyesuaian Stok":
                 jcomCari1.setQuery("SELECT `IdPenyesuaian` as 'ID', `NoPenyesuaian` as 'No. Penyesuaian', DATE_FORMAT(`Tanggal`,'%d-%m-%Y') as 'Tanggal', IFNULL(`NamaBarang`,'-') as 'Nama Barang', `Jumlah`, a.`Keterangan` FROM `tbpenyesuaianstok`a LEFT JOIN `tbmbarang`b ON a.`IdBarang`=b.`IdBarang` WHERE 1");
                 jcomCari1.setOrder(" ORDER BY `NoPenyesuaian` DESC ");
+                jcomCari1.setRender(new int[]{0, 1, 2, 4}, new String[]{"Center", "Center", "Center", "Number"});
                 break;
             case "Penyesuaian Stok Gudang Besar":
                 jcomCari1.setQuery("SELECT `IdPenyesuaian` as 'ID', `NoPenyesuaian` as 'No. Penyesuaian', DATE_FORMAT(`Tanggal`,'%d-%m-%Y') as 'Tanggal', IFNULL(`NamaBarang`,'-') as 'Nama Barang', `Jumlah`, a.`Keterangan` FROM `tbpenyesuaianstokgudangbesar`a LEFT JOIN `tbmbarang`b ON a.`IdBarang`=b.`IdBarang` WHERE 1");
                 jcomCari1.setOrder(" ORDER BY `NoPenyesuaian` DESC ");
+                jcomCari1.setRender(new int[]{0, 1, 2, 4}, new String[]{"Center", "Center", "Center", "Number"});
                 break;
             case "Perawatan":
                 if (jCheckBoxF1.isSelected()) {
-                    jcomCari1.setQuery("SELECT * FROM ((SELECT `IdPerawatanDetail` as 'ID', DATE_FORMAT(`Tanggal`,'%d-%m-%Y') as 'Tanggal', `NoAntrian` as 'No. Antrian', a.`NoInvoice` as 'No. Invoice', `NamaDokter` as 'Dokter', IFNULL(`NamaBeautician`,'-') as 'Beautician', 'Tindakan' as 'Jenis', `NamaTindakan` as 'Ket', FORMAT(`Jumlah`,0) as 'Jumlah', `Keluhan`, `Diagnosa`, a.`Catatan` FROM `tbperawatan`a JOIN `tbperawatandetail`b ON a.`NoInvoice`=b.`NoInvoice` JOIN `tbmdokter`c ON a.`IdDokter`=c.`IdDokter` LEFT JOIN `tbmbeautician`d ON a.`IdBeautician`=d.`IdBeautician` JOIN `tbmtindakan`e ON b.`IdTindakan`=e.`IdTindakan` WHERE 1 UNION ALL SELECT `IdObatDetail` as 'ID', DATE_FORMAT(`Tanggal`,'%d-%m-%Y') as 'Tanggal', `NoAntrian` as 'No. Antrian', a.`NoInvoice` as 'No. Invoice', `NamaDokter` as 'Nama Dokter', IFNULL(`NamaBeautician`,'-') as 'Beautician', 'Obat' as 'Jenis', `NamaBarang` as 'Ket', FORMAT(`Jumlah`,0) as 'Jumlah', `Keluhan`, `Diagnosa`, a.`Catatan` FROM `tbperawatan`a JOIN `tbobatdetail`b ON a.`NoInvoice`=b.`NoInvoice` JOIN `tbmdokter`c ON a.`IdDokter`=c.`IdDokter` LEFT JOIN `tbmbeautician`d ON a.`IdBeautician`=d.`IdBeautician` JOIN `tbmbarang`e ON b.`IdObat`=e.`IdBarang` WHERE 1) t1) ");
-                    jcomCari1.setOrder(" ORDER BY `No. Invoice` DESC, `Jenis` DESC ");
+                    jcomCari1.setQuery("SELECT * FROM ((SELECT `IdPerawatan` as 'ID', DATE_FORMAT(a.`Tanggal`,'%d-%m-%Y') as 'Tanggal', a.`NoTransaksi` as 'No. Transaksi', `NoAntrian` as 'No. Antrian',`NamaPasien` as 'Pasien', IFNULL(`NamaDokter`,'-') as 'Dokter', IFNULL(`NamaBeautician`,'-') as 'Beautician', 'Tindakan' as 'Jenis', `NamaTindakan` as 'Ket', FORMAT(`Jumlah`,0) as 'Jumlah', `Keluhan`, `Diagnosa`, a.`Catatan` FROM `tbperawatan`a JOIN `tbantrian`b ON a.`IdAntrian`=b.`IdAntrian` JOIN `tbmpasien`c ON b.`IdPasien`=c.`IdPasien` JOIN `tbperawatandetail`d ON a.`NoTransaksi`=d.`NoTransaksi` LEFT JOIN `tbmdokter`e ON a.`IdDokter`=e.`IdDokter` LEFT JOIN `tbmbeautician`f ON a.`IdBeautician`=f.`IdBeautician` LEFT JOIN `tbmtindakan`g ON d.`IdTindakan`=g.`IdTindakan` WHERE 1 UNION ALL SELECT `IdPerawatan` as 'ID', DATE_FORMAT(a.`Tanggal`,'%d-%m-%Y') as 'Tanggal', a.`NoTransaksi` as 'No. Transaksi', `NoAntrian` as 'No. Antrian',`NamaPasien` as 'Pasien', IFNULL(`NamaDokter`,'-') as 'Dokter', IFNULL(`NamaBeautician`,'-') as 'Beautician', 'Obat' as 'Jenis', `NamaBarang` as 'Ket', FORMAT(`Jumlah`,0) as 'Jumlah', `Keluhan`, `Diagnosa`, a.`Catatan` FROM `tbperawatan`a JOIN `tbantrian`b ON a.`IdAntrian`=b.`IdAntrian` JOIN `tbmpasien`c ON b.`IdPasien`=c.`IdPasien` JOIN `tbobatdetail`d ON a.`NoTransaksi`=d.`NoTransaksi` LEFT JOIN `tbmdokter`e ON a.`IdDokter`=e.`IdDokter` LEFT JOIN `tbmbeautician`f ON a.`IdBeautician`=f.`IdBeautician` JOIN `tbmbarang`g ON d.`IdObat`=g.`IdBarang` WHERE 1) t1) ");
+                    jcomCari1.setOrder(" ORDER BY `No. Transaksi` DESC, `Jenis` DESC ");
+                    jcomCari1.setRender(new int[]{0, 1, 2, 3, 9}, new String[]{"Center", "Center", "Center", "Center", "CenteredNumber"});
                 } else {
-                    jcomCari1.setQuery("SELECT `IdPerawatan` as 'ID', DATE_FORMAT(`Tanggal`,'%d-%m-%Y') as 'Tanggal', `NoInvoice` as 'No. Invoice', `NoAntrian` as 'No Antrian', `NamaDokter` as 'Nama Dokter', `NamaBeautician` as 'Nama Beautician', `Keluhan`, `Diagnosa`, `Catatan` FROM `tbperawatan`a JOIN `tbmdokter`b ON a.`IdDokter`=b.`IdDokter` LEFT JOIN `tbmbeautician`c ON a.`IdBeautician`=c.`IdBeautician` WHERE 1");
-                    jcomCari1.setOrder(" ORDER BY `NoInvoice` DESC ");
+                    jcomCari1.setQuery("SELECT `IdPerawatan` as 'ID', DATE_FORMAT(a.`Tanggal`,'%d-%m-%Y') as 'Tanggal', `NoTransaksi` as 'No. Transaksi', `NoAntrian` as 'No. Antrian',`NamaPasien` as 'Pasien', IFNULL(`NamaDokter`,'-') as 'Dokter', IFNULL(`NamaBeautician`,'-') as 'Beautician', `Keluhan`, `Diagnosa`, a.`Catatan` FROM `tbperawatan`a JOIN `tbantrian`b ON a.`IdAntrian`=b.`IdAntrian` JOIN `tbmpasien`c ON b.`IdPasien`=c.`IdPasien` LEFT JOIN `tbmdokter`d ON a.`IdDokter`=d.`IdDokter` LEFT JOIN `tbmbeautician`e ON a.`IdBeautician`=e.`IdBeautician` WHERE 1 ");
+                    jcomCari1.setOrder(" ORDER BY `NoTransaksi` DESC ");
+                    jcomCari1.setRender(new int[]{0, 1, 2, 3}, new String[]{"Center", "Center", "Center", "Center"});
                 }
                 break;
             case "Antrian Billing":
-                jcomCari1.setQuery("SELECT b.`NoAntrian` as 'No. Antrian', c.`NoInvoice` as 'No. Invoice', `KodePasien` as 'Kode', `NamaPasien` as 'Nama', `JenisKelamin` as 'Jenis Kelamin', DATE_FORMAT(`TanggalDaftar`,'%d-%m-%Y') as 'Tanggal Daftar', DATE_FORMAT(`TanggaLahir`,'%d-%m-%Y') as 'Tanggal Lahir', `NoTelpon` as 'No. Telpon', `Pekerjaan`, `Email`, `Alamat`, a.`Catatan`, `NoKartu` FROM `tbmpasien`a LEFT JOIN `tbantrian`b ON a.`IdPasien`=b.`IdPasien` LEFT JOIN `tbperawatan`c ON b.`NoAntrian`=c.`NoAntrian` AND b.`Tanggal`=c.`Tanggal` LEFT JOIN `tbbilling`d ON c.`NoInvoice`=d.`NoInvoice` WHERE `IdAntrian` IS NOT NULL AND b.`Tanggal` = CURDATE() AND b.`Status` = 1 AND `IdBilling` IS NULL");
+                jcomCari1.setQuery("SELECT c.`IdAntrian`, `NoAntrian` as 'No. Antrian', c.`NoTransaksi` as 'No. Transaksi', `KodePasien` as 'Kode', `NamaPasien` as 'Nama', `JenisKelamin` as 'Jenis Kelamin', DATE_FORMAT(`TanggalDaftar`,'%d-%m-%Y') as 'Tanggal Daftar', DATE_FORMAT(`TanggaLahir`,'%d-%m-%Y') as 'Tanggal Lahir', `NoTelpon` as 'No. Telpon', `Pekerjaan`, `Email`, `Alamat`, a.`Catatan`, `NoKartu` FROM `tbmpasien`a LEFT JOIN `tbantrian`b ON a.`IdPasien`=b.`IdPasien` LEFT JOIN `tbperawatan`c ON b.`IdAntrian`=c.`IdAntrian` LEFT JOIN `tbbilling`d ON b.`IdAntrian`=d.`IdAntrian` WHERE c.`IdAntrian` IS NOT NULL AND b.`Tanggal` = CURDATE() AND b.`Status` = 1 AND `IdBilling` IS NULL");
                 jcomCari1.setOrder(" ORDER BY b.`NoAntrian` ");
                 break;
             case "Billing":
                 if (jCheckBoxF1.isSelected()) {
-                    jcomCari1.setQuery("SELECT * FROM((SELECT `IdBillingTindakan` as 'ID', a.`NoBilling` as 'No. Billing', DATE_FORMAT(`Tanggal`,'%d-%m-%Y') as 'Tanggal', `NoInvoice` as 'No. Invoice', 'Tindakan' as 'Jenis', `NamaTindakan` as 'Item', FORMAT(`Jumlah`,0) as 'Jumlah', FORMAT(b.`Harga`,0) as 'Harga', FORMAT(`Jumlah`*b.`Harga`,0) as 'Sub Total', FORMAT(`Bayar`,0) as 'Bayar' FROM `tbbilling`a JOIN `tbbillingtindakan`b ON a.`NoBilling`=b.`NoBilling` JOIN `tbmtindakan`c ON b.`IdTindakan`=c.`IdTindakan` WHERE 1 UNION ALL SELECT `IdBillingObat` as 'ID', a.`NoBilling` as 'No. Billing', DATE_FORMAT(`Tanggal`,'%d-%m-%Y') as 'Tanggal', `NoInvoice` as 'No. Invoice', 'Obat' as 'Jenis', `NamaBarang` as 'Item', FORMAT(`Jumlah`,0) as 'Jumlah', FORMAT(b.`Harga`,0) as 'Harga', FORMAT(`Jumlah`*b.`Harga`,0) as 'Sub Total', FORMAT(`Bayar`,0) as 'Bayar' FROM `tbbilling`a JOIN `tbbillingobat`b ON a.`NoBilling`=b.`NoBilling` JOIN `tbmbarang`c ON b.`IdObat`=c.`IdBarang` WHERE 1) t1) ");
-                    jcomCari1.setOrder(" ORDER BY `No. Invoice` DESC, `Jenis` DESC ");
+                    jcomCari1.setQuery("SELECT * FROM((SELECT `IdBilling` as 'ID', DATE_FORMAT(a.`Tanggal`,'%d-%m-%Y') as 'Tanggal', a.`NoBilling` as 'No. Billing', `NoTransaksi` as 'No. Transaksi', `NoAntrian` as 'No. Antrian', `NamaPasien` as 'Pasien', 'Tindakan' as 'Jenis', `NamaTindakan` as 'Item', `Jumlah` as 'Jumlah', b.`Harga` as 'Harga', `Jumlah`*b.`Harga` as 'Sub Total' FROM `tbbilling`a LEFT JOIN `tbbillingtindakan`b ON a.`NoBilling`=b.`NoBilling` JOIN `tbmtindakan`c ON b.`IdTindakan`=c.`IdTindakan` JOIN `tbantrian`d on a.`IdAntrian`=d.`IdAntrian` JOIN `tbmpasien`e ON d.`IdPasien`=e.`IdPasien` WHERE 1 UNION ALL SELECT `IdBilling` as 'ID', DATE_FORMAT(a.`Tanggal`,'%d-%m-%Y') as 'Tanggal', a.`NoBilling` as 'No. Billing', `NoTransaksi` as 'No. Transaksi', `NoAntrian` as 'No. Antrian', `NamaPasien` as 'Pasien', 'Obat' as 'Jenis', `NamaBarang` as 'Item', `Jumlah` as 'Jumlah', b.`Harga` as 'Harga', `Jumlah`*b.`Harga` as 'Sub Total' FROM `tbbilling`a LEFT JOIN `tbbillingobat`b ON a.`NoBilling`=b.`NoBilling` JOIN `tbmbarang`c ON b.`IdObat`=c.`IdBarang` JOIN `tbantrian`d on a.`IdAntrian`=d.`IdAntrian` JOIN `tbmpasien`e ON d.`IdPasien`=e.`IdPasien` WHERE 1) t1) ");
+                    jcomCari1.setOrder(" ORDER BY `No. Billing` DESC, `Jenis` DESC ");
+                    jcomCari1.setRender(new int[]{0, 1, 2, 3, 4, 8, 9, 10}, new String[]{"Center", "Center", "Center", "Center", "Center", "Center", "Number", "Number"});
                 } else {
-                    jcomCari1.setQuery("SELECT `IdBilling` as 'ID', `NoBilling` as 'No. Billing', DATE_FORMAT(`Tanggal`,'%d-%m-%Y') as 'Tanggal', `NoInvoice` as 'No. Invoice', FORMAT(`Bayar`,0) as 'Jumlah Bayar' FROM `tbbilling` WHERE 1");
-                    jcomCari1.setOrder(" ORDER BY `NoBilling` DESC ");
+                    jcomCari1.setQuery("SELECT a.`IdBilling` as 'ID', DATE_FORMAT(a.`Tanggal`,'%d-%m-%Y') as 'Tanggal', a.`NoBilling` as 'No. Billing', `NoTransaksi` as 'No. Transaksi', `NoAntrian` as 'No. Antrian', `NamaPasien` as 'Pasien',SUM(IFNULL(d.`Jumlah`,0)*IFNULL(d.`Harga`,0))+SUM(IFNULL(e.`Jumlah`,0)*IFNULL(e.`Harga`,0)) as 'Total Belanja', `Poin` as 'Pakai Poin', SUM(IFNULL(d.`Jumlah`,0)*IFNULL(d.`Harga`,0))+SUM(IFNULL(e.`Jumlah`,0)*IFNULL(e.`Harga`,0)) - (`Poin`*5000) as 'Setelah Potong', `Bayar` as 'Jumlah Bayar', IF(`Poin`=0,`Bayar`-(SUM(IFNULL(d.`Jumlah`,0)*IFNULL(d.`Harga`,0))+SUM(IFNULL(e.`Jumlah`,0)*IFNULL(e.`Harga`,0))),`Bayar` - (SUM(IFNULL(d.`Jumlah`,0)*IFNULL(d.`Harga`,0))+SUM(IFNULL(e.`Jumlah`,0)*IFNULL(e.`Harga`,0)) - (`Poin`*5000))) as 'Kembali' FROM `tbbilling`a JOIN `tbantrian`b ON a.`IdAntrian` = b.`IdAntrian` JOIN `tbmpasien`c ON b.`IdPasien`=c.`IdPasien` LEFT JOIN `tbbillingobat`d ON a.`NoBilling`=d.`NoBilling` LEFT JOIN `tbbillingtindakan`e ON a.`NoBilling`=e.`NoBilling` WHERE 1 GROUP BY a.`IdBilling` ");
+                    jcomCari1.setOrder(" ORDER BY a.`NoBilling` DESC ");
+                    jcomCari1.setRender(new int[]{0, 1, 2, 3, 4, 6, 7, 8, 9, 10}, new String[]{"Center", "Center", "Center", "Center", "Centered", "Number", "Center", "Number", "Number", "Number"});
                 }
                 break;
             case "Permintaan Stok":
                 jcomCari1.setQuery("SELECT `IdPermintaan` as 'ID', `NoPermintaan` as 'No. Permintaan', DATE_FORMAT(`Tanggal`,'%d-%m-%Y') as 'Tanggal', IFNULL(`NamaBarang`,'-') as 'Nama Barang', `Jumlah`, a.`Keterangan` FROM `tbpermintaanstok`a JOIN `tbmbarang`b ON a.`IdBarang`=b.`IdBarang` WHERE 1");
                 jcomCari1.setOrder(" ORDER BY `NoPermintaan` DESC ");
+                jcomCari1.setRender(new int[]{0, 1, 2, 4}, new String[]{"Center", "Center", "Center", "Number"});
                 break;
             default:
                 throw new AssertionError();

@@ -43,11 +43,11 @@ public class FLaporan {
             out.println("E5" + ex);
             ex.printStackTrace();
         } finally {
-            try {
-                con.close();
-            } catch (SQLException e) {
-                out.println("conclose Laporan Gudang" + e);
-            }
+//            try {
+//                con.close();
+//            } catch (SQLException e) {
+//                out.println("conclose Laporan Gudang" + e);
+//            }
         }
     }
 }

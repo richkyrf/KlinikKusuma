@@ -34,7 +34,7 @@ public class RunSelct {
 
     public void closecon() {
         try {
-            con.close();
+//            con.close();
         } catch (Exception ex) {
             out.println("E37" + ex);
         }

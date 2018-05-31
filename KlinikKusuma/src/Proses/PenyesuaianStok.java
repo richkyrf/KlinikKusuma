@@ -64,7 +64,7 @@ public class PenyesuaianStok extends javax.swing.JFrame {
 
     void cariBarang(String keywordCari) {
         if (jcari == null) {
-            jcari = new Jcari("SELECT `JenisBarang`, `NamaBarang` FROM `tbmbarang`a JOIN `tbsmjenisbarang`b ON a.`IdJenisBarang`=b.`IdJenisBarang` WHERE `JenisBarang` ", "SELECT `JenisBarang`, `NamaBarang` FROM `tbmbarang`a JOIN `tbsmjenisbarang`b ON a.`IdJenisBarang`=b.`IdJenisBarang` WHERE `NamaBarang` ", "Jenis Barang", "Nama Barang", "Cari Barang", 1, JTNamaBarang, JTStokBaru, keywordCari);
+            jcari = new Jcari("SELECT `JenisBarang`, `NamaBarang` FROM `tbmbarang`a JOIN `tbsmjenisbarang`b ON a.`IdJenisBarang`=b.`IdJenisBarang` WHERE `Status` = 1 AND `JenisBarang` ", "SELECT `JenisBarang`, `NamaBarang` FROM `tbmbarang`a JOIN `tbsmjenisbarang`b ON a.`IdJenisBarang`=b.`IdJenisBarang` WHERE `Status` = 1 AND `NamaBarang` ", "Jenis Barang", "Nama Barang", "Cari Barang", 1, JTNamaBarang, JTStokBaru, keywordCari);
         } else {
             jcari.setState(NORMAL);
             jcari.toFront();
@@ -446,7 +446,7 @@ public class PenyesuaianStok extends javax.swing.JFrame {
     // End of variables declaration//GEN-END:variables
 
     String getNoPenyesuaianStok() {
-        NumberFormat nf = new DecimalFormat("000000");
+        NumberFormat nf = new DecimalFormat("00000");
         String NoPenyesuaian = null;
         RunSelct runSelct = new RunSelct();
         if (getTitle().equals("Penyesuaian Stok")) {
@@ -458,27 +458,33 @@ public class PenyesuaianStok extends javax.swing.JFrame {
             ResultSet rs = runSelct.excute();
             if (!rs.isBeforeFirst()) {
                 if (getTitle().equals("Penyesuaian Stok")) {
-                    NoPenyesuaian = "KB-" + "000001" + "-PS";
+                    NoPenyesuaian = "PYK-" + "00001" + "-" + FDateF.datetostr(new Date(), "YY");
                 } else {
-                    NoPenyesuaian = "KB-" + "000001" + "-PG";
+                    NoPenyesuaian = "PYB-" + "00001" + "-" + FDateF.datetostr(new Date(), "YY");
                 }
             }
             while (rs.next()) {
                 String nopenjualan = rs.getString("NoPenyesuaian");
-                String number = nopenjualan.substring(3, 9);
-                int p = 1 + parseInt(number);
-                if (p != 999999) {
+                String number = nopenjualan.substring(3, 8);
+                String year = nopenjualan.substring(9, 11);
+                int p;
+                if (year.equals(FDateF.datetostr(new Date(), "YY"))) {
+                    p = 1 + parseInt(number);
+                } else {
+                    p = 1;
+                }
+                if (p != 99999) {
                     if (getTitle().equals("Penyesuaian Stok")) {
-                        NoPenyesuaian = "KB-" + nf.format(p) + "-PS";
+                        NoPenyesuaian = "PYK-" + nf.format(p) + "-" + FDateF.datetostr(new Date(), "YY");
                     } else {
-                        NoPenyesuaian = "KB-" + nf.format(p) + "-PG";
+                        NoPenyesuaian = "PYB-" + nf.format(p) + "-" + FDateF.datetostr(new Date(), "YY");
                     }
-                } else if (p == 999999) {
+                } else if (p == 99999) {
                     p = 1;
                     if (getTitle().equals("Penyesuaian Stok")) {
-                        NoPenyesuaian = "KB-" + nf.format(p) + "-PS";
+                        NoPenyesuaian = "PYK-" + nf.format(p) + "-" + FDateF.datetostr(new Date(), "YY");
                     } else {
-                        NoPenyesuaian = "KB-" + nf.format(p) + "-PG";
+                        NoPenyesuaian = "PYB-" + nf.format(p) + "-" + FDateF.datetostr(new Date(), "YY");
                     }
                 }
             }
@@ -486,7 +492,7 @@ public class PenyesuaianStok extends javax.swing.JFrame {
             out.println("E6" + e);
             JOptionPaneF.showMessageDialog(null, "Gagal Generate Nomor Penyesuaian");
         } finally {
-            runSelct.closecon();
+//            runSelct.closecon();
         }
         return NoPenyesuaian;
     }

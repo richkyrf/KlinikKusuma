@@ -73,11 +73,11 @@ public class ExportToExcel {
             JOptionPaneF.showMessageDialog(null, "Gagal EXport Data !!!" + e);
         } finally {
             if (connection != null) {
-                try {
-                    connection.close();
-                } catch (SQLException ex) {
-                    LogEror.SaveEror(ex);
-                }
+//                try {
+//                    connection.close();
+//                } catch (SQLException ex) {
+//                    LogEror.SaveEror(ex);
+//                }
             }
         }
     }
