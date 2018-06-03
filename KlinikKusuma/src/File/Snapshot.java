@@ -9,14 +9,13 @@ import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
-import java.io.File;
 import javax.imageio.ImageIO;
-import javax.swing.JFileChooser;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfByte;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.videoio.VideoCapture;
+import static org.opencv.videoio.Videoio.*;
 //import org.opencv.highgui.Highgui;
 //import org.opencv.highgui.VideoCapture;
 
@@ -38,6 +37,9 @@ public class Snapshot extends javax.swing.JFrame {
      */
     public Snapshot() {
         initComponents();
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        setLocationRelativeTo(null);
+        setVisible(true);
     }
 
     class DaemonThread implements Runnable {
@@ -50,6 +52,8 @@ public class Snapshot extends javax.swing.JFrame {
                 while (runnable) {
                     if (webSource.grab()) {
                         try {
+                            webSource.set(CAP_PROP_FRAME_WIDTH, 640);
+                            webSource.set(CAP_PROP_FRAME_HEIGHT, 360);
                             webSource.retrieve(frame);
                             Imgcodecs.imencode(".bmp", frame, mem);
                             Image im = ImageIO.read(new ByteArrayInputStream(mem.toArray()));
@@ -57,7 +61,7 @@ public class Snapshot extends javax.swing.JFrame {
                             BufferedImage buff = (BufferedImage) im;
                             Graphics g = jPanel1.getGraphics();
 
-                            if (g.drawImage(buff, 0, 0, getWidth(), getHeight() - 150, 0, 0, buff.getWidth(), buff.getHeight(), null)) {
+                            if (g.drawImage(buff, 0, 0, jPanel1.getWidth(), jPanel1.getHeight(), 0, 0, buff.getWidth(), buff.getHeight(), null)) {
                                 if (runnable == false) {
                                     System.out.println("Going to wait()");
                                     this.wait();
@@ -84,41 +88,38 @@ public class Snapshot extends javax.swing.JFrame {
 
         jFileChooser1 = new javax.swing.JFileChooser();
         jPanel1 = new javax.swing.JPanel();
-        jbuttonF1 = new KomponenGUI.JbuttonF();
-        jbuttonF2 = new KomponenGUI.JbuttonF();
         jbuttonF3 = new KomponenGUI.JbuttonF();
+        jbuttonF4 = new KomponenGUI.JbuttonF();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosed(java.awt.event.WindowEvent evt) {
+                formWindowClosed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 800, Short.MAX_VALUE)
+            .addGap(0, 640, Short.MAX_VALUE)
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 600, Short.MAX_VALUE)
+            .addGap(0, 360, Short.MAX_VALUE)
         );
 
-        jbuttonF1.setText("Start");
-        jbuttonF1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jbuttonF1ActionPerformed(evt);
-            }
-        });
-
-        jbuttonF2.setText("Pause");
-        jbuttonF2.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jbuttonF2ActionPerformed(evt);
-            }
-        });
-
-        jbuttonF3.setText("Snapshot");
+        jbuttonF3.setText("Save");
         jbuttonF3.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jbuttonF3ActionPerformed(evt);
+            }
+        });
+
+        jbuttonF4.setText("Start");
+        jbuttonF4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jbuttonF4ActionPerformed(evt);
             }
         });
 
@@ -128,15 +129,15 @@ public class Snapshot extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jbuttonF1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addComponent(jbuttonF4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jbuttonF2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(257, 257, 257)
-                        .addComponent(jbuttonF3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addComponent(jbuttonF3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -146,42 +147,39 @@ public class Snapshot extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jbuttonF3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jbuttonF1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jbuttonF2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jbuttonF4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jbuttonF1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbuttonF1ActionPerformed
-        webSource = new VideoCapture(0);
+    private void jbuttonF3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbuttonF3ActionPerformed
+        myThread.runnable = false;
+        webSource.release();
+        dispose();
+//        Imgcodecs.imwrite(Path, frame);
+//        try {
+//            BufferedImage image = ImageIO.read(new File(Path));
+//            Graphics g = Perawatan.jPanel3.getGraphics();
+//            g.drawImage(image, 0, 0, Perawatan.jPanel3.getWidth(), Perawatan.jPanel3.getHeight(), null);
+//        } catch (IOException ex) {
+//            System.out.println("Error " + ex);
+//        }
+    }//GEN-LAST:event_jbuttonF3ActionPerformed
+
+    private void formWindowClosed(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosed
+        myThread.runnable = false;
+    }//GEN-LAST:event_formWindowClosed
+
+    private void jbuttonF4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbuttonF4ActionPerformed
+        webSource = new VideoCapture(1);
         myThread = new DaemonThread();
         Thread t = new Thread(myThread);
         t.setDaemon(true);
         myThread.runnable = true;
         t.start();
-        jbuttonF1.setEnabled(false);  //start button
-        jbuttonF2.setEnabled(true);  // stop button
-
-    }//GEN-LAST:event_jbuttonF1ActionPerformed
-
-    private void jbuttonF3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbuttonF3ActionPerformed
-        int returnVal = jFileChooser1.showSaveDialog(this);
-        if (returnVal == JFileChooser.APPROVE_OPTION) {
-            File file = jFileChooser1.getSelectedFile();
-            Imgcodecs.imwrite(file.getPath(), frame);
-        } else {
-            System.out.println("File access cancelled by user.");
-        }
-    }//GEN-LAST:event_jbuttonF3ActionPerformed
-
-    private void jbuttonF2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbuttonF2ActionPerformed
-        myThread.runnable = false;
-        jbuttonF2.setEnabled(false);
-        jbuttonF1.setEnabled(true);
-        webSource.release();
-    }//GEN-LAST:event_jbuttonF2ActionPerformed
+    }//GEN-LAST:event_jbuttonF4ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -222,8 +220,7 @@ public class Snapshot extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JFileChooser jFileChooser1;
     private javax.swing.JPanel jPanel1;
-    private KomponenGUI.JbuttonF jbuttonF1;
-    private KomponenGUI.JbuttonF jbuttonF2;
     private KomponenGUI.JbuttonF jbuttonF3;
+    private KomponenGUI.JbuttonF jbuttonF4;
     // End of variables declaration//GEN-END:variables
 }

@@ -203,7 +203,7 @@ public class Login extends javax.swing.JFrame {
             GlobalVar.VarL.password = list.get(1);
             GlobalVar.VarL.level = list.get(2);
             if (list.get(0) != null) {
-                new Snapshot().setVisible(true);
+                new MenuUtama();
                 dispose();
             } else {
                 JOptionPaneF.showMessageDialog(this, "Gagal Login. Silahkan Ulangi . . .", "Error", JOptionPane.ERROR_MESSAGE);

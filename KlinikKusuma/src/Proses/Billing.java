@@ -610,6 +610,15 @@ public class Billing extends javax.swing.JFrame {
         JTHargaTindakan = new KomponenGUI.JPlaceHolder();
         JTSubTotalTindakan = new KomponenGUI.JPlaceHolder();
         JBRefreshTindakan = new KomponenGUI.JbuttonF();
+        jlableF27 = new KomponenGUI.JlableF();
+        jlableF28 = new KomponenGUI.JlableF();
+        JTTotalTindakan = new KomponenGUI.JPlaceHolder();
+        jlableF29 = new KomponenGUI.JlableF();
+        jlableF30 = new KomponenGUI.JlableF();
+        JTTotalTindakan1 = new KomponenGUI.JPlaceHolder();
+        jlableF31 = new KomponenGUI.JlableF();
+        jlableF32 = new KomponenGUI.JlableF();
+        JCBPakaiPoin1 = new KomponenGUI.JCheckBoxF();
         jPanel2 = new javax.swing.JPanel();
         JBTambahObat = new KomponenGUI.JbuttonF();
         JTJumlahObat = new KomponenGUI.JPlaceHolder();
@@ -747,9 +756,9 @@ public class Billing extends javax.swing.JFrame {
         });
         jScrollPane1.setViewportView(JTableTindakan);
         if (JTableTindakan.getColumnModel().getColumnCount() > 0) {
-            JTableTindakan.getColumnModel().getColumn(0).setMinWidth(500);
-            JTableTindakan.getColumnModel().getColumn(0).setPreferredWidth(500);
-            JTableTindakan.getColumnModel().getColumn(0).setMaxWidth(500);
+            JTableTindakan.getColumnModel().getColumn(0).setMinWidth(300);
+            JTableTindakan.getColumnModel().getColumn(0).setPreferredWidth(300);
+            JTableTindakan.getColumnModel().getColumn(0).setMaxWidth(300);
             JTableTindakan.getColumnModel().getColumn(1).setMinWidth(105);
             JTableTindakan.getColumnModel().getColumn(1).setPreferredWidth(105);
             JTableTindakan.getColumnModel().getColumn(1).setMaxWidth(105);
@@ -800,6 +809,42 @@ public class Billing extends javax.swing.JFrame {
             }
         });
 
+        jlableF27.setText("Total Tind.");
+
+        jlableF28.setText(":");
+
+        JTGrandTotal.setPlaceholder("Grand Total");
+        JTTotalTindakan.setEnabled(false);
+        JTTotalTindakan.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                JTTotalTindakanKeyPressed(evt);
+            }
+        });
+
+        jlableF29.setText("Diskon");
+
+        jlableF30.setText(":");
+
+        JTGrandTotal.setPlaceholder("Grand Total");
+        JTTotalTindakan1.setEnabled(false);
+        JTTotalTindakan1.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                JTTotalTindakan1KeyPressed(evt);
+            }
+        });
+
+        jlableF31.setText("Poin (000)");
+
+        jlableF32.setText(":");
+
+        JCBPakaiPoin1.setSelected(false);
+        JCBPakaiPoin1.setText("Pakai Poin");
+        JCBPakaiPoin1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                JCBPakaiPoin1ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -808,20 +853,39 @@ public class Billing extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(JCTindakan, javax.swing.GroupLayout.PREFERRED_SIZE, 498, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(JCTindakan, javax.swing.GroupLayout.PREFERRED_SIZE, 298, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(JTJumlahTindakan, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(JTHargaTindakan, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(JTSubTotalTindakan, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 877, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(JTSubTotalTindakan, javax.swing.GroupLayout.PREFERRED_SIZE, 161, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jScrollPane1))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(JBHapusTindakan, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(JBTambahTindakan, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(JBRefreshTindakan, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(JBRefreshTindakan, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(JBTambahTindakan, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jlableF27, javax.swing.GroupLayout.DEFAULT_SIZE, 119, Short.MAX_VALUE)
+                    .addComponent(jlableF29, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jlableF31, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(jlableF28, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(JTTotalTindakan, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(jlableF30, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(JTTotalTindakan1, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(jlableF32, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(JCBPakaiPoin1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(111, 111, 111))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -832,14 +896,25 @@ public class Billing extends javax.swing.JFrame {
                     .addComponent(JBTambahTindakan, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(JTJumlahTindakan, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(JTHargaTindakan, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(JTSubTotalTindakan, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(JTSubTotalTindakan, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jlableF27, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jlableF28, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(JTTotalTindakan, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 106, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(JBHapusTindakan, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(JBHapusTindakan, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jlableF29, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jlableF30, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(JTTotalTindakan1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(JBRefreshTindakan, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(JBRefreshTindakan, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jlableF31, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jlableF32, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(JCBPakaiPoin1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -897,9 +972,9 @@ public class Billing extends javax.swing.JFrame {
         });
         jScrollPane2.setViewportView(JTableObat);
         if (JTableObat.getColumnModel().getColumnCount() > 0) {
-            JTableObat.getColumnModel().getColumn(0).setMinWidth(500);
-            JTableObat.getColumnModel().getColumn(0).setPreferredWidth(500);
-            JTableObat.getColumnModel().getColumn(0).setMaxWidth(500);
+            JTableObat.getColumnModel().getColumn(0).setMinWidth(300);
+            JTableObat.getColumnModel().getColumn(0).setPreferredWidth(300);
+            JTableObat.getColumnModel().getColumn(0).setMaxWidth(300);
             JTableObat.getColumnModel().getColumn(1).setMinWidth(105);
             JTableObat.getColumnModel().getColumn(1).setPreferredWidth(105);
             JTableObat.getColumnModel().getColumn(1).setMaxWidth(105);
@@ -958,19 +1033,19 @@ public class Billing extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addComponent(JCObat, javax.swing.GroupLayout.PREFERRED_SIZE, 498, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(JCObat, javax.swing.GroupLayout.PREFERRED_SIZE, 298, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(JTJumlahObat, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(JTHargaObat, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(JTSubTotalObat, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 877, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(JTSubTotalObat, javax.swing.GroupLayout.PREFERRED_SIZE, 161, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jScrollPane2))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(JBHapusObat, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(JBTambahObat, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(JBRefreshObat, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(JBRefreshObat, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(JBTambahObat, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
@@ -1162,7 +1237,7 @@ public class Billing extends javax.swing.JFrame {
                                         .addComponent(jlableF3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                         .addComponent(JTNamaPasien, javax.swing.GroupLayout.PREFERRED_SIZE, 400, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addGap(180, 370, Short.MAX_VALUE)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                     .addGroup(layout.createSequentialGroup()
                                         .addComponent(jlableF15, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -1170,27 +1245,26 @@ public class Billing extends javax.swing.JFrame {
                                         .addComponent(jlableF14, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                         .addComponent(JDTanggal, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                            .addComponent(jlableF20, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                            .addComponent(jlableF21, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                            .addComponent(JTNoAntrian, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                        .addGroup(layout.createSequentialGroup()
-                                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                                .addGroup(layout.createSequentialGroup()
-                                                    .addComponent(jlableF17, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                    .addComponent(jlableF16, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                                .addGroup(layout.createSequentialGroup()
-                                                    .addComponent(jlableF23, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                    .addComponent(jlableF22, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                                .addComponent(JTNoBilling, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                .addComponent(JTNoTransaksi, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE))))))
+                                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                        .addComponent(jlableF20, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(jlableF21, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(JTNoAntrian, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                            .addGroup(layout.createSequentialGroup()
+                                                .addComponent(jlableF17, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(jlableF16, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                            .addGroup(layout.createSequentialGroup()
+                                                .addComponent(jlableF23, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(jlableF22, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addComponent(JTNoBilling, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addComponent(JTNoTransaksi, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)))))
                             .addGroup(layout.createSequentialGroup()
                                 .addGap(0, 0, Short.MAX_VALUE)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
@@ -1581,6 +1655,18 @@ public class Billing extends javax.swing.JFrame {
         setKembalian();
     }//GEN-LAST:event_JTBayarKeyReleased
 
+    private void JTTotalTindakanKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_JTTotalTindakanKeyPressed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_JTTotalTindakanKeyPressed
+
+    private void JTTotalTindakan1KeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_JTTotalTindakan1KeyPressed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_JTTotalTindakan1KeyPressed
+
+    private void JCBPakaiPoin1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JCBPakaiPoin1ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_JCBPakaiPoin1ActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -1633,6 +1719,7 @@ public class Billing extends javax.swing.JFrame {
     private KomponenGUI.JbuttonF JBUbah;
     private KomponenGUI.JbuttonF JBUbahPrint;
     private KomponenGUI.JCheckBoxF JCBPakaiPoin;
+    private KomponenGUI.JCheckBoxF JCBPakaiPoin1;
     private KomponenGUI.JcomboboxF JCNamaBeautician;
     private KomponenGUI.JcomboboxF JCNamaDokter;
     private KomponenGUI.JcomboboxF JCObat;
@@ -1653,6 +1740,8 @@ public class Billing extends javax.swing.JFrame {
     private KomponenGUI.JRibuanTextField JTSetelahPotong;
     private KomponenGUI.JPlaceHolder JTSubTotalObat;
     private KomponenGUI.JPlaceHolder JTSubTotalTindakan;
+    private KomponenGUI.JPlaceHolder JTTotalTindakan;
+    private KomponenGUI.JPlaceHolder JTTotalTindakan1;
     private KomponenGUI.JtableF JTableObat;
     private KomponenGUI.JtableF JTableTindakan;
     private javax.swing.JPanel jPanel1;
@@ -1679,7 +1768,13 @@ public class Billing extends javax.swing.JFrame {
     private KomponenGUI.JlableF jlableF24;
     private KomponenGUI.JlableF jlableF25;
     private KomponenGUI.JlableF jlableF26;
+    private KomponenGUI.JlableF jlableF27;
+    private KomponenGUI.JlableF jlableF28;
+    private KomponenGUI.JlableF jlableF29;
     private KomponenGUI.JlableF jlableF3;
+    private KomponenGUI.JlableF jlableF30;
+    private KomponenGUI.JlableF jlableF31;
+    private KomponenGUI.JlableF jlableF32;
     private KomponenGUI.JlableF jlableF4;
     private KomponenGUI.JlableF jlableF5;
     private KomponenGUI.JlableF jlableF6;
