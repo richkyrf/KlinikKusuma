@@ -98,7 +98,7 @@ public class JtableF extends JTable {
             rightRenderer.setHorizontalAlignment(SwingConstants.RIGHT);
             for (int i = 0; i < x.length; i++) {
                 if ("Date".equals(Type[i])) {
-                    m.getColumn(x[i]).setCellRenderer(FormatRenderer.getDateTimeRenderer());
+                    m.getColumn(x[i]).setCellRenderer(FormatRenderer.getDateRenderer());
                 }
                 if ("Time".equals(Type[i])) {
                     m.getColumn(x[i]).setCellRenderer(FormatRenderer.getTimeRenderer());

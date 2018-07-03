@@ -45,6 +45,8 @@
                       <EmptySpace max="32767" attributes="0"/>
                       <Component id="jCheckBoxF1" min="-2" max="-2" attributes="0"/>
                       <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                      <Component id="JBRekapMedis" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
                       <Component id="JBCekPoin" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="JBRegister" min="-2" max="-2" attributes="0"/>
@@ -82,6 +84,7 @@
                   <Component id="JBRegister" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="jCheckBoxF1" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="JBCekPoin" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="JBRekapMedis" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
           </Group>
@@ -139,7 +142,7 @@
     </Component>
     <Component class="KomponenGUI.JcomCari" name="jcomCari1">
       <AuxValues>
-        <AuxValue name="JavaCodeGenerator_InitCodePre" type="java.lang.String" value="jcomCari1.jtablef.addMouseListener(new java.awt.event.MouseAdapter() {&#xa;    public void mouseClicked(java.awt.event.MouseEvent evt) {&#xa;        JTableTindakanMouseClicked(evt);&#xa;    }&#xa;});"/>
+        <AuxValue name="JavaCodeGenerator_InitCodePre" type="java.lang.String" value="jcomCari1.jtablef.addMouseListener(new java.awt.event.MouseAdapter() {&#xa;    public void mouseReleased(java.awt.event.MouseEvent evt) {&#xa;        JTableTindakanMouseReleased(evt);&#xa;    }&#xa;});"/>
         <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="9"/>
       </AuxValues>
     </Component>
@@ -168,6 +171,14 @@
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="JBCekPoinActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="KomponenGUI.JbuttonF" name="JBRekapMedis">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Rekap Medis"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="JBRekapMedisActionPerformed"/>
       </Events>
     </Component>
   </SubComponents>

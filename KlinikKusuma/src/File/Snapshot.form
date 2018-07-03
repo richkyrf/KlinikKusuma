@@ -39,6 +39,8 @@
                   </Group>
                   <Group type="102" alignment="1" attributes="0">
                       <Component id="jbuttonF4" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace min="-2" pref="213" max="-2" attributes="0"/>
+                      <Component id="jbuttonF5" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="32767" attributes="0"/>
                       <Component id="jbuttonF3" min="-2" max="-2" attributes="0"/>
                   </Group>
@@ -56,6 +58,7 @@
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="jbuttonF3" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="jbuttonF4" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="jbuttonF5" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="32767" attributes="0"/>
           </Group>
@@ -92,6 +95,14 @@
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jbuttonF4ActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="KomponenGUI.JbuttonF" name="jbuttonF5">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Pasue"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jbuttonF5ActionPerformed"/>
       </Events>
     </Component>
   </SubComponents>

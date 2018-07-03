@@ -5,17 +5,12 @@
  */
 package Proses;
 
-import File.Printsupport;
-import static File.Printsupport.addtomodel;
-import static File.Printsupport.now;
-import static File.Printsupport.title;
 import java.awt.event.KeyEvent;
 import java.util.Date;
 import FunctionGUI.JOptionPaneF;
 import javax.swing.table.DefaultTableModel;
 import static GlobalVar.Var.*;
 import KomponenGUI.FDateF;
-import static KomponenGUI.FDateF.datetostr;
 import LSubProces.DRunSelctOne;
 import LSubProces.MultiInsert;
 import LSubProces.RunSelct;
@@ -31,11 +26,9 @@ import static java.awt.print.Printable.NO_SUCH_PAGE;
 import static java.awt.print.Printable.PAGE_EXISTS;
 import java.awt.print.PrinterException;
 import java.awt.print.PrinterJob;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import static java.lang.Integer.parseInt;
-import static java.lang.String.format;
+import static java.lang.Math.abs;
 import static java.lang.System.out;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -45,25 +38,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import javax.imageio.ImageIO;
-import javax.print.Doc;
-import javax.print.DocFlavor;
-import static javax.print.DocFlavor.INPUT_STREAM.AUTOSENSE;
-import javax.print.DocPrintJob;
-import javax.print.PrintException;
 import javax.print.PrintService;
 import javax.print.PrintServiceLookup;
-import static javax.print.PrintServiceLookup.lookupDefaultPrintService;
-import javax.print.SimpleDoc;
-import javax.print.attribute.DocAttributeSet;
-import javax.print.attribute.HashDocAttributeSet;
-import javax.print.attribute.HashPrintRequestAttributeSet;
-import javax.print.attribute.PrintRequestAttributeSet;
-import static javax.print.attribute.Size2DSyntax.INCH;
-import javax.print.attribute.standard.Copies;
-import static javax.print.attribute.standard.MediaSize.findMedia;
-import static javax.print.attribute.standard.OrientationRequested.LANDSCAPE;
-import javax.print.event.PrintJobAdapter;
-import javax.print.event.PrintJobEvent;
 import javax.swing.JTable;
 import javax.swing.UIManager;
 import javax.swing.table.TableModel;
@@ -78,6 +54,7 @@ public class Billing extends javax.swing.JFrame {
      * Creates new form Perawatan
      */
     String Dari, Parameter;
+    int tindakanCount, obatCount;
 
     public Billing(String dari, Object parameter) {
         Parameter = parameter.toString();
@@ -87,31 +64,36 @@ public class Billing extends javax.swing.JFrame {
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setVisible(true);
         UIManager.put("ComboBox.disabledForeground", Color.blue);
-        JCNamaDokter.setEnabled(false);
-        JCNamaBeautician.setEnabled(false);
+//        JCNamaBeautician.setEnabled(false);
+        JTDiskonObat.setEnabled(false);
         if (dari.contains("Antrian")) {
+            setTitle("Tambah Billing");
+            JBUbah.setVisible(false);
+            JBUbahPrint.setVisible(false);
+            JLSetelahPotongTindakan.setVisible(false);
+            JLSetelahPotongTindakan2.setVisible(false);
+            JTSetelahPotongTindakan.setVisible(false);
+            JLSetelahPotongObat.setVisible(false);
+            JLSetelahPotongObat2.setVisible(false);
+            JTSetelahPotongObat.setVisible(false);
             if (dari.contains("Billing")) {
                 loadPerawatan(parameter);
             } else {
                 loadPenjualan(parameter);
+                JCNamaDokter.setEnabled(true);
+                JCNamaBeautician.setEnabled(true);
                 JTNoTransaksi.setText(getNoTransaksi());
             }
-            setTitle("Tambah Billing");
-            JTNoBilling.setText(getNoBilling());
-            JBUbah.setVisible(false);
-            JBUbahPrint.setVisible(false);
-            JTSetelahPotong.setVisible(false);
-            jlableF12.setVisible(false);
-            jlableF24.setVisible(false);
             setPoin(0);
+            JTNoBilling.setText(getNoBilling());
         } else {
             setTitle("Ubah Billing");
             JBTambah.setVisible(false);
             JBTambahPrint.setVisible(false);
+            loadEditData(parameter);
             if (dari.contains("Perawatan")) {
-                loadEditDataPerawatan(parameter);
             } else {
-                loadEditDataPenjualan(parameter);
+                JCNamaBeautician.setEnabled(true);
             }
         }
         JTBayar.requestFocus();
@@ -125,14 +107,6 @@ public class Billing extends javax.swing.JFrame {
         JTNamaPasien.setText(list.get(0));
         JTNoAntrian.setText(list.get(1));
         JCNamaDokter.setEnabled(false);
-        JCNamaBeautician.setEnabled(false);
-        JBTambahTindakan.setEnabled(false);
-        JBRefreshTindakan.setEnabled(false);
-        JCTindakan.setEnabled(false);
-        JCTindakan.setSelectedItem("-");
-        JTJumlahTindakan.setEnabled(false);
-        JTHargaTindakan.setEnabled(false);
-        setPoin(0);
     }
 
     void loadPerawatan(Object idAntrian) {
@@ -158,7 +132,7 @@ public class Billing extends javax.swing.JFrame {
                 JTableTindakan.setValueAt(rs.getString(3), row, 0);
                 JTableTindakan.setValueAt(rs.getString(4).replace(",", "."), row, 1);
                 JTableTindakan.setValueAt(rs.getString(5).replace(",", "."), row, 2);
-                JTableTindakan.setValueAt(rs.getString(6).replace(",", "."), row, 3);
+                JTableTindakan.setValueAt(rs.getString(6).replace(",", "."), row, 4);
                 row++;
             }
         } catch (SQLException e) {
@@ -188,27 +162,32 @@ public class Billing extends javax.swing.JFrame {
         } finally {
 //            runSelct2.closecon();
         }
+        setTotalTindakan();
+        setTotalObat();
         setGrandTotal();
     }
 
-    void loadEditDataPerawatan(Object idEdit) {
+    void loadEditData(Object idEdit) {
         DRunSelctOne dRunSelctOne = new DRunSelctOne();
         dRunSelctOne.seterorm("Eror Gagal Menampilkan Data Billing");
-        dRunSelctOne.setQuery("SELECT `IdBilling` as 'ID', `NoBilling` as 'No. Billing', DATE_FORMAT(a.`Tanggal`,'%d-%m-%Y') as 'Tanggal', a.`NoTransaksi` as 'No. Transaksi', `NoAntrian` as 'No. Antrian', `NamaDokter` as 'Dokter', IFNULL(`NamaBeautician`,'-- Pilih Nama Beautician --') as 'Beautician', CONCAT('(',`KodePasien`,') ',`NamaPasien`) as 'Pasien', FORMAT(`Bayar`,0) as 'Jumlah Bayar', IF(`StatusPoin`=1,'Poin','Cash') as 'Bayar', `Poin` FROM `tbbilling`a JOIN `tbperawatan`b ON a.`NoTransaksi`=b.`NoTransaksi` JOIN `tbantrian`c ON b.`IdAntrian`=c.`IdAntrian` JOIN `tbmpasien`d ON c.`IdPasien`=d.`IdPasien` JOIN `tbmdokter`e ON b.`IdDokter`=e.`IdDokter` LEFT JOIN `tbmbeautician`f ON b.`IdBeautician`=f.`IdBeautician` WHERE `IdBilling` = '" + Parameter + "'");
+        dRunSelctOne.setQuery("SELECT `IdBilling` as 'ID', `NoBilling` as 'No. Billing', DATE_FORMAT(a.`Tanggal`,'%d-%m-%Y') as 'Tanggal', a.`NoTransaksi` as 'No. Transaksi', `NoAntrian` as 'No. Antrian', CONCAT('(',`KodePasien`,') ',`NamaPasien`) as 'Pasien', IFNULL(`NamaDokter`,'-- Pilih Nama Dokter --') as 'Dokter', IFNULL(`NamaBeautician`,'-- Pilih Nama Beautician --') as 'Beautician', FORMAT(`Bayar`,0) as 'Jumlah Bayar', FORMAT(`DiskonObat`,0) as 'Diskon Obat', FORMAT(`PoinTindakan`,0) as 'Poin Tindakan', FORMAT(`PoinObat`,0) as 'Poin Obat', `MetodePembayaran` FROM `tbbilling`a JOIN `tbantrian`b ON a.`IdAntrian`=b.`IdAntrian` JOIN `tbmpasien`c ON b.`IdPasien`=c.`IdPasien` LEFT JOIN `tbperawatan`d ON a.`NoTransaksi`=d.`NoTransaksi` LEFT JOIN `tbmdokter`e ON IF(a.`IdDokter` IS NULL, d.`IdDokter`, a.`IdDokter`)=e.`IdDokter` LEFT JOIN `tbmbeautician`f ON IF(a.`IdBeautician` IS NULL, d.`IdBeautician`, a.`IdBeautician`)=f.`IdBeautician` WHERE `IdBilling` = '" + Parameter + "'"); //0id, 1nobil, 2tgl, 3notrans, 4noantri, 5pasien, 6dokter, 7beautician, 8bayar, 9diskon, 10poinT, 11poinO, 12metode
         ArrayList<String> list = dRunSelctOne.excute();
         JTNoBilling.setText(list.get(1));
         JDTanggal.setDate(FDateF.strtodate(list.get(2), "dd-MM-yyyy"));
         JTNoTransaksi.setText(list.get(3));
         JTNoAntrian.setText(list.get(4));
-        JCNamaDokter.setSelectedItem(list.get(5));
-        JCNamaBeautician.setSelectedItem(list.get(6));
-        JTNamaPasien.setText(list.get(7));
+        JTNamaPasien.setText(list.get(5));
+        JCNamaDokter.setSelectedItem(list.get(6));
+        JCNamaBeautician.setSelectedItem(list.get(7));
         JTBayar.setInt(list.get(8).replace(",", ""));
-        JCBPakaiPoin.setSelected(list.get(9).equals("Poin"));
+        JTDiskonObat.setInt(list.get(9).replace(",", ""));
+        JTPoinTindakan.setInt(list.get(10).replace(",", ""));
+        JTPoinObat.setInt(list.get(11).replace(",", ""));
+        JCMetodePembayaran.setSelectedItem(list.get(12));
         DefaultTableModel model = (DefaultTableModel) JTableTindakan.getModel();
         model.getDataVector().removeAllElements();
         RunSelct runSelct = new RunSelct();
-        runSelct.setQuery("SELECT `IdBillingTindakan` as 'ID', `NoBilling` as 'No. Billing', `NamaTindakan` as 'Nama Tindakan', FORMAT(`Jumlah`,0) as 'Jumlah', FORMAT(a.`Harga`,0) as 'Harga', FORMAT(`Jumlah`*a.`Harga`,0) as 'Sub Total' FROM `tbbillingtindakan`a JOIN `tbmtindakan`b ON a.`IdTindakan`=b.`IdTindakan` WHERE `NoBilling` = '" + JTNoBilling.getText() + "'");
+        runSelct.setQuery("SELECT `IdBillingTindakan` as 'ID', `NoBilling` as 'No. Billing', `NamaTindakan` as 'Nama Tindakan', FORMAT(`Jumlah`,0) as 'Jumlah', FORMAT(a.`Harga`,0) as 'Harga', IF(`DiskonTindakan` > 100 || `DiskonTindakan` = 0, FORMAT(`DiskonTindakan`,0), CONCAT(`DiskonTindakan`,' %')) as 'Diskon Tindakan', IF(`DiskonTindakan` > 100, FORMAT((`Jumlah`*a.`Harga`)-`DiskonTindakan`,0), FORMAT((`Jumlah`*a.`Harga`)-((`Jumlah`*a.`Harga`)*`DiskonTindakan`/100),0)) as 'Sub Total' FROM `tbbillingtindakan`a JOIN `tbmtindakan`b ON a.`IdTindakan`=b.`IdTindakan` WHERE `NoBilling` = '" + JTNoBilling.getText() + "'");
         try {
             ResultSet rs = runSelct.excute();
             int row = 0;
@@ -218,8 +197,10 @@ public class Billing extends javax.swing.JFrame {
                 JTableTindakan.setValueAt(rs.getString(4).replace(",", "."), row, 1);
                 JTableTindakan.setValueAt(rs.getString(5).replace(",", "."), row, 2);
                 JTableTindakan.setValueAt(rs.getString(6).replace(",", "."), row, 3);
+                JTableTindakan.setValueAt(rs.getString(7).replace(",", "."), row, 4);
                 row++;
             }
+            tindakanCount = JTableTindakan.getRowCount();
         } catch (SQLException e) {
             out.println("E6" + e);
             JOptionPaneF.showMessageDialog(null, "Gagal Panggil Data Billing Tindakan");
@@ -241,44 +222,88 @@ public class Billing extends javax.swing.JFrame {
                 JTableObat.setValueAt(rs2.getString(6).replace(",", "."), row2, 3);
                 row2++;
             }
+            obatCount = JTableObat.getRowCount();
         } catch (SQLException e) {
             out.println("E6" + e);
             JOptionPaneF.showMessageDialog(null, "Gagal Panggil Data Billing Obat");
         } finally {
 //            runSelct2.closecon();
         }
-        setGrandTotal();
-        if (JCBPakaiPoin.isSelected()) {
-            JTSetelahPotong.setVisible(true);
-            jlableF12.setVisible(true);
-            jlableF24.setVisible(true);
-            setPoin(Integer.valueOf(list.get(10)));
-            JTSetelahPotong.setText(String.valueOf(JTGrandTotal.getInt() - Integer.valueOf(list.get(10)) * 5000));
+        setPoin(Integer.valueOf(list.get(10)) + Integer.valueOf(list.get(11)));
+        setTotalTindakan();
+        if (JTPoinTindakan.getInt() != 0) {
+            JLSetelahPotongTindakan.setVisible(true);
+            JLSetelahPotongTindakan2.setVisible(true);
+            JTSetelahPotongTindakan.setVisible(true);
+            JTSetelahPotongTindakan.setInt(getSetelahPotongPoinTindakan());
         } else {
-            JTSetelahPotong.setVisible(false);
-            jlableF12.setVisible(false);
-            jlableF24.setVisible(false);
-            JLPoin.setText("Poin (0)");
-            JCBPakaiPoin.setEnabled(false);
+            JLSetelahPotongTindakan.setVisible(false);
+            JLSetelahPotongTindakan2.setVisible(false);
+            JTSetelahPotongTindakan.setVisible(false);
         }
+        setTotalObat();
+        if (JTPoinObat.getInt() != 0 || JTDiskonObat.getInt() != 0) {
+            JLSetelahPotongObat.setVisible(true);
+            JLSetelahPotongObat2.setVisible(true);
+            JTSetelahPotongObat.setVisible(true);
+            setSetelahPotongObat();
+        } else {
+            JLSetelahPotongObat.setVisible(false);
+            JLSetelahPotongObat2.setVisible(false);
+            JTSetelahPotongObat.setVisible(false);
+        }
+        setGrandTotal();
+//        if (JTPoinTindakan.getInt() != 0) {
+//            JTSetelahPotongTindakan.setVisible(true);
+//            JLSetelahPotongTindakan.setVisible(true);
+//            JLSetelahPotongTindakan2.setVisible(true);
+//            setPoin(Integer.valueOf(list.get(10)));
+//            if (JTSetelahPotongTindakan.isVisible()) {
+//                JTSetelahPotongTindakan.setText(String.valueOf(JTGrandTotal.getInt() - Integer.valueOf(list.get(8)) * 1000));
+//            }
+//        } else {
+//            JTSetelahPotongTindakan.setVisible(false);
+//            JLSetelahPotongTindakan.setVisible(false);
+//            JLSetelahPotongTindakan2.setVisible(false);
+//            JLPoinTindakan.setText("Poin (0)");
+//            JCBPakaiPoinTindakan.setEnabled(false);
+//        }
+//        if (JCBPakaiPoinObat.isSelected()) {
+//            JTSetelahPotongObat.setVisible(true);
+//            JLSetelahPotongObat.setVisible(true);
+//            JLSetelahPotongObat2.setVisible(true);
+//            setPoin(Integer.valueOf(list.get(10)));
+//            JTSetelahPotongObat.setText(String.valueOf(JTGrandTotal.getInt() - Integer.valueOf(list.get(8)) * 1000));
+//        } else {
+//            JTSetelahPotongObat.setVisible(false);
+//            JLSetelahPotongObat.setVisible(false);
+//            JLSetelahPotongObat2.setVisible(false);
+//            JLPoinObat.setText("Poin (0)");
+//            JCBPakaiPoinObat.setEnabled(false);
+//        }
     }
 
-    void loadEditDataPenjualan(Object idEdit) {
-        DRunSelctOne dRunSelctOne = new DRunSelctOne();
-        dRunSelctOne.seterorm("Eror Gagal Menampilkan Data Billing");
-        dRunSelctOne.setQuery("SELECT `IdBilling` as 'ID', `NoBilling` as 'No. Billing', DATE_FORMAT(a.`Tanggal`,'%d-%m-%Y') as 'Tanggal', a.`NoTransaksi` as 'No. Transaksi', `NoAntrian` as 'No. Antrian', CONCAT('(',`KodePasien`,') ',`NamaPasien`) as 'Pasien', FORMAT(`Bayar`,0) as 'Jumlah Bayar', IF(`StatusPoin`=1,'Poin','Cash') as 'Bayar', `Poin` FROM `tbbilling`a JOIN  `tbantrian`b ON a.`IdAntrian`=b.`IdAntrian` JOIN `tbmpasien`c ON b.`IdPasien`=c.`IdPasien` WHERE `IdBilling` = '" + Parameter + "'");
-        ArrayList<String> list = dRunSelctOne.excute();
-        JTNoBilling.setText(list.get(1));
-        JDTanggal.setDate(FDateF.strtodate(list.get(2), "dd-MM-yyyy"));
-        JTNoTransaksi.setText(list.get(3));
-        JTNoAntrian.setText(list.get(4));
-        JTNamaPasien.setText(list.get(5));
-        JTBayar.setInt(list.get(6).replace(",", ""));
-        JCBPakaiPoin.setSelected(list.get(7).equals("Poin"));
+//    void loadEditDataPerawatan(Object idEdit) {
+//        DRunSelctOne dRunSelctOne = new DRunSelctOne();
+//        dRunSelctOne.seterorm("Eror Gagal Menampilkan Data Billing");
+//        dRunSelctOne.setQuery("SELECT `IdBilling` as 'ID', `NoBilling` as 'No. Billing', DATE_FORMAT(a.`Tanggal`,'%d-%m-%Y') as 'Tanggal', a.`NoTransaksi` as 'No. Transaksi', `NoAntrian` as 'No. Antrian', `NamaDokter` as 'Dokter', IFNULL(`NamaBeautician`,'-- Pilih Nama Beautician --') as 'Beautician', CONCAT('(',`KodePasien`,') ',`NamaPasien`) as 'Pasien', FORMAT(`Bayar`,0) as 'Jumlah Bayar', FORMAT(`DiskonObat`,0) as 'Diskon Obat', FORMAT(`PoinTindakan`,0) as 'Poin Tindakan', FORMAT(`PoinObat`,0) as 'Poin Obat', `MetodePembayaran` FROM `tbbilling`a JOIN `tbperawatan`b ON a.`NoTransaksi`=b.`NoTransaksi` JOIN `tbantrian`c ON b.`IdAntrian`=c.`IdAntrian` JOIN `tbmpasien`d ON c.`IdPasien`=d.`IdPasien` JOIN `tbmdokter`e ON b.`IdDokter`=e.`IdDokter` LEFT JOIN `tbmbeautician`f ON b.`IdBeautician`=f.`IdBeautician` WHERE `IdBilling` = '" + Parameter + "'");//0id, 1nobil, 2tgl, 3notrans, 4noantrian, 5dokter, 6beautician, 7pasien, 8bayar, 9diskonO, 10poinT, 11poinO, 12metode
+//        ArrayList<String> list = dRunSelctOne.excute();
+//        JTNoBilling.setText(list.get(1));
+//        JDTanggal.setDate(FDateF.strtodate(list.get(2), "dd-MM-yyyy"));
+//        JTNoTransaksi.setText(list.get(3));
+//        JTNoAntrian.setText(list.get(4));
+//        JCNamaDokter.setSelectedItem(list.get(5));
+//        JCNamaBeautician.setSelectedItem(list.get(6));
+//        JTNamaPasien.setText(list.get(7));
+//        JTBayar.setInt(list.get(8).replace(",", ""));
+//        JTDiskonObat.setInt(list.get(9).replace(",", ""));
+//        JTPoinTindakan.setInt(list.get(10).replace(",", ""));
+//        JTPoinObat.setInt(list.get(11).replace(",", ""));
+//        JCMetodePembayaran.setSelectedItem(list.get(12));
 //        DefaultTableModel model = (DefaultTableModel) JTableTindakan.getModel();
 //        model.getDataVector().removeAllElements();
 //        RunSelct runSelct = new RunSelct();
-//        runSelct.setQuery("SELECT `IdBillingTindakan` as 'ID', `NoBilling` as 'No. Billing', `NamaTindakan` as 'Nama Tindakan', FORMAT(`Jumlah`,0) as 'Jumlah', FORMAT(a.`Harga`,0) as 'Harga', FORMAT(`Jumlah`*a.`Harga`,0) as 'Sub Total' FROM `tbbillingtindakan`a JOIN `tbmtindakan`b ON a.`IdTindakan`=b.`IdTindakan` WHERE `NoBilling` = '" + JTNoBilling.getText() + "'");
+//        runSelct.setQuery("SELECT `IdBillingTindakan` as 'ID', `NoBilling` as 'No. Billing', `NamaTindakan` as 'Nama Tindakan', FORMAT(`Jumlah`,0) as 'Jumlah', FORMAT(a.`Harga`,0) as 'Harga', FORMAT(`DiskonTindakan`,0) as 'Diskon Tindakan', FORMAT(`Jumlah`*a.`Harga`,0) as 'Sub Total' FROM `tbbillingtindakan`a JOIN `tbmtindakan`b ON a.`IdTindakan`=b.`IdTindakan` WHERE `NoBilling` = '" + JTNoBilling.getText() + "'");
 //        try {
 //            ResultSet rs = runSelct.excute();
 //            int row = 0;
@@ -290,49 +315,67 @@ public class Billing extends javax.swing.JFrame {
 //                JTableTindakan.setValueAt(rs.getString(6).replace(",", "."), row, 3);
 //                row++;
 //            }
+//            tindakanCount = JTableTindakan.getRowCount();
 //        } catch (SQLException e) {
 //            out.println("E6" + e);
 //            JOptionPaneF.showMessageDialog(null, "Gagal Panggil Data Billing Tindakan");
 //        } finally {
 ////            runSelct.closecon();
 //        }
-        DefaultTableModel model2 = (DefaultTableModel) JTableObat.getModel();
-        model2.getDataVector().removeAllElements();
-        RunSelct runSelct2 = new RunSelct();
-        runSelct2.setQuery("SELECT `IdBillingObat` as 'ID', `NoBilling` as 'No. Billing', `NamaBarang` as 'Nama Obat', FORMAT(`Jumlah`,0) as 'Jumlah', FORMAT(a.`Harga`,0) as 'Harga', FORMAT(`Jumlah`*a.`Harga`,0) as 'Sub Total' FROM `tbbillingobat`a JOIN `tbmbarang`b ON a.`IdObat`=b.`IdBarang` WHERE `NoBilling` = '" + JTNoBilling.getText() + "'");
-        try {
-            ResultSet rs2 = runSelct2.excute();
-            int row2 = 0;
-            while (rs2.next()) {
-                model2.addRow(new Object[]{"", "", "", "", ""});
-                JTableObat.setValueAt(rs2.getString(3), row2, 0);
-                JTableObat.setValueAt(rs2.getString(4).replace(",", "."), row2, 1);
-                JTableObat.setValueAt(rs2.getString(5).replace(",", "."), row2, 2);
-                JTableObat.setValueAt(rs2.getString(6).replace(",", "."), row2, 3);
-                row2++;
-            }
-        } catch (SQLException e) {
-            out.println("E6" + e);
-            JOptionPaneF.showMessageDialog(null, "Gagal Panggil Data Billing Obat");
-        } finally {
-//            runSelct2.closecon();
-        }
-        setGrandTotal();
-        if (JCBPakaiPoin.isSelected()) {
-            JTSetelahPotong.setVisible(true);
-            jlableF12.setVisible(true);
-            jlableF24.setVisible(true);
-            setPoin(Integer.valueOf(list.get(8)));
-            JTSetelahPotong.setText(String.valueOf(JTGrandTotal.getInt() - Integer.valueOf(list.get(8)) * 5000));
-        } else {
-            JTSetelahPotong.setVisible(false);
-            jlableF12.setVisible(false);
-            jlableF24.setVisible(false);
-            JLPoin.setText("Poin (0)");
-            JCBPakaiPoin.setEnabled(false);
-        }
-    }
-
+//        DefaultTableModel model2 = (DefaultTableModel) JTableObat.getModel();
+//        model2.getDataVector().removeAllElements();
+//        RunSelct runSelct2 = new RunSelct();
+//        runSelct2.setQuery("SELECT `IdBillingObat` as 'ID', `NoBilling` as 'No. Billing', `NamaBarang` as 'Nama Obat', FORMAT(`Jumlah`,0) as 'Jumlah', FORMAT(a.`Harga`,0) as 'Harga', FORMAT(`Jumlah`*a.`Harga`,0) as 'Sub Total' FROM `tbbillingobat`a JOIN `tbmbarang`b ON a.`IdObat`=b.`IdBarang` WHERE `NoBilling` = '" + JTNoBilling.getText() + "'");
+//        try {
+//            ResultSet rs2 = runSelct2.excute();
+//            int row2 = 0;
+//            while (rs2.next()) {
+//                model2.addRow(new Object[]{"", "", "", "", ""});
+//                JTableObat.setValueAt(rs2.getString(3), row2, 0);
+//                JTableObat.setValueAt(rs2.getString(4).replace(",", "."), row2, 1);
+//                JTableObat.setValueAt(rs2.getString(5).replace(",", "."), row2, 2);
+//                JTableObat.setValueAt(rs2.getString(6).replace(",", "."), row2, 3);
+//                row2++;
+//            }
+//            obatCount = JTableObat.getRowCount();
+//        } catch (SQLException e) {
+//            out.println("E6" + e);
+//            JOptionPaneF.showMessageDialog(null, "Gagal Panggil Data Billing Obat");
+//        } finally {
+////            runSelct2.closecon();
+//        }
+//        setTotalTindakan();
+//        setTotalObat();
+//        setGrandTotal();
+////        if (JCBPakaiPoinTindakan.isSelected()) {
+////            JTSetelahPotongTindakan.setVisible(true);
+////            JLSetelahPotongTindakan.setVisible(true);
+////            JLSetelahPotongTindakan2.setVisible(true);
+////            setPoin(Integer.valueOf(list.get(10)));
+////            if (JTSetelahPotongTindakan.isVisible()) {
+////                JTSetelahPotongTindakan.setText(String.valueOf(JTGrandTotal.getInt() - Integer.valueOf(list.get(10)) * 1000));
+////            }
+////        } else {
+////            JTSetelahPotongTindakan.setVisible(false);
+////            JLSetelahPotongTindakan.setVisible(false);
+////            JLSetelahPotongTindakan2.setVisible(false);
+////            JLPoinTindakan.setText("Poin (0)");
+////            JCBPakaiPoinTindakan.setEnabled(false);
+////        }
+////        if (JCBPakaiPoinObat.isSelected()) {
+////            JTSetelahPotongObat.setVisible(true);
+////            JLSetelahPotongObat.setVisible(true);
+////            JLSetelahPotongObat2.setVisible(true);
+////            setPoin(Integer.valueOf(list.get(10)));
+////            JTSetelahPotongObat.setText(String.valueOf(JTGrandTotal.getInt() - Integer.valueOf(list.get(10)) * 1000));
+////        } else {
+////            JTSetelahPotongObat.setVisible(false);
+////            JLSetelahPotongObat.setVisible(false);
+////            JLSetelahPotongObat2.setVisible(false);
+////            JLPoinObat.setText("Poin (0)");
+////            JCBPakaiPoinObat.setEnabled(false);
+////        }
+//    }
     public static String getNoTransaksi() {
         NumberFormat nf = new DecimalFormat("00000");
         String NoTransaksi = null;
@@ -369,40 +412,42 @@ public class Billing extends javax.swing.JFrame {
         return NoTransaksi;
     }
 
-    public static String getNoBilling() {
-        NumberFormat nf = new DecimalFormat("00000");
-        String NoBilling = null;
-        RunSelct runSelct = new RunSelct();
-        runSelct.setQuery("SELECT `NoBilling` FROM `tbbilling` ORDER BY `NoBilling` DESC LIMIT 1");
-        try {
-            ResultSet rs = runSelct.excute();
-            if (!rs.isBeforeFirst()) {
-                NoBilling = "BL-" + "00001" + "-" + FDateF.datetostr(new Date(), "YY");
-            }
-            while (rs.next()) {
-                String NoTransaksi = rs.getString("NoBilling");
-                String number = NoTransaksi.substring(3, 8);
-                String year = NoTransaksi.substring(9, 11);
-                int p;
-                if (year.equals(FDateF.datetostr(new Date(), "YY"))) {
-                    p = 1 + parseInt(number);
-                } else {
-                    p = 1;
-                }
-                if (p != 99999) {
-                    NoBilling = "BL-" + nf.format(p) + "-" + FDateF.datetostr(new Date(), "YY");
-                } else if (p == 99999) {
-                    p = 1;
-                    NoBilling = "BL-" + nf.format(p) + "-" + FDateF.datetostr(new Date(), "YY");
-                }
-            }
-        } catch (SQLException e) {
-            out.println("E6" + e);
-            JOptionPaneF.showMessageDialog(null, "Gagal Generate Nomor Billing");
-        } finally {
-//            runSelct.closecon();
-        }
-        return NoBilling;
+    public String getNoBilling() {
+//        NumberFormat nf = new DecimalFormat("00000");
+//        String NoBilling = null;
+//        RunSelct runSelct = new RunSelct();
+//        runSelct.setQuery("SELECT `NoBilling` FROM `tbbilling` ORDER BY `NoBilling` DESC LIMIT 1");
+//        try {
+//            ResultSet rs = runSelct.excute();
+//            if (!rs.isBeforeFirst()) {
+//                NoBilling = "BL-" + "00001" + "-" + FDateF.datetostr(new Date(), "YY");
+//            }
+//            while (rs.next()) {
+//                String NoTransaksi = rs.getString("NoBilling");
+//                String number = NoTransaksi.substring(3, 8);
+//                String year = NoTransaksi.substring(9, 11);
+//                int p;
+//                if (year.equals(FDateF.datetostr(new Date(), "YY"))) {
+//                    p = 1 + parseInt(number);
+//                } else {
+//                    p = 1;
+//                }
+//                if (p != 99999) {
+//                    NoBilling = "BL-" + nf.format(p) + "-" + FDateF.datetostr(new Date(), "YY");
+//                } else if (p == 99999) {
+//                    p = 1;
+//                    NoBilling = "BL-" + nf.format(p) + "-" + FDateF.datetostr(new Date(), "YY");
+//                }
+//            }
+//        } catch (SQLException e) {
+//            out.println("E6" + e);
+//            JOptionPaneF.showMessageDialog(null, "Gagal Generate Nomor Billing");
+//        } finally {
+////            runSelct.closecon();
+//        }
+//        return NoBilling;
+        NumberFormat nf = new DecimalFormat("000");
+        return FDateF.datetostr(JDTanggal.getDate(), "YYMMdd") + nf.format(Integer.valueOf(JTNoAntrian.getText()));
     }
 
     boolean checkInput() {
@@ -416,7 +461,7 @@ public class Billing extends javax.swing.JFrame {
             JOptionPaneF.showMessageDialog(this, "Gagal. No. Transaksi Boleh Kosong");
             return false;
         } else if (JTNoBilling.getText().isEmpty()) {
-            JOptionPaneF.showMessageDialog(this, "Gagal. No. Billing Boleh Kosong");
+            JOptionPaneF.showMessageDialog(this, "Gagal. No. Nota Boleh Kosong");
             return false;
 //        } else if (JTableTindakan.getRowCount() == 0) {
 //            JOptionPaneF.showMessageDialog(this, "Gagal. Silahkan Isi Tindakan Terlebih Dahulu.");
@@ -424,11 +469,9 @@ public class Billing extends javax.swing.JFrame {
 //        } else if (JTableObat.getRowCount() == 0) {
 //            JOptionPaneF.showMessageDialog(this, "Gagal. Silahkan Isi Obat Terlebih Dahulu.");
 //            return false;
-        } else if (JTBayar.getInt() < JTGrandTotal.getInt() && !JCBPakaiPoin.isSelected()) {
+        } else if (JTBayar.getInt() < JTGrandTotal.getInt()) {
             JOptionPaneF.showMessageDialog(this, "Gagal. Jumlah Bayar Tidak Mencukupi.");
-            return false;
-        } else if (JTBayar.getInt() < JTSetelahPotong.getInt() && JCBPakaiPoin.isSelected()) {
-            JOptionPaneF.showMessageDialog(this, "Gagal. Jumlah Bayar Tidak Mencukupi.");
+            JTBayar.requestFocus();
             return false;
         } else {
             return true;
@@ -498,7 +541,11 @@ public class Billing extends javax.swing.JFrame {
     }
 
     void setSubTotalTindakan() {
-        JTSubTotalTindakan.setInt(String.valueOf(JTJumlahTindakan.getInt() * JTHargaTindakan.getInt()));
+        if (JTDiskonTindakan.getInt() <= 100) {
+            JTSubTotalTindakan.setInt(String.valueOf(JTJumlahTindakan.getInt() * JTHargaTindakan.getInt() - (JTJumlahTindakan.getInt() * JTHargaTindakan.getInt() * JTDiskonTindakan.getInt() / 100)));
+        } else {
+            JTSubTotalTindakan.setInt(String.valueOf((JTJumlahTindakan.getInt() * JTHargaTindakan.getInt()) - JTDiskonTindakan.getInt()));
+        }
     }
 
     void setSubTotalObat() {
@@ -507,26 +554,68 @@ public class Billing extends javax.swing.JFrame {
 
     void setGrandTotal() {
         Integer total = 0;
-        for (int i = 0; i < JTableTindakan.getRowCount(); i++) {
-            total = total + Integer.valueOf(JTableTindakan.getValueAt(i, 3).toString().replace(".", ""));
+        if (JTSetelahPotongTindakan.isVisible()) {
+            total = total + JTSetelahPotongTindakan.getInt();
+        } else {
+            total = total + JTTotalTindakan.getInt();
         }
+        if (JTSetelahPotongObat.isVisible()) {
+            total = total + JTSetelahPotongObat.getInt();
+        } else {
+            total = total + JTTotalObat.getInt();
+        }
+        JTGrandTotal.setInt(String.valueOf(total));
+        setKembalian();
+    }
+
+    void setTotalTindakan() {
+        Integer total = 0;
+        for (int i = 0; i < JTableTindakan.getRowCount(); i++) {
+            total = total + Integer.valueOf(JTableTindakan.getValueAt(i, 4).toString().replace(".", ""));
+        }
+        JTTotalTindakan.setInt(String.valueOf(total));
+        if (total != 0 && Integer.valueOf(JLPoinTindakan.getText().split("\\(")[1].split("\\)")[0]) != 0) {
+            JTPoinTindakan.setEnabled(true);
+        } else {
+            JTPoinTindakan.setEnabled(false);
+        }
+    }
+
+    void setTotalObat() {
+        Integer total = 0;
         for (int i = 0; i < JTableObat.getRowCount(); i++) {
             total = total + Integer.valueOf(JTableObat.getValueAt(i, 3).toString().replace(".", ""));
         }
-        JTGrandTotal.setInt(String.valueOf(total));
+        JTTotalObat.setInt(String.valueOf(total));
+        if (total != 0 && Integer.valueOf(JLPoinObat.getText().split("\\(")[1].split("\\)")[0]) != 0) {
+            JTPoinObat.setEnabled(true);
+        } else {
+            JTPoinObat.setEnabled(false);
+        }
+        if (total != 0) {
+            JTDiskonObat.setEnabled(true);
+        } else {
+            JTDiskonObat.setEnabled(false);
+        }
     }
 
     void setPoin(int poin) {
         DRunSelctOne dRunSelctOne = new DRunSelctOne();
         dRunSelctOne.seterorm("Gagal setPoin()");
-        //dRunSelctOne.setQuery("SELECT `IdPasien`, IFNULL(SUM(`Poin`),0) as 'Poin' FROM (SELECT `IdPasien`, 0 as 'Jumlah Belanja', 0 as 'Poin' FROM `tbmpasien` WHERE 1 AND `KodePasien` = '" + JTNamaPasien.getText().split("\\(")[1].split("\\)")[0] + "' UNION ALL SELECT d.`IdPasien`, (SUM(e.`Jumlah`*e.`Harga`)+SUM(f.`Jumlah`*f.`Harga`) - (`Poin` * 5000)) as 'Total Belanja', FLOOR((SUM(e.`Jumlah`*e.`Harga`)+SUM(f.`Jumlah`*f.`Harga`) - (`Poin` * 5000)) / 50000) as 'Poin' FROM `tbbilling`a JOIN `tbperawatan`b ON a.`NoTransaksi`=b.`NoTransaksi` JOIN `tbantrian`c ON b.`IdAntrian`=c.`IdAntrian` JOIN `tbmpasien`d ON c.`IdPasien`=d.`IdPasien` JOIN `tbbillingobat`e ON a.`NoBilling`=e.`NoBilling` JOIN `tbbillingtindakan`f ON a.`NoBilling`=f.`NoBilling` WHERE 1 AND d.`IdPasien` = (SELECT `IdPasien` FROM `tbmpasien` WHERE `KodePasien` = '" + JTNamaPasien.getText().split("\\(")[1].split("\\)")[0] + "') GROUP BY d.`IdPasien`, a.`NoBilling` UNION ALL SELECT d.`IdPasien`, a.`Poin`*5000*-1 as 'Total Belanja', `Poin`*-1 FROM `tbbilling`a JOIN `tbperawatan`b ON a.`NoTransaksi`=b.`NoTransaksi` JOIN `tbantrian`c ON b.`IdAntrian`=c.`IdAntrian` JOIN `tbmpasien`d ON c.`IdPasien`=d.`IdPasien` JOIN `tbbillingobat`e ON a.`NoBilling`=e.`NoBilling` JOIN `tbbillingtindakan`f ON a.`NoBilling`=f.`NoBilling` WHERE 1 AND a.`StatusPoin` = 1 AND d.`IdPasien` = (SELECT `IdPasien` FROM `tbmpasien` WHERE `KodePasien` = '" + JTNamaPasien.getText().split("\\(")[1].split("\\)")[0] + "') GROUP BY d.`IdPasien`, a.`NoBilling`) t1 WHERE 1 GROUP BY `IdPasien`");
-        dRunSelctOne.setQuery("SELECT `IdPasien`, IFNULL(SUM(`Poin`),0) as 'Poin' FROM (    SELECT `IdPasien`, 0 as 'Jumlah Belanja', 0 as 'Poin' FROM `tbmpasien` WHERE 1 AND `KodePasien` = '" + JTNamaPasien.getText().split("\\(")[1].split("\\)")[0] + "'     UNION ALL     SELECT d.`IdPasien`, (SUM(IFNULL(e.`Jumlah`,0)*IFNULL(e.`Harga`,0))+SUM(IFNULL(f.`Jumlah`,0)*IFNULL(f.`Harga`,0)) - (`Poin` * 5000)) as 'Total Belanja', FLOOR((SUM(IFNULL(e.`Jumlah`,0)*IFNULL(e.`Harga`,0))+SUM(IFNULL(f.`Jumlah`,0)*IFNULL(f.`Harga`,0)) - (`Poin` * 5000)) / 50000) as 'Poin' FROM `tbbilling`a LEFT JOIN `tbperawatan`b ON a.`NoTransaksi`=b.`NoTransaksi` JOIN `tbantrian`c ON IF(b.`IdAntrian` IS NULL, a.`IdAntrian`, b.`IdAntrian`)=c.`IdAntrian` JOIN `tbmpasien`d ON c.`IdPasien`=d.`IdPasien` LEFT JOIN `tbbillingobat`e ON a.`NoBilling`=e.`NoBilling` LEFT JOIN `tbbillingtindakan`f ON a.`NoBilling`=f.`NoBilling` WHERE 1 AND `KodePasien` = '" + JTNamaPasien.getText().split("\\(")[1].split("\\)")[0] + "' GROUP BY d.`IdPasien`, a.`NoBilling`     UNION ALL     SELECT d.`IdPasien`, a.`Poin`*5000*-1 as 'Total Belanja', `Poin`*-1 FROM `tbbilling`a LEFT JOIN `tbperawatan`b ON a.`NoTransaksi`=b.`NoTransaksi` JOIN `tbantrian`c ON IF(b.`IdAntrian` IS NULL, a.`IdAntrian`, b.`IdAntrian`)=c.`IdAntrian` JOIN `tbmpasien`d ON c.`IdPasien`=d.`IdPasien` LEFT JOIN `tbbillingobat`e ON a.`NoBilling`=e.`NoBilling` LEFT JOIN `tbbillingtindakan`f ON a.`NoBilling`=f.`NoBilling` WHERE 1 AND a.`StatusPoin` = 1 AND d.`IdPasien` = `KodePasien` = '" + JTNamaPasien.getText().split("\\(")[1].split("\\)")[0] + "' GROUP BY d.`IdPasien`, a.`NoBilling`) t1 WHERE 1 GROUP BY `IdPasien`");
+        dRunSelctOne.setQuery("SELECT `IdPasien`, IFNULL(SUM(`Poin`),0) as 'Poin' FROM (    SELECT `IdPasien`, 0 as 'Jumlah Belanja', 0 as 'Poin' FROM `tbmpasien` WHERE 1 AND `KodePasien` = '" + JTNamaPasien.getText().split("\\(")[1].split("\\)")[0] + "'   	UNION ALL     SELECT d.`IdPasien`, (SUM(IFNULL(e.`Jumlah`,0)*IFNULL(e.`Harga`,0))+SUM((IFNULL(f.`Jumlah`,0)*IFNULL(f.`Harga`,0)) - IFNULL(f.`DiskonTindakan`,0))) as 'Total Belanja', FLOOR((SUM(IFNULL(e.`Jumlah`,0)*IFNULL(e.`Harga`,0))+SUM(IFNULL(f.`Jumlah`,0)*IFNULL(f.`Harga`,0)) - IFNULL(f.`DiskonTindakan`,0)) / 50000) as 'Poin' FROM `tbbilling`a LEFT JOIN `tbperawatan`b ON a.`NoTransaksi`=b.`NoTransaksi` JOIN `tbantrian`c ON IF(b.`IdAntrian` IS NULL, a.`IdAntrian`, b.`IdAntrian`)=c.`IdAntrian` JOIN `tbmpasien`d ON c.`IdPasien`=d.`IdPasien` LEFT JOIN `tbbillingobat`e ON a.`NoBilling`=e.`NoBilling` LEFT JOIN `tbbillingtindakan`f ON a.`NoBilling`=f.`NoBilling` WHERE 1 ANd `PoinTindakan` = 0 AND `PoinObat` = 0 AND `KodePasien` = '" + JTNamaPasien.getText().split("\\(")[1].split("\\)")[0] + "' GROUP BY d.`IdPasien`, a.`NoBilling`         UNION ALL         SELECT d.`IdPasien`, (a.`PoinTindakan`+a.`PoinObat`)*1000*-1 as 'Total Belanja', (`PoinTindakan`+`PoinObat`)*-1 FROM `tbbilling`a LEFT JOIN `tbperawatan`b ON a.`NoTransaksi`=b.`NoTransaksi` JOIN `tbantrian`c ON IF(b.`IdAntrian` IS NULL, a.`IdAntrian`, b.`IdAntrian`)=c.`IdAntrian` JOIN `tbmpasien`d ON c.`IdPasien`=d.`IdPasien` LEFT JOIN `tbbillingobat`e ON a.`NoBilling`=e.`NoBilling` LEFT JOIN `tbbillingtindakan`f ON a.`NoBilling`=f.`NoBilling` WHERE 1 AND (a.`PoinTindakan` > 0 OR a.`PoinObat` > 0) AND `KodePasien` = '" + JTNamaPasien.getText().split("\\(")[1].split("\\)")[0] + "' GROUP BY d.`IdPasien`, a.`NoBilling`	) t1 WHERE 1 GROUP BY `IdPasien`");
         ArrayList<String> list = dRunSelctOne.excute();
-        JLPoin.setText("Poin (" + (Integer.parseInt(list.get(1)) + poin) + ")");
-        if (list.get(1).equals("0")) {
-            JCBPakaiPoin.setEnabled(false);
+        JLPoinTindakan.setText("Poin (" + (Integer.parseInt(list.get(1)) + poin) + ")");
+        JLPoinObat.setText("Poin (" + (Integer.parseInt(list.get(1)) + poin) + ")");
+        if (!list.get(1).equals("0") && JTTotalTindakan.getInt() != 0) {
+//            JCBPakaiPoinTindakan.setEnabled(false);
+//            JCBPakaiPoinObat.setEnabled(false);
+            JTPoinTindakan.setEnabled(true);
+            JTPoinObat.setEnabled(true);
         } else {
-            JCBPakaiPoin.setEnabled(true);
+//            JCBPakaiPoinTindakan.setEnabled(true);
+//            JCBPakaiPoinObat.setEnabled(true);
+            JTPoinTindakan.setEnabled(false);
+            JTPoinObat.setEnabled(false);
         }
     }
 
@@ -554,31 +643,102 @@ public class Billing extends javax.swing.JFrame {
         }
     }
 
-    String getSetelahPotong() {
-        if (JTGrandTotal.getInt() - (Integer.valueOf(JLPoin.getText().split("\\(")[1].split("\\)")[0]) * 5000) <= 0) {
+    String getSetelahPotongPoinTindakan() {
+        if (JTTotalTindakan.getInt() - (JTPoinTindakan.getInt() * 1000) <= 0) {
             return "0";
         } else {
-            return String.valueOf(JTGrandTotal.getInt() - ((Integer.valueOf(JLPoin.getText().split("\\(")[1].split("\\)")[0]) * 5000)));
+            return String.valueOf(JTTotalTindakan.getInt() - (JTPoinTindakan.getInt() * 1000));
         }
     }
 
-    Integer getPoinTerpakai() {
-        if (JCBPakaiPoin.isSelected()) {
-            return (JTGrandTotal.getInt() - JTSetelahPotong.getInt()) / 5000;
-        } else {
-            return 0;
-        }
+    Integer getPoinTerpakaiTindakan() {
+//        if (JCBPakaiPoinTindakan.isSelected()) {
+//            return (JTTotalTindakan.getInt() - JTSetelahPotongTindakan.getInt()) / 1000;
+//        } else {
+        return 0;
+//        }
+    }
+
+    Integer getPoinTerpakaiObat() {
+//        if (JCBPakaiPoinObat.isSelected()) {
+//            return (JTTotalObat.getInt() - JTSetelahPotongObat.getInt()) / 1000;
+//        } else {
+        return 0;
+//        }
     }
 
     void setKembalian() {
         if (!JTBayar.getText().isEmpty()) {
-            if (JCBPakaiPoin.isSelected()) {
-                JTKembali.setInt(JTBayar.getInt() - JTSetelahPotong.getInt());
-            } else {
-                JTKembali.setInt(JTBayar.getInt() - JTGrandTotal.getInt());
-            }
-
+            JTKembali.setInt(JTBayar.getInt() - JTGrandTotal.getInt());
         }
+    }
+
+//    void setSetelahPotongTindakan() {
+//        if (JTDiskonTindakan.getInt() != 0) {
+//            JLSetelahPotongTindakan.setVisible(true);
+//            JLSetelahPotongTindakan2.setVisible(true);
+//            JTSetelahPotongTindakan.setVisible(true); 
+//            if (JTDiskonTindakan.getInt() <= 100) {
+//                JTSetelahPotongTindakan.setText(String.valueOf(JTSetelahPotongTindakan.getInt() - Math.round(JTSetelahPotongTindakan.getInt() * JTDiskonTindakan.getInt() / 100)));
+//            } else {
+//                JTSetelahPotongTindakan.setText(String.valueOf(JTSetelahPotongTindakan.getInt() - JTDiskonTindakan.getInt()));
+//            }
+//        }
+//    }
+    void setSetelahPotongObat() {
+        if (JTDiskonObat.getInt() != 0 || JTPoinObat.getInt() != 0) {
+            JLSetelahPotongObat.setVisible(true);
+            JLSetelahPotongObat2.setVisible(true);
+            JTSetelahPotongObat.setVisible(true);
+            if (JTDiskonObat.getInt() <= 100) {
+                if (JTPoinObat.getInt() != 0) {
+                    JTSetelahPotongObat.setInt(String.valueOf(JTTotalObat.getInt() - Math.round(JTTotalObat.getInt() * JTDiskonObat.getInt() / 100) - (JTPoinObat.getInt() * 1000)));
+                } else {
+                    JTSetelahPotongObat.setInt(String.valueOf(JTTotalObat.getInt() - Math.round(JTTotalObat.getInt() * JTDiskonObat.getInt() / 100)));
+                }
+            } else {
+                if (JTPoinObat.getInt() != 0) {
+                    JTSetelahPotongObat.setInt(String.valueOf(JTTotalObat.getInt() - JTDiskonObat.getInt() - (JTPoinObat.getInt() * 1000)));
+                } else {
+                    JTSetelahPotongObat.setInt(String.valueOf(JTTotalObat.getInt() - JTDiskonObat.getInt()));
+                }
+
+            }
+        } else {
+            JLSetelahPotongObat.setVisible(false);
+            JLSetelahPotongObat2.setVisible(false);
+            JTSetelahPotongObat.setVisible(false);
+            JTSetelahPotongObat.setText("");
+        }
+    }
+
+    String Intformatdigit(int Number) {
+        int value = 0;
+        value = Number;
+        String output;
+        String pattern = "#,###,###";
+        DecimalFormat myFormatter = new DecimalFormat(pattern);
+        if (value < 0) {
+            value = abs(value);
+            output = "(" + myFormatter.format(value) + ")";
+        } else if (value > 0 && value < 1) {
+            output = "0" + myFormatter.format(value);
+        } else {
+            output = myFormatter.format(value);
+        }
+        return output.replace(",", ".");
+    }
+
+    int getTotalDiskonTindakan() {
+        int totalDiskon = 0;
+        for (int i = 0; i < JTableTindakan.getRowCount(); i++) {
+            if (Integer.valueOf(JTableTindakan.getValueAt(i, 3).toString().replace(" %", "").replace(".", "")) <= 100) {
+                totalDiskon += Math.round(Integer.valueOf(JTableTindakan.getValueAt(i, 1).toString().replace(".", "")) * Integer.valueOf(JTableTindakan.getValueAt(i, 2).toString().replace(".", "")) * (JTableTindakan.getValueAt(i, 3).toString().replace(" %", "").replace(".", "").equals("") ? 0 : Integer.valueOf(JTableTindakan.getValueAt(i, 3).toString().replace(" %", "").replace(".", ""))) / 100);
+            } else {
+                totalDiskon += Integer.valueOf(JTableTindakan.getValueAt(i, 3).toString().replace(" %", "").replace(".", ""));
+            }
+        }
+        return totalDiskon;
     }
 
     /**
@@ -591,6 +751,7 @@ public class Billing extends javax.swing.JFrame {
     private void initComponents() {
         bindingGroup = new org.jdesktop.beansbinding.BindingGroup();
 
+        JCMetodePembayaran = new KomponenGUI.JcomboboxF();
         jlableF2 = new KomponenGUI.JlableF();
         jlableF3 = new KomponenGUI.JlableF();
         JTNamaPasien = new KomponenGUI.JtextF();
@@ -613,12 +774,14 @@ public class Billing extends javax.swing.JFrame {
         jlableF27 = new KomponenGUI.JlableF();
         jlableF28 = new KomponenGUI.JlableF();
         JTTotalTindakan = new KomponenGUI.JPlaceHolder();
-        jlableF29 = new KomponenGUI.JlableF();
-        jlableF30 = new KomponenGUI.JlableF();
-        JTTotalTindakan1 = new KomponenGUI.JPlaceHolder();
-        jlableF31 = new KomponenGUI.JlableF();
+        JTDiskonTindakan = new KomponenGUI.JPlaceHolder();
+        JLPoinTindakan = new KomponenGUI.JlableF();
         jlableF32 = new KomponenGUI.JlableF();
-        JCBPakaiPoin1 = new KomponenGUI.JCheckBoxF();
+        JLSetelahPotongTindakan = new KomponenGUI.JlableF();
+        JLSetelahPotongTindakan2 = new KomponenGUI.JlableF();
+        jSeparator3 = new javax.swing.JSeparator();
+        JTPoinTindakan = new KomponenGUI.JPlaceHolder();
+        JTSetelahPotongTindakan = new KomponenGUI.JPlaceHolder();
         jPanel2 = new javax.swing.JPanel();
         JBTambahObat = new KomponenGUI.JbuttonF();
         JTJumlahObat = new KomponenGUI.JPlaceHolder();
@@ -629,6 +792,20 @@ public class Billing extends javax.swing.JFrame {
         JTHargaObat = new KomponenGUI.JPlaceHolder();
         JTSubTotalObat = new KomponenGUI.JPlaceHolder();
         JBRefreshObat = new KomponenGUI.JbuttonF();
+        jlableF39 = new KomponenGUI.JlableF();
+        jlableF40 = new KomponenGUI.JlableF();
+        JTTotalObat = new KomponenGUI.JPlaceHolder();
+        jSeparator4 = new javax.swing.JSeparator();
+        jlableF41 = new KomponenGUI.JlableF();
+        jlableF42 = new KomponenGUI.JlableF();
+        JTDiskonObat = new KomponenGUI.JPlaceHolder();
+        jlableF36 = new KomponenGUI.JlableF();
+        JLPoinObat = new KomponenGUI.JlableF();
+        JLSetelahPotongObat = new KomponenGUI.JlableF();
+        JLSetelahPotongObat2 = new KomponenGUI.JlableF();
+        JLPersenObat = new KomponenGUI.JlableF();
+        JTPoinObat = new KomponenGUI.JPlaceHolder();
+        JTSetelahPotongObat = new KomponenGUI.JPlaceHolder();
         JBTambah = new KomponenGUI.JbuttonF();
         JDTanggal = new KomponenGUI.JdateCF();
         jlableF14 = new KomponenGUI.JlableF();
@@ -654,17 +831,14 @@ public class Billing extends javax.swing.JFrame {
         jlableF10 = new KomponenGUI.JlableF();
         jlableF11 = new KomponenGUI.JlableF();
         JTBayar = new KomponenGUI.JPlaceHolder();
-        JLPoin = new KomponenGUI.JlableF();
-        jlableF13 = new KomponenGUI.JlableF();
-        JCBPakaiPoin = new KomponenGUI.JCheckBoxF();
-        jlableF12 = new KomponenGUI.JlableF();
-        jlableF24 = new KomponenGUI.JlableF();
-        JTSetelahPotong = new KomponenGUI.JRibuanTextField();
         JBTambahPrint = new KomponenGUI.JbuttonF();
         JBUbahPrint = new KomponenGUI.JbuttonF();
         jlableF25 = new KomponenGUI.JlableF();
         jlableF26 = new KomponenGUI.JlableF();
         JTKembali = new KomponenGUI.JRibuanTextField();
+        jSeparator5 = new javax.swing.JSeparator();
+        jlableF29 = new KomponenGUI.JlableF();
+        jlableF30 = new KomponenGUI.JlableF();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
@@ -673,6 +847,8 @@ public class Billing extends javax.swing.JFrame {
                 formWindowClosed(evt);
             }
         });
+
+        JCMetodePembayaran.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Tunai", "Debit" }));
 
         jlableF2.setText("Nama Pasien");
 
@@ -746,7 +922,7 @@ public class Billing extends javax.swing.JFrame {
 
             },
             new String [] {
-                "Tindakan", "Jumlah", "Harga", "Sub Total"
+                "Tindakan", "Jumlah", "Harga", "Diskon", "Sub Total"
             }
         ));
         JTableTindakan.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -756,17 +932,20 @@ public class Billing extends javax.swing.JFrame {
         });
         jScrollPane1.setViewportView(JTableTindakan);
         if (JTableTindakan.getColumnModel().getColumnCount() > 0) {
-            JTableTindakan.getColumnModel().getColumn(0).setMinWidth(300);
-            JTableTindakan.getColumnModel().getColumn(0).setPreferredWidth(300);
-            JTableTindakan.getColumnModel().getColumn(0).setMaxWidth(300);
-            JTableTindakan.getColumnModel().getColumn(1).setMinWidth(105);
-            JTableTindakan.getColumnModel().getColumn(1).setPreferredWidth(105);
-            JTableTindakan.getColumnModel().getColumn(1).setMaxWidth(105);
+            JTableTindakan.getColumnModel().getColumn(0).setMinWidth(340);
+            JTableTindakan.getColumnModel().getColumn(0).setPreferredWidth(340);
+            JTableTindakan.getColumnModel().getColumn(0).setMaxWidth(340);
+            JTableTindakan.getColumnModel().getColumn(1).setMinWidth(80);
+            JTableTindakan.getColumnModel().getColumn(1).setPreferredWidth(80);
+            JTableTindakan.getColumnModel().getColumn(1).setMaxWidth(80);
             JTableTindakan.getColumnModel().getColumn(2).setMinWidth(105);
             JTableTindakan.getColumnModel().getColumn(2).setPreferredWidth(105);
             JTableTindakan.getColumnModel().getColumn(2).setMaxWidth(105);
+            JTableTindakan.getColumnModel().getColumn(3).setMinWidth(80);
+            JTableTindakan.getColumnModel().getColumn(3).setPreferredWidth(80);
+            JTableTindakan.getColumnModel().getColumn(3).setMaxWidth(80);
         }
-        JTableTindakan.setrender(new int[]{1,2,3}, new String[]{"Number","Number","Number"});
+        JTableTindakan.setrender(new int[]{1,2,3,4}, new String[]{"Number","Number","Right","Number"});
 
         JBHapusTindakan.setText("Hapus");
 
@@ -813,7 +992,7 @@ public class Billing extends javax.swing.JFrame {
 
         jlableF28.setText(":");
 
-        JTGrandTotal.setPlaceholder("Grand Total");
+        //JTTotalTindakan.setPlaceholder("Total Tindakan");
         JTTotalTindakan.setEnabled(false);
         JTTotalTindakan.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
@@ -821,27 +1000,46 @@ public class Billing extends javax.swing.JFrame {
             }
         });
 
-        jlableF29.setText("Diskon");
-
-        jlableF30.setText(":");
-
-        JTGrandTotal.setPlaceholder("Grand Total");
-        JTTotalTindakan1.setEnabled(false);
-        JTTotalTindakan1.addKeyListener(new java.awt.event.KeyAdapter() {
+        JTDiskonTindakan.setPlaceholder("Diskon");
+        JTDiskonTindakan.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                JTDiskonTindakanFocusLost(evt);
+            }
+        });
+        JTDiskonTindakan.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
-                JTTotalTindakan1KeyPressed(evt);
+                JTDiskonTindakanKeyPressed(evt);
+            }
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                JTDiskonTindakanKeyReleased(evt);
             }
         });
 
-        jlableF31.setText("Poin (000)");
+        JLPoinTindakan.setText("Poin (000)");
 
         jlableF32.setText(":");
 
-        JCBPakaiPoin1.setSelected(false);
-        JCBPakaiPoin1.setText("Pakai Poin");
-        JCBPakaiPoin1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                JCBPakaiPoin1ActionPerformed(evt);
+        JLSetelahPotongTindakan.setText("Setelah Potong");
+
+        JLSetelahPotongTindakan2.setText(":");
+
+        jSeparator3.setOrientation(javax.swing.SwingConstants.VERTICAL);
+
+        JTPoinTindakan.setPlaceholder("Pakai Poin");
+        JTPoinTindakan.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                JTPoinTindakanKeyPressed(evt);
+            }
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                JTPoinTindakanKeyReleased(evt);
+            }
+        });
+
+        //JTSetelahPotongTindakan.setPlaceholder("Setelah Potong");
+        JTSetelahPotongTindakan.setEnabled(false);
+        JTSetelahPotongTindakan.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                JTSetelahPotongTindakanKeyPressed(evt);
             }
         });
 
@@ -851,70 +1049,85 @@ public class Billing extends javax.swing.JFrame {
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(JCTindakan, javax.swing.GroupLayout.PREFERRED_SIZE, 298, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(JCTindakan, javax.swing.GroupLayout.PREFERRED_SIZE, 339, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(JTJumlahTindakan, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(JTJumlahTindakan, javax.swing.GroupLayout.PREFERRED_SIZE, 74, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(JTHargaTindakan, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(JTHargaTindakan, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(JTSubTotalTindakan, javax.swing.GroupLayout.PREFERRED_SIZE, 161, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(JTDiskonTindakan, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(JTSubTotalTindakan, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addComponent(jScrollPane1))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(JBHapusTindakan, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(JBRefreshTindakan, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(JBTambahTindakan, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jlableF27, javax.swing.GroupLayout.DEFAULT_SIZE, 119, Short.MAX_VALUE)
-                    .addComponent(jlableF29, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jlableF31, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    .addComponent(JBHapusTindakan, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(JBTambahTindakan, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(JBRefreshTindakan, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addComponent(jSeparator3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(18, 18, 18)
+                        .addComponent(jlableF27, javax.swing.GroupLayout.PREFERRED_SIZE, 119, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jlableF28, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(JTTotalTindakan, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jlableF30, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(JTTotalTindakan, javax.swing.GroupLayout.PREFERRED_SIZE, 152, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(JTTotalTindakan1, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jlableF32, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(JCBPakaiPoin1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(111, 111, 111))
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                                .addComponent(JLSetelahPotongTindakan, javax.swing.GroupLayout.PREFERRED_SIZE, 119, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(JLSetelahPotongTindakan2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(JTSetelahPotongTindakan, javax.swing.GroupLayout.PREFERRED_SIZE, 152, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(JLPoinTindakan, javax.swing.GroupLayout.PREFERRED_SIZE, 119, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jlableF32, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(JTPoinTindakan, javax.swing.GroupLayout.PREFERRED_SIZE, 152, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                .addGap(10, 10, 10))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jSeparator3)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(0, 0, 0)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(JCTindakan, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(JBTambahTindakan, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(JTJumlahTindakan, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(JTHargaTindakan, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(JTSubTotalTindakan, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jlableF27, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jlableF28, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(JTTotalTindakan, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 106, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(JBHapusTindakan, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jlableF29, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jlableF30, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(JTTotalTindakan1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(jlableF27, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(JTTotalTindakan, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jlableF28, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(JBRefreshTindakan, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jlableF31, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(JTPoinTindakan, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jlableF32, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(JCBPakaiPoin1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                            .addComponent(JLPoinTindakan, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(6, 6, 6)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(JTSetelahPotongTindakan, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(JLSetelahPotongTindakan2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(JLSetelahPotongTindakan, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(JCTindakan, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(JTJumlahTindakan, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(JTHargaTindakan, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(JTSubTotalTindakan, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(JTDiskonTindakan, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(JBTambahTindakan, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 106, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(JBHapusTindakan, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(JBRefreshTindakan, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -972,9 +1185,9 @@ public class Billing extends javax.swing.JFrame {
         });
         jScrollPane2.setViewportView(JTableObat);
         if (JTableObat.getColumnModel().getColumnCount() > 0) {
-            JTableObat.getColumnModel().getColumn(0).setMinWidth(300);
-            JTableObat.getColumnModel().getColumn(0).setPreferredWidth(300);
-            JTableObat.getColumnModel().getColumn(0).setMaxWidth(300);
+            JTableObat.getColumnModel().getColumn(0).setMinWidth(413);
+            JTableObat.getColumnModel().getColumn(0).setPreferredWidth(413);
+            JTableObat.getColumnModel().getColumn(0).setMaxWidth(413);
             JTableObat.getColumnModel().getColumn(1).setMinWidth(105);
             JTableObat.getColumnModel().getColumn(1).setPreferredWidth(105);
             JTableObat.getColumnModel().getColumn(1).setMaxWidth(105);
@@ -1025,6 +1238,62 @@ public class Billing extends javax.swing.JFrame {
             }
         });
 
+        jlableF39.setText("Total Obat");
+
+        jlableF40.setText(":");
+
+        //JTTotalObat.setPlaceholder("Total Obat");
+        JTTotalObat.setEnabled(false);
+        JTTotalObat.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                JTTotalObatKeyPressed(evt);
+            }
+        });
+
+        jSeparator4.setOrientation(javax.swing.SwingConstants.VERTICAL);
+
+        jlableF41.setText("Diskon");
+
+        jlableF42.setText(":");
+
+        JTDiskonObat.setPlaceholder("Diskon");
+        JTDiskonObat.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                JTDiskonObatKeyPressed(evt);
+            }
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                JTDiskonObatKeyReleased(evt);
+            }
+        });
+
+        jlableF36.setText(":");
+
+        JLPoinObat.setText("Poin (000)");
+
+        JLSetelahPotongObat.setText("Setelah Potong");
+
+        JLSetelahPotongObat2.setText(":");
+
+        JLPersenObat.setText("(%)");
+
+        JTPoinObat.setPlaceholder("Pakai Poin");
+        JTPoinObat.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                JTPoinObatKeyPressed(evt);
+            }
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                JTPoinObatKeyReleased(evt);
+            }
+        });
+
+        //JTSetelahPotongObat.setPlaceholder("Setelah Potong");
+        JTSetelahPotongObat.setEnabled(false);
+        JTSetelahPotongObat.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                JTSetelahPotongObatKeyPressed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
@@ -1033,39 +1302,96 @@ public class Billing extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addComponent(JCObat, javax.swing.GroupLayout.PREFERRED_SIZE, 298, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 790, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(JBHapusObat, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(JBRefreshObat, javax.swing.GroupLayout.DEFAULT_SIZE, 97, Short.MAX_VALUE))
+                        .addGap(18, 18, 18))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addComponent(JCObat, javax.swing.GroupLayout.PREFERRED_SIZE, 411, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(JTJumlahObat, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(JTHargaObat, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(JTSubTotalObat, javax.swing.GroupLayout.PREFERRED_SIZE, 161, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jScrollPane2))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(JTSubTotalObat, javax.swing.GroupLayout.PREFERRED_SIZE, 161, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(JBTambahObat, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGap(18, 18, 18)))
+                .addComponent(jSeparator4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(JBHapusObat, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(JBRefreshObat, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(JBTambahObat, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(JLSetelahPotongObat, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(JLPoinObat, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jlableF39, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addComponent(jlableF41, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(JLPersenObat, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addComponent(jlableF40, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(JTTotalObat, javax.swing.GroupLayout.DEFAULT_SIZE, 152, Short.MAX_VALUE))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addComponent(jlableF42, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(JTDiskonObat, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jlableF36, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(JLSetelahPotongObat2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(JTSetelahPotongObat, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(JTPoinObat, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                .addGap(10, 10, 10))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGap(0, 0, 0)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(JCObat, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(JBTambahObat, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(JTJumlahObat, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(JTHargaObat, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(JTSubTotalObat, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(JTSubTotalObat, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(JBTambahObat, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 106, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(jPanel2Layout.createSequentialGroup()
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel2Layout.createSequentialGroup()
                         .addComponent(JBHapusObat, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(JBRefreshObat, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addComponent(JBRefreshObat, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 106, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(14, 14, 14))
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(JTTotalObat, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jlableF40, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jlableF39, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(JTDiskonObat, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jlableF42, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(JLPersenObat, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jlableF41, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(JTPoinObat, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jlableF36, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(JLPoinObat, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(6, 6, 6)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(JLSetelahPotongObat2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(JLSetelahPotongObat, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(JTSetelahPotongObat, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addComponent(jSeparator4))
+                .addContainerGap())
         );
 
         JBTambah.setText("Simpan");
@@ -1130,7 +1456,7 @@ public class Billing extends javax.swing.JFrame {
 
         JTNoBilling.setEnabled(false);
 
-        jlableF23.setText("No. Billing");
+        jlableF23.setText("No. Nota");
 
         JTGrandTotal.setPlaceholder("Grand Total");
         JTGrandTotal.setEnabled(false);
@@ -1166,24 +1492,6 @@ public class Billing extends javax.swing.JFrame {
             }
         });
 
-        JLPoin.setText("Poin (000)");
-
-        jlableF13.setText(":");
-
-        JCBPakaiPoin.setSelected(false);
-        JCBPakaiPoin.setText("Pakai Poin");
-        JCBPakaiPoin.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                JCBPakaiPoinActionPerformed(evt);
-            }
-        });
-
-        jlableF12.setText("Setelah Potong");
-
-        jlableF24.setText(":");
-
-        JTSetelahPotong.setEnabled(false);
-
         JBTambahPrint.setText("Simpan & Print");
         JBTambahPrint.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -1204,6 +1512,10 @@ public class Billing extends javax.swing.JFrame {
 
         JTKembali.setDisabledTextColor(new java.awt.Color(255, 0, 0));
         JTKembali.setEnabled(false);
+
+        jlableF29.setText("Metode Bayar");
+
+        jlableF30.setText(":");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -1237,24 +1549,24 @@ public class Billing extends javax.swing.JFrame {
                                         .addComponent(jlableF3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                         .addComponent(JTNamaPasien, javax.swing.GroupLayout.PREFERRED_SIZE, 400, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                                .addGap(180, 370, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                     .addGroup(layout.createSequentialGroup()
                                         .addComponent(jlableF15, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                         .addComponent(jlableF14, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(JDTanggal, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                        .addComponent(JDTanggal, javax.swing.GroupLayout.PREFERRED_SIZE, 152, javax.swing.GroupLayout.PREFERRED_SIZE))
                                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                                         .addComponent(jlableF20, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                         .addComponent(jlableF21, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(JTNoAntrian, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                        .addComponent(JTNoAntrian, javax.swing.GroupLayout.PREFERRED_SIZE, 152, javax.swing.GroupLayout.PREFERRED_SIZE))
                                     .addGroup(layout.createSequentialGroup()
                                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                                             .addGroup(layout.createSequentialGroup()
-                                                .addComponent(jlableF17, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addComponent(jlableF17, javax.swing.GroupLayout.PREFERRED_SIZE, 119, javax.swing.GroupLayout.PREFERRED_SIZE)
                                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                                 .addComponent(jlableF16, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                                             .addGroup(layout.createSequentialGroup()
@@ -1263,39 +1575,8 @@ public class Billing extends javax.swing.JFrame {
                                                 .addComponent(jlableF22, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addComponent(JTNoBilling, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                            .addComponent(JTNoTransaksi, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)))))
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(0, 0, Short.MAX_VALUE)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(jlableF9, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(JLPoin, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(jlableF12, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(jlableF10, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(jlableF25, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addComponent(jlableF8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                            .addComponent(jlableF13, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addComponent(JCBPakaiPoin, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                            .addComponent(JTGrandTotal, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addComponent(jlableF24, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(JTSetelahPotong, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                            .addComponent(jlableF11, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                            .addComponent(jlableF26, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                            .addComponent(JTKembali, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                            .addComponent(JTBayar, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 160, Short.MAX_VALUE))))
-                                .addGap(97, 97, 97))
+                                            .addComponent(JTNoBilling, javax.swing.GroupLayout.PREFERRED_SIZE, 152, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addComponent(JTNoTransaksi, javax.swing.GroupLayout.PREFERRED_SIZE, 152, javax.swing.GroupLayout.PREFERRED_SIZE)))))
                             .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
                                 .addComponent(JBKembali, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -1311,7 +1592,37 @@ public class Billing extends javax.swing.JFrame {
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(jlableF19, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(jSeparator2))
+                        .addContainerGap())
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addComponent(jSeparator5)
                         .addContainerGap())))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                    .addComponent(jlableF9, javax.swing.GroupLayout.DEFAULT_SIZE, 119, Short.MAX_VALUE)
+                    .addComponent(jlableF10, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jlableF25, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jlableF29, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(layout.createSequentialGroup()
+                            .addComponent(jlableF8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(JTGrandTotal, javax.swing.GroupLayout.PREFERRED_SIZE, 152, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                .addComponent(jlableF11, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(jlableF26, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                .addComponent(JTKembali, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(JTBayar, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 152, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jlableF30, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(JCMetodePembayaran, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1346,7 +1657,7 @@ public class Billing extends javax.swing.JFrame {
                     .addComponent(JTNoBilling, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jlableF22, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jlableF23, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 8, Short.MAX_VALUE)
                 .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(4, 4, 4)
                 .addComponent(jlableF18, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -1359,20 +1670,12 @@ public class Billing extends javax.swing.JFrame {
                 .addGap(4, 4, 4)
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jSeparator5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(JTGrandTotal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jlableF8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jlableF9, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(JLPoin, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jlableF13, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(JCBPakaiPoin, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jlableF12, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jlableF24, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(JTSetelahPotong, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jlableF10, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -1383,7 +1686,12 @@ public class Billing extends javax.swing.JFrame {
                     .addComponent(JTKembali, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jlableF26, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jlableF25, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 12, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jlableF29, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jlableF30, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(JCMetodePembayaran, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(JBTambah, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(JBKembali, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -1464,11 +1772,7 @@ public class Billing extends javax.swing.JFrame {
 
     private void JTHargaTindakanKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_JTHargaTindakanKeyPressed
         if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
-            if (JBTambahTindakan.getText().equals("Tambah")) {
-                tambahTableTindakan();
-            } else {
-                ubahTableTindakan();
-            }
+            JTDiskonTindakan.requestFocus();
         }
     }//GEN-LAST:event_JTHargaTindakanKeyPressed
 
@@ -1570,7 +1874,8 @@ public class Billing extends javax.swing.JFrame {
             JCTindakan.setSelectedItem(JTableTindakan.getValueAt(JTableTindakan.getSelectedRow(), 0).toString());
             JTJumlahTindakan.setText(JTableTindakan.getValueAt(JTableTindakan.getSelectedRow(), 1).toString());
             JTHargaTindakan.setText(JTableTindakan.getValueAt(JTableTindakan.getSelectedRow(), 2).toString());
-            JTSubTotalTindakan.setText(JTableTindakan.getValueAt(JTableTindakan.getSelectedRow(), 3).toString());
+            JTDiskonTindakan.setText(JTableTindakan.getValueAt(JTableTindakan.getSelectedRow(), 3).toString().replace(" %", ""));
+            JTSubTotalTindakan.setText(JTableTindakan.getValueAt(JTableTindakan.getSelectedRow(), 4).toString());
             JBTambahTindakan.setText("Ubah");
         } else {
             JBTambahTindakan.setText("Tambah");
@@ -1596,20 +1901,6 @@ public class Billing extends javax.swing.JFrame {
             JBTambahObat.setText("Tambah");
         }
     }//GEN-LAST:event_JTableObatMouseClicked
-
-    private void JCBPakaiPoinActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JCBPakaiPoinActionPerformed
-        if (JCBPakaiPoin.isSelected()) {
-            JTSetelahPotong.setVisible(true);
-            jlableF12.setVisible(true);
-            jlableF24.setVisible(true);
-            JTSetelahPotong.setText(getSetelahPotong());
-        } else {
-            JTSetelahPotong.setVisible(false);
-            jlableF12.setVisible(false);
-            jlableF24.setVisible(false);
-        }
-        JTBayar.requestFocus();
-    }//GEN-LAST:event_JCBPakaiPoinActionPerformed
 
     private void JTJumlahTindakanFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_JTJumlahTindakanFocusLost
         setSubTotalTindakan();
@@ -1659,13 +1950,98 @@ public class Billing extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_JTTotalTindakanKeyPressed
 
-    private void JTTotalTindakan1KeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_JTTotalTindakan1KeyPressed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_JTTotalTindakan1KeyPressed
+    private void JTDiskonTindakanKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_JTDiskonTindakanKeyPressed
+        if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
+            if (JBTambahTindakan.getText().equals("Tambah")) {
+                tambahTableTindakan();
+            } else {
+                ubahTableTindakan();
+            }
+        }
+    }//GEN-LAST:event_JTDiskonTindakanKeyPressed
 
-    private void JCBPakaiPoin1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JCBPakaiPoin1ActionPerformed
+    private void JTTotalObatKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_JTTotalObatKeyPressed
         // TODO add your handling code here:
-    }//GEN-LAST:event_JCBPakaiPoin1ActionPerformed
+    }//GEN-LAST:event_JTTotalObatKeyPressed
+
+    private void JTDiskonObatKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_JTDiskonObatKeyPressed
+        if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
+            if (JTPoinObat.isEnabled()) {
+                JTPoinObat.requestFocus();
+            } else {
+                JTBayar.requestFocus();
+            }
+        }
+    }//GEN-LAST:event_JTDiskonObatKeyPressed
+
+    private void JTDiskonTindakanKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_JTDiskonTindakanKeyReleased
+        setSubTotalTindakan();
+    }//GEN-LAST:event_JTDiskonTindakanKeyReleased
+
+    private void JTDiskonObatKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_JTDiskonObatKeyReleased
+        JLPersenObat.setText(JTDiskonObat.getInt() <= 100 ? "(%)" : "");
+        setSetelahPotongObat();
+        setGrandTotal();
+    }//GEN-LAST:event_JTDiskonObatKeyReleased
+
+    private void JTDiskonTindakanFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_JTDiskonTindakanFocusLost
+        setSubTotalTindakan();
+    }//GEN-LAST:event_JTDiskonTindakanFocusLost
+
+    private void JTPoinTindakanKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_JTPoinTindakanKeyPressed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_JTPoinTindakanKeyPressed
+
+    private void JTPoinTindakanKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_JTPoinTindakanKeyReleased
+//        int poin = Integer.valueOf(JLPoinTindakan.getText().split("\\(")[1].split("\\)")[0]);
+        if (JTPoinTindakan.getInt() != 0) {
+            if (JTPoinTindakan.getInt() + JTPoinObat.getInt() > Integer.valueOf(JLPoinTindakan.getText().split("\\(")[1].split("\\)")[0])) {
+                getToolkit().beep();
+                JTPoinTindakan.setText(JTPoinTindakan.getText().replace(".", "").substring(0, JTPoinTindakan.getText().replace(".", "").length() - 1));
+            } else {
+                JLSetelahPotongTindakan.setVisible(true);
+                JLSetelahPotongTindakan2.setVisible(true);
+                JTSetelahPotongTindakan.setVisible(true);
+                JTSetelahPotongTindakan.setInt(getSetelahPotongPoinTindakan());
+//                JLPoinObat.setText("Poin (" + (poin - JTPoinTindakan.getInt()) + ")");
+                setGrandTotal();
+            }
+        } else {
+            JLSetelahPotongTindakan.setVisible(false);
+            JLSetelahPotongTindakan2.setVisible(false);
+            JTSetelahPotongTindakan.setVisible(false);
+//            JLPoinObat.setText("Poin (" + poin + ")");
+        }
+        if (Integer.valueOf(JLPoinTindakan.getText().split("\\(")[1].split("\\)")[0]) - JTPoinTindakan.getInt() == 0) {
+            JTPoinObat.setEnabled(false);
+        } else {
+            JTPoinObat.setEnabled(true);
+        }
+    }//GEN-LAST:event_JTPoinTindakanKeyReleased
+
+    private void JTPoinObatKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_JTPoinObatKeyPressed
+        if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
+            JTBayar.requestFocus();
+        }
+    }//GEN-LAST:event_JTPoinObatKeyPressed
+
+    private void JTPoinObatKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_JTPoinObatKeyReleased
+        if (JTPoinObat.getInt() + JTPoinTindakan.getInt() > Integer.valueOf(JLPoinObat.getText().split("\\(")[1].split("\\)")[0])) {
+            getToolkit().beep();
+            JTPoinObat.setText(JTPoinObat.getText().replace(".", "").substring(0, JTPoinObat.getText().replace(".", "").length() - 1));
+        } else {
+            setSetelahPotongObat();
+            setGrandTotal();
+        }
+    }//GEN-LAST:event_JTPoinObatKeyReleased
+
+    private void JTSetelahPotongTindakanKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_JTSetelahPotongTindakanKeyPressed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_JTSetelahPotongTindakanKeyPressed
+
+    private void JTSetelahPotongObatKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_JTSetelahPotongObatKeyPressed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_JTSetelahPotongObatKeyPressed
 
     /**
      * @param args the command line arguments
@@ -1718,15 +2094,22 @@ public class Billing extends javax.swing.JFrame {
     private KomponenGUI.JbuttonF JBTambahTindakan;
     private KomponenGUI.JbuttonF JBUbah;
     private KomponenGUI.JbuttonF JBUbahPrint;
-    private KomponenGUI.JCheckBoxF JCBPakaiPoin;
-    private KomponenGUI.JCheckBoxF JCBPakaiPoin1;
+    private KomponenGUI.JcomboboxF JCMetodePembayaran;
     private KomponenGUI.JcomboboxF JCNamaBeautician;
     private KomponenGUI.JcomboboxF JCNamaDokter;
     private KomponenGUI.JcomboboxF JCObat;
     private KomponenGUI.JcomboboxF JCTindakan;
     private static KomponenGUI.JdateCF JDTanggal;
-    private KomponenGUI.JlableF JLPoin;
+    private KomponenGUI.JlableF JLPersenObat;
+    private KomponenGUI.JlableF JLPoinObat;
+    private KomponenGUI.JlableF JLPoinTindakan;
+    private KomponenGUI.JlableF JLSetelahPotongObat;
+    private KomponenGUI.JlableF JLSetelahPotongObat2;
+    private KomponenGUI.JlableF JLSetelahPotongTindakan;
+    private KomponenGUI.JlableF JLSetelahPotongTindakan2;
     private KomponenGUI.JPlaceHolder JTBayar;
+    private KomponenGUI.JPlaceHolder JTDiskonObat;
+    private KomponenGUI.JPlaceHolder JTDiskonTindakan;
     private KomponenGUI.JPlaceHolder JTGrandTotal;
     private KomponenGUI.JPlaceHolder JTHargaObat;
     private KomponenGUI.JPlaceHolder JTHargaTindakan;
@@ -1737,11 +2120,14 @@ public class Billing extends javax.swing.JFrame {
     private KomponenGUI.JtextF JTNoAntrian;
     private KomponenGUI.JtextF JTNoBilling;
     private KomponenGUI.JtextF JTNoTransaksi;
-    private KomponenGUI.JRibuanTextField JTSetelahPotong;
+    private KomponenGUI.JPlaceHolder JTPoinObat;
+    private KomponenGUI.JPlaceHolder JTPoinTindakan;
+    private KomponenGUI.JPlaceHolder JTSetelahPotongObat;
+    private KomponenGUI.JPlaceHolder JTSetelahPotongTindakan;
     private KomponenGUI.JPlaceHolder JTSubTotalObat;
     private KomponenGUI.JPlaceHolder JTSubTotalTindakan;
+    private KomponenGUI.JPlaceHolder JTTotalObat;
     private KomponenGUI.JPlaceHolder JTTotalTindakan;
-    private KomponenGUI.JPlaceHolder JTTotalTindakan1;
     private KomponenGUI.JtableF JTableObat;
     private KomponenGUI.JtableF JTableTindakan;
     private javax.swing.JPanel jPanel1;
@@ -1750,10 +2136,11 @@ public class Billing extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JSeparator jSeparator2;
+    private javax.swing.JSeparator jSeparator3;
+    private javax.swing.JSeparator jSeparator4;
+    private javax.swing.JSeparator jSeparator5;
     private KomponenGUI.JlableF jlableF10;
     private KomponenGUI.JlableF jlableF11;
-    private KomponenGUI.JlableF jlableF12;
-    private KomponenGUI.JlableF jlableF13;
     private KomponenGUI.JlableF jlableF14;
     private KomponenGUI.JlableF jlableF15;
     private KomponenGUI.JlableF jlableF16;
@@ -1765,7 +2152,6 @@ public class Billing extends javax.swing.JFrame {
     private KomponenGUI.JlableF jlableF21;
     private KomponenGUI.JlableF jlableF22;
     private KomponenGUI.JlableF jlableF23;
-    private KomponenGUI.JlableF jlableF24;
     private KomponenGUI.JlableF jlableF25;
     private KomponenGUI.JlableF jlableF26;
     private KomponenGUI.JlableF jlableF27;
@@ -1773,9 +2159,13 @@ public class Billing extends javax.swing.JFrame {
     private KomponenGUI.JlableF jlableF29;
     private KomponenGUI.JlableF jlableF3;
     private KomponenGUI.JlableF jlableF30;
-    private KomponenGUI.JlableF jlableF31;
     private KomponenGUI.JlableF jlableF32;
+    private KomponenGUI.JlableF jlableF36;
+    private KomponenGUI.JlableF jlableF39;
     private KomponenGUI.JlableF jlableF4;
+    private KomponenGUI.JlableF jlableF40;
+    private KomponenGUI.JlableF jlableF41;
+    private KomponenGUI.JlableF jlableF42;
     private KomponenGUI.JlableF jlableF5;
     private KomponenGUI.JlableF jlableF6;
     private KomponenGUI.JlableF jlableF7;
@@ -1788,7 +2178,8 @@ public class Billing extends javax.swing.JFrame {
         if (checkTableTindakan()) {
             if (JCTindakan.getSelectedIndex() != 0) {
                 DefaultTableModel model = (DefaultTableModel) JTableTindakan.getModel();
-                model.addRow(new Object[]{JCTindakan.getSelectedItem(), JTJumlahTindakan.getText(), JTHargaTindakan.getText(), JTSubTotalTindakan.getText()});
+                model.addRow(new Object[]{JCTindakan.getSelectedItem(), JTJumlahTindakan.getText(), JTHargaTindakan.getText(), JTDiskonTindakan.getInt() <= 100 && JTDiskonTindakan.getInt() > 0 ? JTDiskonTindakan.getInt() + " %" : JTDiskonTindakan.getText(), JTSubTotalTindakan.getText()});
+                setTotalTindakan();
                 setGrandTotal();
                 refreshTindakan();
             } else {
@@ -1802,6 +2193,7 @@ public class Billing extends javax.swing.JFrame {
             if (JCObat.getSelectedIndex() != 0) {
                 DefaultTableModel model = (DefaultTableModel) JTableObat.getModel();
                 model.addRow(new Object[]{JCObat.getSelectedItem(), JTJumlahObat.getText(), JTHargaObat.getText(), JTSubTotalObat.getText()});
+                setTotalObat();
                 setGrandTotal();
                 refreshObat();
             } else {
@@ -1813,6 +2205,7 @@ public class Billing extends javax.swing.JFrame {
     void hapusTableTindakan() {
         if (JTableTindakan.getSelectedRow() != -1) {
             ((DefaultTableModel) JTableTindakan.getModel()).removeRow(JTableTindakan.getSelectedRow());
+            setTotalTindakan();
             setGrandTotal();
             refreshTindakan();
         }
@@ -1821,6 +2214,7 @@ public class Billing extends javax.swing.JFrame {
     void hapusTableObat() {
         if (JTableObat.getSelectedRow() != -1) {
             ((DefaultTableModel) JTableObat.getModel()).removeRow(JTableObat.getSelectedRow());
+            setTotalObat();
             setGrandTotal();
             refreshObat();
         }
@@ -1832,7 +2226,9 @@ public class Billing extends javax.swing.JFrame {
                 JTableTindakan.setValueAt(JCTindakan.getSelectedItem(), JTableTindakan.getSelectedRow(), 0);
                 JTableTindakan.setValueAt(JTJumlahTindakan.getText(), JTableTindakan.getSelectedRow(), 1);
                 JTableTindakan.setValueAt(JTHargaTindakan.getText(), JTableTindakan.getSelectedRow(), 2);
-                JTableTindakan.setValueAt(JTSubTotalTindakan.getText(), JTableTindakan.getSelectedRow(), 3);
+                JTableTindakan.setValueAt(JTDiskonTindakan.getInt() <= 100 ? JTDiskonTindakan.getInt() + " %" : JTDiskonTindakan.getText(), JTableTindakan.getSelectedRow(), 3);
+                JTableTindakan.setValueAt(JTSubTotalTindakan.getText(), JTableTindakan.getSelectedRow(), 4);
+                setTotalTindakan();
                 setGrandTotal();
                 refreshTindakan();
             }
@@ -1846,6 +2242,7 @@ public class Billing extends javax.swing.JFrame {
                 JTableObat.setValueAt(JTJumlahObat.getText(), JTableObat.getSelectedRow(), 1);
                 JTableObat.setValueAt(JTHargaObat.getText(), JTableObat.getSelectedRow(), 2);
                 JTableObat.setValueAt(JTSubTotalObat.getText(), JTableObat.getSelectedRow(), 3);
+                setTotalObat();
                 setGrandTotal();
                 refreshObat();
             }
@@ -1856,6 +2253,7 @@ public class Billing extends javax.swing.JFrame {
         JCTindakan.setSelectedIndex(0);
         JTJumlahTindakan.setText("");
         JTHargaTindakan.setText("");
+        JTDiskonTindakan.setText("");
         JTSubTotalTindakan.setText("");
         JTableTindakan.clearSelection();
         JBTambahTindakan.setText("Tambah");
@@ -1880,10 +2278,12 @@ public class Billing extends javax.swing.JFrame {
             if (Berhasil) {
                 Berhasil = multiInsert.setautocomit(false);
                 if (Berhasil) {
-                    Berhasil = multiInsert.Excute("INSERT INTO `tbbilling`(`IdAntrian`, `NoBilling`, `Tanggal`, `NoTransaksi`, `Bayar`, `StatusPoin`, `Poin`) VALUES ('" + Parameter + "','" + JTNoBilling.getText() + "','" + FDateF.datetostr(JDTanggal.getDate(), "yyyy-MM-dd") + "','" + JTNoTransaksi.getText() + "','" + JTBayar.getNumberFormattedText() + "', " + JCBPakaiPoin.isSelected() + ", '" + getPoinTerpakai() + "')", null);
+                    String dokter = JTNoTransaksi.getText().contains("PJ") ? "(SELECT `IdDokter` FROM `tbmdokter` WHERE `NamaDokter` = '" + JCNamaDokter.getSelectedItem() + "')" : "null";
+                    String beautician = JTNoTransaksi.getText().contains("PJ") ? "(SELECT `IdBeautician` FROM `tbmbeautician` WHERE `NamaBeautician` = '" + JCNamaBeautician.getSelectedItem() + "')" : "null";
+                    Berhasil = multiInsert.Excute("INSERT INTO `tbbilling`(`IdAntrian`, `NoBilling`, `Tanggal`, `NoTransaksi`, `IdDokter`, `IdBeautician`, `Bayar`, `DiskonObat`, `PoinTindakan`, `PoinObat`, `MetodePembayaran`, `Kasir`) VALUES ('" + Parameter + "','" + JTNoBilling.getText() + "','" + FDateF.datetostr(JDTanggal.getDate(), "yyyy-MM-dd") + "','" + JTNoTransaksi.getText() + "'," + dokter + "," + beautician + ",'" + JTBayar.getNumberFormattedText() + "', " + JTDiskonObat.getInt() + ", " + JTPoinTindakan.getInt() + ", '" + JTPoinObat.getInt() + "', '" + JCMetodePembayaran.getSelectedItem() + "','" + GlobalVar.VarL.username + "')", null);
                     if (Berhasil) {
                         for (int i = 0; i < JTableTindakan.getRowCount(); i++) {
-                            Berhasil = multiInsert.Excute("INSERT INTO `tbbillingtindakan`(`NoBilling`, `IdTindakan`, `Jumlah`, `Harga`) VALUES ('" + JTNoBilling.getText() + "',(SELECT `IdTindakan` FROM `tbmtindakan` WHERE `NamaTindakan` = '" + JTableTindakan.getValueAt(i, 0) + "'),'" + JTableTindakan.getValueAt(i, 1).toString().replace(".", "") + "','" + JTableTindakan.getValueAt(i, 2).toString().replace(".", "") + "')", null);
+                            Berhasil = multiInsert.Excute("INSERT INTO `tbbillingtindakan`(`NoBilling`, `IdTindakan`, `Jumlah`, `Harga`, `DiskonTindakan`) VALUES ('" + JTNoBilling.getText() + "',(SELECT `IdTindakan` FROM `tbmtindakan` WHERE `NamaTindakan` = '" + JTableTindakan.getValueAt(i, 0) + "'),'" + JTableTindakan.getValueAt(i, 1).toString().replace(".", "") + "','" + JTableTindakan.getValueAt(i, 2).toString().replace(".", "") + "','" + (JTableTindakan.getValueAt(i, 3).equals("") ? "0" : JTableTindakan.getValueAt(i, 3).toString().replace(".", "").replace(" %", "")) + "')", null);
                         }
                         if (Berhasil) {
                             for (int j = 0; j < JTableObat.getRowCount(); j++) {
@@ -1936,14 +2336,20 @@ public class Billing extends javax.swing.JFrame {
             if (Berhasil) {
                 Berhasil = multiInsert.setautocomit(false);
                 if (Berhasil) {
-                    Berhasil = multiInsert.Excute("UPDATE `tbbilling` SET `NoBilling`='" + JTNoBilling.getText() + "',`Tanggal`='" + FDateF.datetostr(JDTanggal.getDate(), "yyyy-MM-dd") + "',`NoTransaksi`='" + JTNoTransaksi.getText() + "',`Bayar`='" + JTBayar.getNumberFormattedText() + "', `StatusPoin` = " + JCBPakaiPoin.isSelected() + ", `Poin` = '" + getPoinTerpakai() + "' WHERE `IdBilling` = '" + Parameter + "'", null);
+                    String dokter = JTNoTransaksi.getText().contains("PJ") ? "(SELECT `IdDokter` FROM `tbmdokter` WHERE `NamaDokter` = '" + JCNamaDokter.getSelectedItem() + "')" : "null";
+                    String beautician = JTNoTransaksi.getText().contains("PJ") ? "(SELECT `IdBeautician` FROM `tbmbeautician` WHERE `NamaBeautician` = '" + JCNamaBeautician.getSelectedItem() + "')" : "null";
+                    Berhasil = multiInsert.Excute("UPDATE `tbbilling` SET `NoBilling`='" + JTNoBilling.getText() + "',`Tanggal`='" + FDateF.datetostr(JDTanggal.getDate(), "yyyy-MM-dd") + "',`NoTransaksi`='" + JTNoTransaksi.getText() + "', `IdDokter` = " + dokter + ",`IdBeautician` = " + beautician + ",`Bayar`='" + JTBayar.getNumberFormattedText() + "', `DiskonObat` = '" + JTDiskonObat.getInt() + "', `PoinTindakan` = '" + JTPoinTindakan.getInt() + "', `PoinObat` = '" + JTPoinObat.getInt() + "', `MetodePembayaran`='" + JCMetodePembayaran.getSelectedItem() + "' WHERE `IdBilling` = '" + Parameter + "'", null);
                     if (Berhasil) {
-                        Berhasil = multiInsert.Excute("DELETE FROM `tbbillingtindakan` WHERE `NoBilling` = '" + JTNoBilling.getText() + "'", null);
+                        if (tindakanCount != 0) {
+                            Berhasil = multiInsert.Excute("DELETE FROM `tbbillingtindakan` WHERE `NoBilling` = '" + JTNoBilling.getText() + "'", null);
+                        }
                         if (Berhasil) {
-                            Berhasil = multiInsert.Excute("DELETE FROM `tbbillingobat` WHERE `NoBilling` = '" + JTNoBilling.getText() + "'", null);
+                            if (obatCount != 0) {
+                                Berhasil = multiInsert.Excute("DELETE FROM `tbbillingobat` WHERE `NoBilling` = '" + JTNoBilling.getText() + "'", null);
+                            }
                             if (Berhasil) {
                                 for (int i = 0; i < JTableTindakan.getRowCount(); i++) {
-                                    Berhasil = multiInsert.Excute("INSERT INTO `tbbillingtindakan`(`NoBilling`, `IdTindakan`, `Jumlah`, `Harga`) VALUES ('" + JTNoBilling.getText() + "',(SELECT `IdTindakan` FROM `tbmtindakan` WHERE `NamaTindakan` = '" + JTableTindakan.getValueAt(i, 0) + "'),'" + JTableTindakan.getValueAt(i, 1).toString().replace(".", "") + "','" + JTableTindakan.getValueAt(i, 2).toString().replace(".", "") + "')", null);
+                                    Berhasil = multiInsert.Excute("INSERT INTO `tbbillingtindakan`(`NoBilling`, `IdTindakan`, `Jumlah`, `Harga`, `DiskonTindakan`) VALUES ('" + JTNoBilling.getText() + "',(SELECT `IdTindakan` FROM `tbmtindakan` WHERE `NamaTindakan` = '" + JTableTindakan.getValueAt(i, 0) + "'),'" + JTableTindakan.getValueAt(i, 1).toString().replace(".", "") + "','" + JTableTindakan.getValueAt(i, 2).toString().replace(".", "") + "','" + (JTableTindakan.getValueAt(i, 3).equals("") ? "0" : JTableTindakan.getValueAt(i, 3).toString().replace(".", "").replace(" %", "")) + "')", null);
                                 }
                                 if (Berhasil) {
                                     for (int j = 0; j < JTableObat.getRowCount(); j++) {
@@ -1977,9 +2383,7 @@ public class Billing extends javax.swing.JFrame {
 
     void printing() {
         PrintResep pr = new PrintResep();
-        Object printitem[][] = getTableData(JTableTindakan, JTableObat);
-        setItems(printitem);
-        total_item_count = itemsTable.getRowCount();
+        total_item_count = JTableTindakan.getRowCount() + JTableObat.getRowCount();
         PrinterJob pj = PrinterJob.getPrinterJob();
         pj.setPrintable(pr, getPageFormat(pj));
         PrintService[] printServices = PrintServiceLookup.lookupPrintServices(null, null);
@@ -1995,77 +2399,17 @@ public class Billing extends javax.swing.JFrame {
         }
     }
 
-    void setItems(Object[][] printitem) {
-        Object data[][] = printitem;
-        DefaultTableModel model = new DefaultTableModel();
-        model.addColumn(title[0]);
-        model.addColumn(title[1]);
-        model.addColumn(title[2]);
-        model.addColumn(title[3]);
-
-        int rowcount = printitem.length;
-
-        addtomodel(model, data, rowcount);
-
-        itemsTable = new JTable(model);
-    }
-
-    void addtomodel(DefaultTableModel model, Object[][] data, int rowcount) {
-        int count = 0;
-        while (count < rowcount) {
-            model.addRow(data[count]);
-            count++;
-        }
-        if (model.getRowCount() != rowcount) {
-            addtomodel(model, data, rowcount);
-        }
-
-//        System.out.println("Check Passed.");
-    }
-
-    Object[][] getTableData(JTable table1, JTable table2) {
-        int itemcount = table1.getRowCount() + table2.getRowCount();
-//        System.out.println("Item Count:" + itemcount);
-
-        DefaultTableModel dtm1 = (DefaultTableModel) table1.getModel();
-        DefaultTableModel dtm2 = (DefaultTableModel) table2.getModel();
-        int nRow1 = dtm1.getRowCount(), nCol1 = dtm1.getColumnCount();
-        int nRow2 = dtm2.getRowCount(), nCol2 = dtm2.getColumnCount();
-        Object[][] tableData = new Object[nRow1 + nRow2][nCol1 + nCol2];
-        if (itemcount == nRow1 + nRow2) {
-            int x = 0;
-            for (int i = 0; i < nRow1; i++) {
-                for (int j = 0; j < nCol1; j++) {
-                    tableData[x][j] = dtm1.getValueAt(i, j);
-                }
-                x++;
-            }
-            for (int i = 0; i < nRow2; i++) {
-                for (int j = 0; j < nCol2; j++) {
-                    tableData[x][j] = dtm2.getValueAt(i, j);
-                }
-                x++;
-            }
-            if (tableData.length != itemcount) {
-                getTableData(table1, table2);
-            }
-//            System.out.println("Data check passed");
-        } else {
-            getTableData(table1, table2);
-        }
-        return tableData;
-    }
-
     PageFormat getPageFormat(PrinterJob pj) {
         PageFormat pf = pj.defaultPage();
         Paper paper = pf.getPaper();
 
         double middleHeight = total_item_count * 13;
-        double headerHeight = 5.4694448;
+//        double headerHeight = 5.4694448;
+        double headerHeight = 10.4694448;
         double footerHeight = 2.575932;
-        if (JCBPakaiPoin.isSelected()) {
-            footerHeight = 3.705;
-        }
+//        if (JCBPakaiPoin.isSelected()) {
+//            footerHeight = 3.705;
+//        }
 
         double width = convert_CM_To_PPI(7);
         double height = (convert_CM_To_PPI(headerHeight + footerHeight)) + middleHeight;
@@ -2093,10 +2437,9 @@ public class Billing extends javax.swing.JFrame {
 
     }
 
-    static JTable itemsTable;
+    static JTable itemsTableTindakan, itemsTableObat;
     int total_item_count = 0;
     String DATE_FORMAT_NOW = "dd/MM/yyyy HH:mm:ss a";
-    String title[] = new String[]{"Nama Barang", "Jml", "Harga", "Total"};
     String Poin, PoinTerpakai, SetelahPotong, Bayar;
 
     class PrintResep implements Printable {
@@ -2118,79 +2461,144 @@ public class Billing extends javax.swing.JFrame {
                     g2d.drawImage(read, x + ((w - imagewidth) / 2), y, imagewidth, imageheight, null);
                     font = new Font("Times New Roman", Font.PLAIN, 7);
                     g2d.setFont(font);
-                    g2d.drawString("Jl. Kompol Zainal Abidin No.05-06 (0741-7553068)", x + ((w - g2d.getFontMetrics().stringWidth("Jl. Kompol Zainal Abidin No.05-06 (0741-7553068)")) / 2), y + 45);
-                    g2d.drawString("Tanjung Pinang - Jambi", x + ((w - g2d.getFontMetrics().stringWidth("Tanjung Pinang - Jambi")) / 2), y + 55);
-                    g2d.drawLine(x, y + 65, 180, y + 65);
+                    g2d.drawString("Jl. Kompol Zainal Abidin No.05-06 (0741-7553068)", x + ((w - g2d.getFontMetrics().stringWidth("Jl. Kompol Zainal Abidin No.05-06 (0741-7553068)")) / 2), y += 45);
+                    g2d.drawString("Tanjung Pinang - Jambi", x + ((w - g2d.getFontMetrics().stringWidth("Tanjung Pinang - Jambi")) / 2), y += 10);
+                    g2d.drawLine(x, y += 10, 180, y);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
                 try {
                     int x = 5;
-                    int y = 55;
+                    int y = 65;
                     int w = 188;
                     font = new Font("Times New Roman", Font.PLAIN, 10);
                     g2d.setFont(font);
-                    g2d.drawString("Tanggal : " + now(), x, y + 20);
-                    g2d.drawString("Cashier : " + GlobalVar.VarL.username, x, y + 33);
 
-                    g2d.drawLine(x, y + 40, 180, y + 40);
+                    int x1 = g2d.getFontMetrics().stringWidth("Beautician") + 10;
+                    int x2 = g2d.getFontMetrics().stringWidth("Beautician") + 20;
 
-                    font = new Font("Times New Roman", Font.PLAIN, 9);
+                    g2d.drawString("Pasien", x, y += 10);
+                    g2d.drawString(" : ", x1, y);
+                    g2d.drawString(JTNamaPasien.getText(), x2, y);
+
+                    g2d.drawString("Tanggal", x, y += 10);
+                    g2d.drawString(" : ", x1, y);
+                    g2d.drawString(now(), x2, y);
+
+                    g2d.drawString("No. Nota", x, y += 10);
+                    g2d.drawString(" : ", x1, y);
+                    NumberFormat nf = new DecimalFormat("000");
+                    g2d.drawString(JTNoBilling.getText(), x2, y);
+
+                    g2d.drawString("Cashier", x, y += 10);
+                    g2d.drawString(" : ", x1, y);
+                    g2d.drawString(GlobalVar.VarL.username, x2, y);
+
+                    g2d.drawString("Dokter", x, y += 10);
+                    g2d.drawString(" : ", x1, y);
+                    g2d.drawString("" + (JCNamaDokter.getSelectedIndex() == 0 ? "-" : JCNamaDokter.getSelectedItem()), x2, y);
+
+                    g2d.drawString("Beautician", x, y += 10);
+                    g2d.drawString(" : ", x1, y);
+                    g2d.drawString("" + (JCNamaBeautician.getSelectedIndex() == 0 ? "-" : JCNamaBeautician.getSelectedItem()), x2, y);
+
+                    g2d.drawLine(x, y += 5, 180, y);
+                    if (JTableTindakan.getRowCount() != 0) {
+                        g2d.setFont(new Font("Times New Roman", Font.PLAIN, 9));
+                        g2d.drawString("Tindakan :", x, y += 15);
+                        g2d.drawString("Jmlh", 85, y);
+                        g2d.drawString("Harga", 110, y);
+                        g2d.drawString("Total", 155, y);
+//                        g2d.drawLine(x, y += 5, 180, y);
+                        for (int i = 0; i < JTableTindakan.getRowCount(); i++) {
+                            y += 10;
+                            g2d.drawString(JTableTindakan.getValueAt(i, 0).toString(), x + 10, y);
+                            g2d.drawString(JTableTindakan.getValueAt(i, 1).toString(), 82 + (13 - g2d.getFontMetrics().stringWidth(JTableTindakan.getValueAt(i, 1).toString())), y);
+                            g2d.drawString(JTableTindakan.getValueAt(i, 2).toString(), 100 + (36 - g2d.getFontMetrics().stringWidth(JTableTindakan.getValueAt(i, 2).toString())), y);
+                            Integer subTotalTindakan = Integer.valueOf(JTableTindakan.getValueAt(i, 1).toString().replace(".", "")) * Integer.valueOf(JTableTindakan.getValueAt(i, 2).toString().replace(".", ""));
+                            g2d.drawString(Intformatdigit(subTotalTindakan), 134 + (46 - g2d.getFontMetrics().stringWidth(Intformatdigit(subTotalTindakan))), y);
+                        }
+                        g2d.drawLine(60, y += 5, 180, y);
+                        g2d.drawString("Total", 60, y += 10);
+                        g2d.drawString(": Rp.", 120, y);
+                        g2d.drawString(JTTotalTindakan.getText(), 134 + (46 - g2d.getFontMetrics().stringWidth(JTTotalTindakan.getText())), y);
+                        if (getTotalDiskonTindakan() != 0) {
+                            g2d.drawString("Diskon", 60, y += 10);
+                            g2d.drawString(": Rp.", 120, y);
+                            g2d.drawString(Intformatdigit(getTotalDiskonTindakan()), 134 + (46 - g2d.getFontMetrics().stringWidth(Intformatdigit(getTotalDiskonTindakan()))), y);
+                        }
+                        if (JTPoinTindakan.getInt() != 0) {
+                            g2d.drawString("Pakai Poin", 60, y += 10);
+                            g2d.drawString(": Rp.", 120, y);
+                            g2d.drawString(Intformatdigit(JTPoinTindakan.getInt() * 1000), 134 + (46 - g2d.getFontMetrics().stringWidth(Intformatdigit(JTPoinTindakan.getInt() * 1000))), y);
+                        }
+                        if (getTotalDiskonTindakan() != 0 || JTPoinTindakan.getInt() != 0) {
+                            g2d.drawString("Setelah Potong", 60, y += 10);
+                            g2d.drawString(": Rp.", 120, y);
+                            g2d.drawString(JTSetelahPotongTindakan.getText(), 134 + (46 - g2d.getFontMetrics().stringWidth(JTSetelahPotongTindakan.getText())), y);
+                        }
+                    }
+                    if (JTableObat.getRowCount() != 0) {
+                        g2d.setFont(new Font("Times New Roman", Font.PLAIN, 9));
+                        g2d.drawString("Cream & Obat :", x, y += 25);
+                        g2d.drawString("Jmlh", 85, y);
+                        g2d.drawString("Harga", 110, y);
+                        g2d.drawString("Total", 155, y);
+                        for (int i = 0; i < JTableObat.getRowCount(); i++) {
+                            y += 10;
+                            g2d.drawString(JTableObat.getValueAt(i, 0).toString(), x + 10, y);
+                            g2d.drawString(JTableObat.getValueAt(i, 1).toString(), 82 + (13 - g2d.getFontMetrics().stringWidth(JTableObat.getValueAt(i, 1).toString())), y);
+                            g2d.drawString(JTableObat.getValueAt(i, 2).toString(), 100 + (36 - g2d.getFontMetrics().stringWidth(JTableObat.getValueAt(i, 2).toString())), y);
+                            Integer subTotalObat = Integer.valueOf(JTableObat.getValueAt(i, 1).toString().replace(".", "")) * Integer.valueOf(JTableObat.getValueAt(i, 2).toString().replace(".", ""));
+                            g2d.drawString(Intformatdigit(subTotalObat), 134 + (46 - g2d.getFontMetrics().stringWidth(JTableObat.getValueAt(i, 3).toString())), y);
+                        }
+                        g2d.drawLine(60, y += 5, 180, y);
+                        g2d.drawString("Total", 60, y += 10);
+                        g2d.drawString(": Rp.", 120, y);
+                        g2d.drawString(JTTotalObat.getText(), 134 + (46 - g2d.getFontMetrics().stringWidth(JTTotalObat.getText())), y);
+                        if (JTDiskonObat.getInt() != 0) {
+                            g2d.drawString("Diskon", 60, y += 10);
+                            g2d.drawString(": Rp.", 120, y);
+                            if (JTDiskonObat.getInt() <= 100) {
+                                g2d.drawString(JTDiskonObat.getInt() <= 100 ? Intformatdigit(Math.round(JTDiskonObat.getInt() * JTTotalObat.getInt() / 100)) : JTDiskonObat.getText(), 134 + (46 - g2d.getFontMetrics().stringWidth(Intformatdigit(Math.round(JTDiskonObat.getInt() * JTTotalObat.getInt() / 100)))), y);
+                            } else {
+                                g2d.drawString(JTDiskonObat.getText(), 134 + (46 - g2d.getFontMetrics().stringWidth(JTDiskonObat.getText())), y);
+                            }
+                        }
+                        if (JTPoinObat.getInt() != 0) {
+                            g2d.drawString("Pakai Poin", 60, y += 10);
+                            g2d.drawString(": Rp.", 120, y);
+                            g2d.drawString(Intformatdigit(JTPoinObat.getInt() * 1000), 134 + (46 - g2d.getFontMetrics().stringWidth(Intformatdigit(JTPoinObat.getInt() * 1000))), y);
+                        }
+                        if (JTDiskonObat.getInt() != 0 || JTPoinObat.getInt() != 0) {
+                            g2d.drawString("Setelah Potong", 60, y += 10);
+                            g2d.drawString(": Rp.", 120, y);
+                            g2d.drawString(JTSetelahPotongObat.getText(), 134 + (46 - g2d.getFontMetrics().stringWidth(JTSetelahPotongObat.getText())), y);
+                        }
+                    }
+                    g2d.drawLine(0, y += 15, 180, y);
+                    g2d.drawString("Total", 60, y += 10);
+                    g2d.drawString(": Rp.", 120, y);
+//                    g2d.drawString(":", g2d.getFontMetrics().stringWidth("Total") + 5, y);
+                    g2d.drawString(JTGrandTotal.getText(), 134 + (46 - g2d.getFontMetrics().stringWidth(JTGrandTotal.getText())), y);
+//                    g2d.drawString(JTGrandTotal.getText(), g2d.getFontMetrics().stringWidth("Total") + 10, y);
+
+                    g2d.drawString("Bayar", 60, y += 10);
+                    g2d.drawString(": Rp.", 120, y);
+                    g2d.drawString(JTBayar.getText(), 134 + (46 - g2d.getFontMetrics().stringWidth(JTBayar.getText())), y);
+
+                    g2d.drawString("Kembali", 60, y += 10);
+                    g2d.drawString(": Rp.", 120, y);
+                    g2d.drawString(JTKembali.getText(), 134 + (46 - g2d.getFontMetrics().stringWidth(JTKembali.getText())), y);
+
+                    g2d.drawString("Metode Bayar", 60, y += 10);
+                    g2d.drawString(":", 120, y);
+                    g2d.drawString(JCMetodePembayaran.getSelectedItem().toString(), 134 + (46 - g2d.getFontMetrics().stringWidth(JCMetodePembayaran.getSelectedItem().toString())), y);
+
+                    font = new Font("Arial", Font.BOLD, 10);
                     g2d.setFont(font);
-                    g2d.drawString(title[0], x, y + 50);
-                    g2d.drawString(title[1], 85, y + 50);
-                    g2d.drawString(title[2], 110, y + 50);
-                    g2d.drawString(title[3], 155, y + 50);
-                    g2d.drawLine(x, y + 55, 180, y + 55);
-
-                    int cH = 0;
-                    TableModel mod = itemsTable.getModel();
-                    for (int i = 0; i < mod.getRowCount(); i++) {
-                        String NamaBarang = mod.getValueAt(i, 0).toString();
-                        String Jumlah = mod.getValueAt(i, 1).toString();
-                        String Harga = mod.getValueAt(i, 2).toString();
-                        String SubTotal = mod.getValueAt(i, 3).toString();
-
-                        cH = (y + 65) + (13 * i);
-                        g2d.drawString(NamaBarang, x, cH);
-                        g2d.drawString(Jumlah, 82 + (13 - g2d.getFontMetrics().stringWidth(Jumlah)), cH);
-                        g2d.drawString(Harga, 100 + (36 - g2d.getFontMetrics().stringWidth(Harga)), cH);
-                        g2d.drawString(SubTotal, 134 + (46 - g2d.getFontMetrics().stringWidth(SubTotal)), cH);
-                    }
-                    g2d.drawLine(80, cH + 5, 180, cH + 5);
-                    g2d.drawString("Total", 80, cH + 15);
-                    g2d.drawString(":", 140, cH + 15);
-                    g2d.drawString(JTGrandTotal.getText(), 134 + (46 - g2d.getFontMetrics().stringWidth(JTGrandTotal.getText())), cH + 15);
-                    if (JCBPakaiPoin.isSelected()) {
-                        g2d.drawString("Poin Anda", 80, cH + 25);
-                        g2d.drawString(":", 140, cH + 25);
-                        g2d.drawString(JLPoin.getText().split("\\(")[1].split("\\)")[0], 134 + (46 - g2d.getFontMetrics().stringWidth(JLPoin.getText().split("\\(")[1].split("\\)")[0])), cH + 25);
-                        g2d.drawString("Poin Dipakai", 80, cH + 35);
-                        g2d.drawString(":", 140, cH + 35);
-                        g2d.drawString(String.valueOf(getPoinTerpakai()), 134 + (46 - g2d.getFontMetrics().stringWidth(String.valueOf(getPoinTerpakai()))), cH + 35);
-                        g2d.drawString("Setelah Potong", 80, cH + 45);
-                        g2d.drawString(":", 140, cH + 45);
-                        g2d.drawString(JTSetelahPotong.getText(), 134 + (46 - g2d.getFontMetrics().stringWidth(JTSetelahPotong.getText())), cH + 45);
-                        g2d.drawString("Bayar", 80, cH + 55);
-                        g2d.drawString(":", 140, cH + 55);
-                        g2d.drawString(JTBayar.getText(), 134 + (46 - g2d.getFontMetrics().stringWidth(JTBayar.getText())), cH + 55);
-                        g2d.drawString("Kembali", 80, cH + 65);
-                        g2d.drawString(":", 140, cH + 65);
-                        g2d.drawString(JTKembali.getText(), 134 + (46 - g2d.getFontMetrics().stringWidth(JTKembali.getText())), cH + 65);
-                        font = new Font("Arial", Font.BOLD, 10);
-                        g2d.setFont(font);
-                        g2d.drawString("Thank You Come Again", x + ((w - g2d.getFontMetrics().stringWidth("Thank You Come Again")) / 2), cH + 95);
-                    } else {
-                        g2d.drawString("Bayar", 80, cH + 25);
-                        g2d.drawString(":", 140, cH + 25);
-                        g2d.drawString(JTBayar.getText(), 134 + (46 - g2d.getFontMetrics().stringWidth(JTBayar.getText())), cH + 25);
-                        g2d.drawString("Kembali", 80, cH + 35);
-                        g2d.drawString(":", 140, cH + 35);
-                        g2d.drawString(JTKembali.getText(), 134 + (46 - g2d.getFontMetrics().stringWidth(JTKembali.getText())), cH + 33);
-                        font = new Font("Arial", Font.BOLD, 10);
-                        g2d.setFont(font);
-                        g2d.drawString("Thank You Come Again", x + ((w - g2d.getFontMetrics().stringWidth("Thank You Come Again")) / 2), cH + 63);
-                    }
+                    String text = "Terima Kasih Atas Kunjungan Anda";
+                    g2d.drawString(text, (w - g2d.getFontMetrics().stringWidth(text)) / 2, y += 30);
 
                 } catch (Exception r) {
                     r.printStackTrace();

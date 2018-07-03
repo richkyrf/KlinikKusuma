@@ -60,26 +60,26 @@
                                       <Component id="JTNamaPasien" min="-2" pref="400" max="-2" attributes="0"/>
                                   </Group>
                               </Group>
-                              <EmptySpace min="180" pref="370" max="32767" attributes="0"/>
+                              <EmptySpace max="32767" attributes="0"/>
                               <Group type="103" groupAlignment="0" max="-2" attributes="0">
                                   <Group type="102" attributes="0">
                                       <Component id="jlableF15" max="32767" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Component id="jlableF14" min="-2" max="-2" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
-                                      <Component id="JDTanggal" min="-2" pref="140" max="-2" attributes="0"/>
+                                      <Component id="JDTanggal" min="-2" pref="152" max="-2" attributes="0"/>
                                   </Group>
                                   <Group type="102" alignment="1" attributes="0">
                                       <Component id="jlableF20" max="32767" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Component id="jlableF21" min="-2" max="-2" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
-                                      <Component id="JTNoAntrian" min="-2" pref="140" max="-2" attributes="0"/>
+                                      <Component id="JTNoAntrian" min="-2" pref="152" max="-2" attributes="0"/>
                                   </Group>
                                   <Group type="102" alignment="0" attributes="0">
                                       <Group type="103" groupAlignment="1" max="-2" attributes="0">
                                           <Group type="102" attributes="0">
-                                              <Component id="jlableF17" min="-2" max="-2" attributes="0"/>
+                                              <Component id="jlableF17" min="-2" pref="119" max="-2" attributes="0"/>
                                               <EmptySpace max="-2" attributes="0"/>
                                               <Component id="jlableF16" min="-2" max="-2" attributes="0"/>
                                           </Group>
@@ -91,52 +91,11 @@
                                       </Group>
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Group type="103" groupAlignment="0" attributes="0">
-                                          <Component id="JTNoBilling" alignment="0" min="-2" pref="140" max="-2" attributes="0"/>
-                                          <Component id="JTNoTransaksi" min="-2" pref="140" max="-2" attributes="0"/>
+                                          <Component id="JTNoBilling" alignment="0" min="-2" pref="152" max="-2" attributes="0"/>
+                                          <Component id="JTNoTransaksi" min="-2" pref="152" max="-2" attributes="0"/>
                                       </Group>
                                   </Group>
                               </Group>
-                          </Group>
-                          <Group type="102" alignment="1" attributes="0">
-                              <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
-                              <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                                  <Component id="jlableF9" alignment="1" max="32767" attributes="0"/>
-                                  <Component id="JLPoin" alignment="1" max="32767" attributes="0"/>
-                                  <Component id="jlableF12" alignment="1" max="32767" attributes="0"/>
-                                  <Component id="jlableF10" alignment="1" max="32767" attributes="0"/>
-                                  <Component id="jlableF25" alignment="1" max="32767" attributes="0"/>
-                              </Group>
-                              <EmptySpace max="-2" attributes="0"/>
-                              <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                                  <Group type="102" alignment="0" attributes="0">
-                                      <Group type="103" groupAlignment="0" attributes="0">
-                                          <Component id="jlableF8" alignment="0" min="-2" max="-2" attributes="0"/>
-                                          <Component id="jlableF13" alignment="0" min="-2" max="-2" attributes="0"/>
-                                      </Group>
-                                      <EmptySpace max="-2" attributes="0"/>
-                                      <Group type="103" groupAlignment="0" attributes="0">
-                                          <Component id="JCBPakaiPoin" min="-2" max="-2" attributes="0"/>
-                                          <Component id="JTGrandTotal" min="-2" pref="160" max="-2" attributes="0"/>
-                                      </Group>
-                                  </Group>
-                                  <Group type="102" alignment="0" attributes="0">
-                                      <Component id="jlableF24" min="-2" max="-2" attributes="0"/>
-                                      <EmptySpace max="-2" attributes="0"/>
-                                      <Component id="JTSetelahPotong" max="32767" attributes="0"/>
-                                  </Group>
-                                  <Group type="102" alignment="1" attributes="0">
-                                      <Group type="103" groupAlignment="1" attributes="0">
-                                          <Component id="jlableF11" min="-2" max="-2" attributes="0"/>
-                                          <Component id="jlableF26" min="-2" max="-2" attributes="0"/>
-                                      </Group>
-                                      <EmptySpace max="-2" attributes="0"/>
-                                      <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                                          <Component id="JTKembali" alignment="1" max="32767" attributes="0"/>
-                                          <Component id="JTBayar" alignment="1" pref="160" max="32767" attributes="0"/>
-                                      </Group>
-                                  </Group>
-                              </Group>
-                              <EmptySpace min="-2" pref="97" max="-2" attributes="0"/>
                           </Group>
                           <Group type="102" alignment="0" attributes="0">
                               <Component id="JBKembali" min="-2" max="-2" attributes="0"/>
@@ -159,7 +118,47 @@
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
                   </Group>
+                  <Group type="102" alignment="1" attributes="0">
+                      <Component id="jSeparator5" max="32767" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                  </Group>
               </Group>
+          </Group>
+          <Group type="102" alignment="1" attributes="0">
+              <EmptySpace max="32767" attributes="0"/>
+              <Group type="103" groupAlignment="1" max="-2" attributes="0">
+                  <Component id="jlableF9" pref="119" max="32767" attributes="0"/>
+                  <Component id="jlableF10" alignment="1" max="32767" attributes="0"/>
+                  <Component id="jlableF25" alignment="1" max="32767" attributes="0"/>
+                  <Component id="jlableF29" alignment="0" max="32767" attributes="0"/>
+              </Group>
+              <EmptySpace max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                  <Group type="103" groupAlignment="0" attributes="0">
+                      <Group type="102" alignment="0" attributes="0">
+                          <Component id="jlableF8" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="JTGrandTotal" min="-2" pref="152" max="-2" attributes="0"/>
+                      </Group>
+                      <Group type="102" alignment="1" attributes="0">
+                          <Group type="103" groupAlignment="1" attributes="0">
+                              <Component id="jlableF11" min="-2" max="-2" attributes="0"/>
+                              <Component id="jlableF26" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                              <Component id="JTKembali" alignment="1" max="32767" attributes="0"/>
+                              <Component id="JTBayar" alignment="1" min="-2" pref="152" max="-2" attributes="0"/>
+                          </Group>
+                      </Group>
+                  </Group>
+                  <Group type="102" attributes="0">
+                      <Component id="jlableF30" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="JCMetodePembayaran" max="32767" attributes="0"/>
+                  </Group>
+              </Group>
+              <EmptySpace max="-2" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -201,7 +200,7 @@
                   <Component id="jlableF22" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="jlableF23" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
-              <EmptySpace type="separate" min="-2" max="-2" attributes="0"/>
+              <EmptySpace pref="8" max="32767" attributes="0"/>
               <Component id="jSeparator1" min="-2" max="-2" attributes="0"/>
               <EmptySpace min="-2" pref="4" max="-2" attributes="0"/>
               <Component id="jlableF18" min="-2" max="-2" attributes="0"/>
@@ -214,22 +213,12 @@
               <EmptySpace min="-2" pref="4" max="-2" attributes="0"/>
               <Component id="jPanel2" min="-2" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
+              <Component id="jSeparator5" min="-2" max="-2" attributes="0"/>
+              <EmptySpace min="-2" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="JTGrandTotal" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="jlableF8" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="jlableF9" alignment="3" min="-2" max="-2" attributes="0"/>
-              </Group>
-              <EmptySpace max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="3" attributes="0">
-                  <Component id="JLPoin" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="jlableF13" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="JCBPakaiPoin" alignment="3" min="-2" max="-2" attributes="0"/>
-              </Group>
-              <EmptySpace max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="3" attributes="0">
-                  <Component id="jlableF12" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="jlableF24" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="JTSetelahPotong" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace min="-2" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
@@ -243,7 +232,13 @@
                   <Component id="jlableF26" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="jlableF25" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
-              <EmptySpace pref="12" max="32767" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="3" attributes="0">
+                  <Component id="jlableF29" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="jlableF30" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="JCMetodePembayaran" alignment="3" min="-2" max="-2" attributes="0"/>
+              </Group>
+              <EmptySpace type="separate" max="32767" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="JBTambah" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="JBKembali" alignment="3" min="-2" max="-2" attributes="0"/>
@@ -257,6 +252,16 @@
     </DimensionLayout>
   </Layout>
   <SubComponents>
+    <Component class="KomponenGUI.JcomboboxF" name="JCMetodePembayaran">
+      <Properties>
+        <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
+          <StringArray count="2">
+            <StringItem index="0" value="Tunai"/>
+            <StringItem index="1" value="Debit"/>
+          </StringArray>
+        </Property>
+      </Properties>
+    </Component>
     <Component class="KomponenGUI.JlableF" name="jlableF2">
       <Properties>
         <Property name="text" type="java.lang.String" value="Nama Pasien"/>
@@ -315,82 +320,102 @@
           <Group type="103" groupAlignment="0" attributes="0">
               <Group type="102" alignment="0" attributes="0">
                   <EmptySpace max="-2" attributes="0"/>
-                  <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                  <Group type="103" groupAlignment="0" attributes="0">
                       <Group type="102" attributes="0">
-                          <Component id="JCTindakan" min="-2" pref="298" max="-2" attributes="0"/>
+                          <Component id="JCTindakan" min="-2" pref="339" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
-                          <Component id="JTJumlahTindakan" min="-2" pref="100" max="-2" attributes="0"/>
+                          <Component id="JTJumlahTindakan" min="-2" pref="74" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
-                          <Component id="JTHargaTindakan" min="-2" pref="100" max="-2" attributes="0"/>
+                          <Component id="JTHargaTindakan" min="-2" pref="96" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
-                          <Component id="JTSubTotalTindakan" min="-2" pref="161" max="-2" attributes="0"/>
+                          <Component id="JTDiskonTindakan" min="-2" pref="75" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="JTSubTotalTindakan" max="32767" attributes="0"/>
                       </Group>
                       <Component id="jScrollPane1" max="32767" attributes="0"/>
                   </Group>
                   <EmptySpace max="-2" attributes="0"/>
-                  <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                      <Component id="JBHapusTindakan" max="32767" attributes="0"/>
-                      <Component id="JBRefreshTindakan" max="32767" attributes="0"/>
-                      <Component id="JBTambahTindakan" alignment="0" max="32767" attributes="0"/>
-                  </Group>
-                  <EmptySpace max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <Component id="jlableF27" pref="119" max="32767" attributes="0"/>
-                      <Component id="jlableF29" max="32767" attributes="0"/>
-                      <Component id="jlableF31" alignment="0" max="32767" attributes="0"/>
+                      <Component id="JBHapusTindakan" alignment="1" min="-2" pref="97" max="-2" attributes="0"/>
+                      <Component id="JBTambahTindakan" alignment="1" min="-2" pref="97" max="-2" attributes="0"/>
+                      <Component id="JBRefreshTindakan" alignment="1" min="-2" pref="97" max="-2" attributes="0"/>
                   </Group>
-                  <EmptySpace max="-2" attributes="0"/>
+                  <EmptySpace type="separate" max="-2" attributes="0"/>
+                  <Component id="jSeparator3" min="-2" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Group type="102" attributes="0">
+                          <EmptySpace min="-2" pref="18" max="-2" attributes="0"/>
+                          <Component id="jlableF27" min="-2" pref="119" max="-2" attributes="0"/>
+                          <EmptySpace min="-2" max="-2" attributes="0"/>
                           <Component id="jlableF28" min="-2" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
-                          <Component id="JTTotalTindakan" min="-2" pref="160" max="-2" attributes="0"/>
+                          <Component id="JTTotalTindakan" min="-2" pref="152" max="-2" attributes="0"/>
                       </Group>
-                      <Group type="102" attributes="0">
-                          <Component id="jlableF30" min="-2" max="-2" attributes="0"/>
+                      <Group type="102" alignment="1" attributes="0">
                           <EmptySpace max="-2" attributes="0"/>
-                          <Component id="JTTotalTindakan1" min="-2" pref="160" max="-2" attributes="0"/>
-                      </Group>
-                      <Group type="102" attributes="0">
-                          <Component id="jlableF32" min="-2" max="-2" attributes="0"/>
-                          <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                          <Component id="JCBPakaiPoin1" min="-2" max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="0" attributes="0">
+                              <Group type="102" alignment="1" attributes="0">
+                                  <Component id="JLSetelahPotongTindakan" min="-2" pref="119" max="-2" attributes="0"/>
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Component id="JLSetelahPotongTindakan2" min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Component id="JTSetelahPotongTindakan" min="-2" pref="152" max="-2" attributes="0"/>
+                              </Group>
+                              <Group type="102" attributes="0">
+                                  <Component id="JLPoinTindakan" min="-2" pref="119" max="-2" attributes="0"/>
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Component id="jlableF32" min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Component id="JTPoinTindakan" min="-2" pref="152" max="-2" attributes="0"/>
+                              </Group>
+                          </Group>
                       </Group>
                   </Group>
-                  <EmptySpace min="-2" pref="111" max="-2" attributes="0"/>
+                  <EmptySpace min="-2" pref="10" max="-2" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
         <DimensionLayout dim="1">
           <Group type="103" groupAlignment="0" attributes="0">
-              <Group type="102" alignment="0" attributes="0">
-                  <EmptySpace min="0" pref="0" max="-2" attributes="0"/>
-                  <Group type="103" groupAlignment="3" attributes="0">
-                      <Component id="JCTindakan" alignment="3" min="-2" max="-2" attributes="0"/>
-                      <Component id="JBTambahTindakan" alignment="3" min="-2" max="-2" attributes="0"/>
-                      <Component id="JTJumlahTindakan" alignment="3" min="-2" max="-2" attributes="0"/>
-                      <Component id="JTHargaTindakan" alignment="3" min="-2" max="-2" attributes="0"/>
-                      <Component id="JTSubTotalTindakan" alignment="3" min="-2" max="-2" attributes="0"/>
-                      <Component id="jlableF27" alignment="3" min="-2" max="-2" attributes="0"/>
-                      <Component id="jlableF28" alignment="3" min="-2" max="-2" attributes="0"/>
-                      <Component id="JTTotalTindakan" alignment="3" min="-2" max="-2" attributes="0"/>
-                  </Group>
-                  <EmptySpace max="-2" attributes="0"/>
+              <Component id="jSeparator3" max="32767" attributes="0"/>
+              <Group type="102" attributes="0">
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <Component id="jScrollPane1" min="-2" pref="106" max="-2" attributes="0"/>
-                      <Group type="102" attributes="0">
+                      <Group type="102" alignment="0" attributes="0">
                           <Group type="103" groupAlignment="3" attributes="0">
-                              <Component id="JBHapusTindakan" alignment="3" min="-2" max="-2" attributes="0"/>
-                              <Component id="jlableF29" alignment="3" min="-2" max="-2" attributes="0"/>
-                              <Component id="jlableF30" alignment="3" min="-2" max="-2" attributes="0"/>
-                              <Component id="JTTotalTindakan1" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="jlableF27" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="JTTotalTindakan" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="jlableF28" alignment="3" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <EmptySpace max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="3" attributes="0">
-                              <Component id="JBRefreshTindakan" alignment="3" min="-2" max="-2" attributes="0"/>
-                              <Component id="jlableF31" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="JTPoinTindakan" alignment="3" min="-2" max="-2" attributes="0"/>
                               <Component id="jlableF32" alignment="3" min="-2" max="-2" attributes="0"/>
-                              <Component id="JCBPakaiPoin1" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="JLPoinTindakan" alignment="3" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                          <EmptySpace min="-2" pref="6" max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="3" attributes="0">
+                              <Component id="JTSetelahPotongTindakan" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="JLSetelahPotongTindakan2" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="JLSetelahPotongTindakan" alignment="3" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                      </Group>
+                      <Group type="102" alignment="0" attributes="0">
+                          <Group type="103" groupAlignment="3" attributes="0">
+                              <Component id="JCTindakan" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="JTJumlahTindakan" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="JTHargaTindakan" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="JTSubTotalTindakan" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="JTDiskonTindakan" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="JBTambahTindakan" alignment="3" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="0" attributes="0">
+                              <Component id="jScrollPane1" min="-2" pref="106" max="-2" attributes="0"/>
+                              <Group type="102" attributes="0">
+                                  <Component id="JBHapusTindakan" min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Component id="JBRefreshTindakan" min="-2" max="-2" attributes="0"/>
+                              </Group>
                           </Group>
                       </Group>
                   </Group>
@@ -438,16 +463,22 @@
             <Component class="KomponenGUI.JtableF" name="JTableTindakan">
               <Properties>
                 <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.editors2.TableModelEditor">
-                  <Table columnCount="4" rowCount="0">
+                  <Table columnCount="5" rowCount="0">
                     <Column editable="true" title="Tindakan" type="java.lang.Object"/>
                     <Column editable="true" title="Jumlah" type="java.lang.Object"/>
                     <Column editable="true" title="Harga" type="java.lang.Object"/>
+                    <Column editable="true" title="Diskon" type="java.lang.Object"/>
                     <Column editable="true" title="Sub Total" type="java.lang.Object"/>
                   </Table>
                 </Property>
-                <Property name="columnModel" type="javax.swing.table.TableColumnModel" editor="org.netbeans.modules.form.editors2.TableColumnModelEditor" postCode="JTableTindakan.setrender(new int[]{1,2,3}, new String[]{&quot;Number&quot;,&quot;Number&quot;,&quot;Number&quot;});">
+                <Property name="columnModel" type="javax.swing.table.TableColumnModel" editor="org.netbeans.modules.form.editors2.TableColumnModelEditor" postCode="JTableTindakan.setrender(new int[]{1,2,3,4}, new String[]{&quot;Number&quot;,&quot;Number&quot;,&quot;Right&quot;,&quot;Number&quot;});">
                   <TableColumnModel selectionModel="0">
-                    <Column maxWidth="300" minWidth="300" prefWidth="300" resizable="true">
+                    <Column maxWidth="340" minWidth="340" prefWidth="340" resizable="true">
+                      <Title/>
+                      <Editor/>
+                      <Renderer/>
+                    </Column>
+                    <Column maxWidth="80" minWidth="80" prefWidth="80" resizable="true">
                       <Title/>
                       <Editor/>
                       <Renderer/>
@@ -457,7 +488,7 @@
                       <Editor/>
                       <Renderer/>
                     </Column>
-                    <Column maxWidth="105" minWidth="105" prefWidth="105" resizable="true">
+                    <Column maxWidth="80" minWidth="80" prefWidth="80" resizable="true">
                       <Title/>
                       <Editor/>
                       <Renderer/>
@@ -537,31 +568,20 @@
             <EventHandler event="keyPressed" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="JTTotalTindakanKeyPressed"/>
           </Events>
           <AuxValues>
-            <AuxValue name="JavaCodeGenerator_InitCodePre" type="java.lang.String" value="JTGrandTotal.setPlaceholder(&quot;Grand Total&quot;);"/>
+            <AuxValue name="JavaCodeGenerator_InitCodePre" type="java.lang.String" value="//JTTotalTindakan.setPlaceholder(&quot;Total Tindakan&quot;);"/>
           </AuxValues>
         </Component>
-        <Component class="KomponenGUI.JlableF" name="jlableF29">
-          <Properties>
-            <Property name="text" type="java.lang.String" value="Diskon"/>
-          </Properties>
-        </Component>
-        <Component class="KomponenGUI.JlableF" name="jlableF30">
-          <Properties>
-            <Property name="text" type="java.lang.String" value=":"/>
-          </Properties>
-        </Component>
-        <Component class="KomponenGUI.JPlaceHolder" name="JTTotalTindakan1">
-          <Properties>
-            <Property name="enabled" type="boolean" value="false"/>
-          </Properties>
+        <Component class="KomponenGUI.JPlaceHolder" name="JTDiskonTindakan">
           <Events>
-            <EventHandler event="keyPressed" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="JTTotalTindakan1KeyPressed"/>
+            <EventHandler event="focusLost" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="JTDiskonTindakanFocusLost"/>
+            <EventHandler event="keyPressed" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="JTDiskonTindakanKeyPressed"/>
+            <EventHandler event="keyReleased" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="JTDiskonTindakanKeyReleased"/>
           </Events>
           <AuxValues>
-            <AuxValue name="JavaCodeGenerator_InitCodePre" type="java.lang.String" value="JTGrandTotal.setPlaceholder(&quot;Grand Total&quot;);"/>
+            <AuxValue name="JavaCodeGenerator_InitCodePre" type="java.lang.String" value="JTDiskonTindakan.setPlaceholder(&quot;Diskon&quot;);"/>
           </AuxValues>
         </Component>
-        <Component class="KomponenGUI.JlableF" name="jlableF31">
+        <Component class="KomponenGUI.JlableF" name="JLPoinTindakan">
           <Properties>
             <Property name="text" type="java.lang.String" value="Poin (000)"/>
           </Properties>
@@ -571,14 +591,40 @@
             <Property name="text" type="java.lang.String" value=":"/>
           </Properties>
         </Component>
-        <Component class="KomponenGUI.JCheckBoxF" name="JCBPakaiPoin1">
+        <Component class="KomponenGUI.JlableF" name="JLSetelahPotongTindakan">
           <Properties>
-            <Property name="selected" type="boolean" value="false"/>
-            <Property name="text" type="java.lang.String" value="Pakai Poin"/>
+            <Property name="text" type="java.lang.String" value="Setelah Potong"/>
+          </Properties>
+        </Component>
+        <Component class="KomponenGUI.JlableF" name="JLSetelahPotongTindakan2">
+          <Properties>
+            <Property name="text" type="java.lang.String" value=":"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JSeparator" name="jSeparator3">
+          <Properties>
+            <Property name="orientation" type="int" value="1"/>
+          </Properties>
+        </Component>
+        <Component class="KomponenGUI.JPlaceHolder" name="JTPoinTindakan">
+          <Events>
+            <EventHandler event="keyPressed" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="JTPoinTindakanKeyPressed"/>
+            <EventHandler event="keyReleased" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="JTPoinTindakanKeyReleased"/>
+          </Events>
+          <AuxValues>
+            <AuxValue name="JavaCodeGenerator_InitCodePre" type="java.lang.String" value="JTPoinTindakan.setPlaceholder(&quot;Pakai Poin&quot;);"/>
+          </AuxValues>
+        </Component>
+        <Component class="KomponenGUI.JPlaceHolder" name="JTSetelahPotongTindakan">
+          <Properties>
+            <Property name="enabled" type="boolean" value="false"/>
           </Properties>
           <Events>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="JCBPakaiPoin1ActionPerformed"/>
+            <EventHandler event="keyPressed" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="JTSetelahPotongTindakanKeyPressed"/>
           </Events>
+          <AuxValues>
+            <AuxValue name="JavaCodeGenerator_InitCodePre" type="java.lang.String" value="//JTSetelahPotongTindakan.setPlaceholder(&quot;Setelah Potong&quot;);"/>
+          </AuxValues>
         </Component>
       </SubComponents>
     </Container>
@@ -588,50 +634,123 @@
         <DimensionLayout dim="0">
           <Group type="103" groupAlignment="0" attributes="0">
               <Group type="102" alignment="0" attributes="0">
-                  <EmptySpace max="-2" attributes="0"/>
+                  <EmptySpace min="-2" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                      <Group type="102" attributes="0">
-                          <Component id="JCObat" min="-2" pref="298" max="-2" attributes="0"/>
+                      <Group type="102" alignment="0" attributes="0">
+                          <Component id="jScrollPane2" min="-2" pref="790" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                              <Component id="JBHapusObat" max="32767" attributes="0"/>
+                              <Component id="JBRefreshObat" pref="97" max="32767" attributes="0"/>
+                          </Group>
+                          <EmptySpace min="-2" pref="18" max="-2" attributes="0"/>
+                      </Group>
+                      <Group type="102" alignment="0" attributes="0">
+                          <Component id="JCObat" min="-2" pref="411" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="JTJumlahObat" min="-2" pref="100" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="JTHargaObat" min="-2" pref="100" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="JTSubTotalObat" min="-2" pref="161" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="JBTambahObat" max="32767" attributes="0"/>
+                          <EmptySpace type="separate" max="-2" attributes="0"/>
                       </Group>
-                      <Component id="jScrollPane2" max="32767" attributes="0"/>
+                  </Group>
+                  <Component id="jSeparator4" min="-2" max="-2" attributes="0"/>
+                  <EmptySpace min="-2" pref="18" max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                      <Component id="JLSetelahPotongObat" max="32767" attributes="0"/>
+                      <Component id="JLPoinObat" alignment="0" max="32767" attributes="0"/>
+                      <Component id="jlableF39" alignment="0" max="32767" attributes="0"/>
+                      <Group type="102" alignment="0" attributes="0">
+                          <Component id="jlableF41" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="JLPersenObat" min="-2" pref="60" max="-2" attributes="0"/>
+                      </Group>
                   </Group>
                   <EmptySpace max="-2" attributes="0"/>
-                  <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                      <Component id="JBHapusObat" max="32767" attributes="0"/>
-                      <Component id="JBRefreshObat" max="32767" attributes="0"/>
-                      <Component id="JBTambahObat" alignment="0" max="32767" attributes="0"/>
+                  <Group type="103" groupAlignment="0" attributes="0">
+                      <Group type="102" alignment="0" attributes="0">
+                          <Component id="jlableF40" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="JTTotalObat" pref="152" max="32767" attributes="0"/>
+                      </Group>
+                      <Group type="102" alignment="0" attributes="0">
+                          <Component id="jlableF42" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="JTDiskonObat" max="32767" attributes="0"/>
+                      </Group>
+                      <Group type="102" alignment="0" attributes="0">
+                          <Group type="103" groupAlignment="0" attributes="0">
+                              <Component id="jlableF36" alignment="0" min="-2" max="-2" attributes="0"/>
+                              <Component id="JLSetelahPotongObat2" alignment="0" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="0" attributes="0">
+                              <Component id="JTSetelahPotongObat" max="32767" attributes="0"/>
+                              <Component id="JTPoinObat" max="32767" attributes="0"/>
+                          </Group>
+                      </Group>
                   </Group>
-                  <EmptySpace max="32767" attributes="0"/>
+                  <EmptySpace min="-2" pref="10" max="-2" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
         <DimensionLayout dim="1">
           <Group type="103" groupAlignment="0" attributes="0">
-              <Group type="102" alignment="0" attributes="0">
-                  <EmptySpace min="0" pref="0" max="-2" attributes="0"/>
+              <Group type="102" attributes="0">
                   <Group type="103" groupAlignment="3" attributes="0">
                       <Component id="JCObat" alignment="3" min="-2" max="-2" attributes="0"/>
-                      <Component id="JBTambahObat" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="JTJumlahObat" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="JTHargaObat" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="JTSubTotalObat" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="JBTambahObat" alignment="3" min="-2" max="-2" attributes="0"/>
                   </Group>
-                  <EmptySpace max="-2" attributes="0"/>
-                  <Group type="103" groupAlignment="0" attributes="0">
-                      <Component id="jScrollPane2" min="-2" pref="106" max="-2" attributes="0"/>
-                      <Group type="102" attributes="0">
+                  <EmptySpace min="-2" max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="1" max="-2" attributes="0">
+                      <Group type="102" alignment="0" attributes="0">
                           <Component id="JBHapusObat" min="-2" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="JBRefreshObat" min="-2" max="-2" attributes="0"/>
                       </Group>
+                      <Component id="jScrollPane2" min="-2" pref="106" max="-2" attributes="0"/>
                   </Group>
-                  <EmptySpace max="32767" attributes="0"/>
+                  <EmptySpace min="-2" pref="14" max="-2" attributes="0"/>
+              </Group>
+              <Group type="102" attributes="0">
+                  <Group type="103" groupAlignment="0" attributes="0">
+                      <Group type="102" attributes="0">
+                          <Group type="103" groupAlignment="3" attributes="0">
+                              <Component id="JTTotalObat" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="jlableF40" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="jlableF39" alignment="3" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="3" attributes="0">
+                              <Component id="JTDiskonObat" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="jlableF42" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="JLPersenObat" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="jlableF41" alignment="3" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="3" attributes="0">
+                              <Component id="JTPoinObat" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="jlableF36" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="JLPoinObat" alignment="3" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                          <EmptySpace min="-2" pref="6" max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="3" attributes="0">
+                              <Component id="JLSetelahPotongObat2" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="JLSetelahPotongObat" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="JTSetelahPotongObat" alignment="3" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                          <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                      </Group>
+                      <Component id="jSeparator4" max="32767" attributes="0"/>
+                  </Group>
+                  <EmptySpace max="-2" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
@@ -684,7 +803,7 @@
                 </Property>
                 <Property name="columnModel" type="javax.swing.table.TableColumnModel" editor="org.netbeans.modules.form.editors2.TableColumnModelEditor" postCode="JTableObat.setrender(new int[]{1,2,3}, new String[]{&quot;Number&quot;,&quot;Number&quot;,&quot;Number&quot;});">
                   <TableColumnModel selectionModel="0">
-                    <Column maxWidth="300" minWidth="300" prefWidth="300" resizable="true">
+                    <Column maxWidth="413" minWidth="413" prefWidth="413" resizable="true">
                       <Title/>
                       <Editor/>
                       <Renderer/>
@@ -755,6 +874,96 @@
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="JBRefreshObatActionPerformed"/>
           </Events>
+        </Component>
+        <Component class="KomponenGUI.JlableF" name="jlableF39">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Total Obat"/>
+          </Properties>
+        </Component>
+        <Component class="KomponenGUI.JlableF" name="jlableF40">
+          <Properties>
+            <Property name="text" type="java.lang.String" value=":"/>
+          </Properties>
+        </Component>
+        <Component class="KomponenGUI.JPlaceHolder" name="JTTotalObat">
+          <Properties>
+            <Property name="enabled" type="boolean" value="false"/>
+          </Properties>
+          <Events>
+            <EventHandler event="keyPressed" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="JTTotalObatKeyPressed"/>
+          </Events>
+          <AuxValues>
+            <AuxValue name="JavaCodeGenerator_InitCodePre" type="java.lang.String" value="//JTTotalObat.setPlaceholder(&quot;Total Obat&quot;);"/>
+          </AuxValues>
+        </Component>
+        <Component class="javax.swing.JSeparator" name="jSeparator4">
+          <Properties>
+            <Property name="orientation" type="int" value="1"/>
+          </Properties>
+        </Component>
+        <Component class="KomponenGUI.JlableF" name="jlableF41">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Diskon"/>
+          </Properties>
+        </Component>
+        <Component class="KomponenGUI.JlableF" name="jlableF42">
+          <Properties>
+            <Property name="text" type="java.lang.String" value=":"/>
+          </Properties>
+        </Component>
+        <Component class="KomponenGUI.JPlaceHolder" name="JTDiskonObat">
+          <Events>
+            <EventHandler event="keyPressed" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="JTDiskonObatKeyPressed"/>
+            <EventHandler event="keyReleased" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="JTDiskonObatKeyReleased"/>
+          </Events>
+          <AuxValues>
+            <AuxValue name="JavaCodeGenerator_InitCodePre" type="java.lang.String" value="JTDiskonObat.setPlaceholder(&quot;Diskon&quot;);"/>
+          </AuxValues>
+        </Component>
+        <Component class="KomponenGUI.JlableF" name="jlableF36">
+          <Properties>
+            <Property name="text" type="java.lang.String" value=":"/>
+          </Properties>
+        </Component>
+        <Component class="KomponenGUI.JlableF" name="JLPoinObat">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Poin (000)"/>
+          </Properties>
+        </Component>
+        <Component class="KomponenGUI.JlableF" name="JLSetelahPotongObat">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Setelah Potong"/>
+          </Properties>
+        </Component>
+        <Component class="KomponenGUI.JlableF" name="JLSetelahPotongObat2">
+          <Properties>
+            <Property name="text" type="java.lang.String" value=":"/>
+          </Properties>
+        </Component>
+        <Component class="KomponenGUI.JlableF" name="JLPersenObat">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="(%)"/>
+          </Properties>
+        </Component>
+        <Component class="KomponenGUI.JPlaceHolder" name="JTPoinObat">
+          <Events>
+            <EventHandler event="keyPressed" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="JTPoinObatKeyPressed"/>
+            <EventHandler event="keyReleased" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="JTPoinObatKeyReleased"/>
+          </Events>
+          <AuxValues>
+            <AuxValue name="JavaCodeGenerator_InitCodePre" type="java.lang.String" value="JTPoinObat.setPlaceholder(&quot;Pakai Poin&quot;);"/>
+          </AuxValues>
+        </Component>
+        <Component class="KomponenGUI.JPlaceHolder" name="JTSetelahPotongObat">
+          <Properties>
+            <Property name="enabled" type="boolean" value="false"/>
+          </Properties>
+          <Events>
+            <EventHandler event="keyPressed" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="JTSetelahPotongObatKeyPressed"/>
+          </Events>
+          <AuxValues>
+            <AuxValue name="JavaCodeGenerator_InitCodePre" type="java.lang.String" value="//JTSetelahPotongObat.setPlaceholder(&quot;Setelah Potong&quot;);"/>
+          </AuxValues>
         </Component>
       </SubComponents>
     </Container>
@@ -871,7 +1080,7 @@
     </Component>
     <Component class="KomponenGUI.JlableF" name="jlableF23">
       <Properties>
-        <Property name="text" type="java.lang.String" value="No. Billing"/>
+        <Property name="text" type="java.lang.String" value="No. Nota"/>
       </Properties>
     </Component>
     <Component class="KomponenGUI.JPlaceHolder" name="JTGrandTotal">
@@ -916,40 +1125,6 @@
         <AuxValue name="JavaCodeGenerator_InitCodePre" type="java.lang.String" value="JTBayar.setPlaceholder(&quot;Bayar&quot;);"/>
       </AuxValues>
     </Component>
-    <Component class="KomponenGUI.JlableF" name="JLPoin">
-      <Properties>
-        <Property name="text" type="java.lang.String" value="Poin (000)"/>
-      </Properties>
-    </Component>
-    <Component class="KomponenGUI.JlableF" name="jlableF13">
-      <Properties>
-        <Property name="text" type="java.lang.String" value=":"/>
-      </Properties>
-    </Component>
-    <Component class="KomponenGUI.JCheckBoxF" name="JCBPakaiPoin">
-      <Properties>
-        <Property name="selected" type="boolean" value="false"/>
-        <Property name="text" type="java.lang.String" value="Pakai Poin"/>
-      </Properties>
-      <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="JCBPakaiPoinActionPerformed"/>
-      </Events>
-    </Component>
-    <Component class="KomponenGUI.JlableF" name="jlableF12">
-      <Properties>
-        <Property name="text" type="java.lang.String" value="Setelah Potong"/>
-      </Properties>
-    </Component>
-    <Component class="KomponenGUI.JlableF" name="jlableF24">
-      <Properties>
-        <Property name="text" type="java.lang.String" value=":"/>
-      </Properties>
-    </Component>
-    <Component class="KomponenGUI.JRibuanTextField" name="JTSetelahPotong">
-      <Properties>
-        <Property name="enabled" type="boolean" value="false"/>
-      </Properties>
-    </Component>
     <Component class="KomponenGUI.JbuttonF" name="JBTambahPrint">
       <Properties>
         <Property name="text" type="java.lang.String" value="Simpan &amp; Print"/>
@@ -982,6 +1157,18 @@
           <Color blue="0" green="0" red="ff" type="rgb"/>
         </Property>
         <Property name="enabled" type="boolean" value="false"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JSeparator" name="jSeparator5">
+    </Component>
+    <Component class="KomponenGUI.JlableF" name="jlableF29">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Metode Bayar"/>
+      </Properties>
+    </Component>
+    <Component class="KomponenGUI.JlableF" name="jlableF30">
+      <Properties>
+        <Property name="text" type="java.lang.String" value=":"/>
       </Properties>
     </Component>
   </SubComponents>

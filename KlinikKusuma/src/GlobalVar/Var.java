@@ -34,6 +34,7 @@ public class Var {
 
     public static List listMasterBarang, listMasterDokter, listMasterPasien, listPenjualan, listMasterBeautician, listMasterTindakan, listAntrian, listMasterPemasok, listBarangMasuk, listPenyesuaianStok, listPerawatan, listAntrianBilling, listBilling, listPermintaanStok, listPenyesuaianStokGudangBesar;
     public static ListPoin cekPoin;
+    public static ListRekap listRekap;
 
     public static Jcari jcari;
     public static BarangMasuk tambahBarangMasuk, ubahBarangMasuk;
@@ -43,5 +44,6 @@ public class Var {
     public static PermintaanStok tambahPermintaanStok, ubahPermintaanStok;
     
     public static LaporanStok laporanStokGudangKecil, laporanStokGudangBesar;
-    public static Laporan laporanTindakan, laporanFacial, laporanHarian;
+    public static Laporan laporanTindakan, laporanFacial, laporanCream;
+    public static LaporanGudang laporanGudangKecil, laporanGudangBesar;
 }

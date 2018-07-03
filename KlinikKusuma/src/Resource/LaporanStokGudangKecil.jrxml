@@ -28,7 +28,7 @@ LEFT JOIN
 (SELECT `IdObat`, SUM(`Jumlah`) as 'Perawatan' FROM `tbbillingobat`a JOIN `tbbilling`b ON a.`NoBilling`=b.`NoBilling` WHERE `Tanggal` BETWEEN $P{TglAwal} AND $P{TglAkhir} GROUP BY `IdObat` ) c
     ON a.`IdBarang`=c.`IdObat`
 LEFT JOIN
-(SELECT `IdBarang`, SUM(`Jumlah`) as 'Penjualan' FROM `tbpenjualandetail`a JOIN `tbpenjualan`b ON a.`NoTransaksi`=b.`NoTransaksi` WHERE `Tanggal` BETWEEN $P{TglAwal} AND $P{TglAkhir} GROUP BY `IdBarang`) d
+(SELECT `IdObat` as 'IdBarang', SUM(`Jumlah`) as 'Penjualan' FROM `tbbillingobat`a JOIN `tbbilling`b ON a.`NoBilling`=b.`NoBilling` WHERE `Tanggal` BETWEEN $P{TglAwal} AND $P{TglAkhir} GROUP BY `IdBarang`) d
     ON a.`IdBarang`=d.`IdBarang`
 LEFT JOIN
 (SELECT `IdBarang`, SUM(`Jumlah`) as 'Penyesuaian' FROM `tbpenyesuaianstok` WHERE `Tanggal` BETWEEN $P{TglAwal} AND $P{TglAkhir} GROUP BY `IdBarang`) e
@@ -39,9 +39,9 @@ SELECT `IdBarang`, `NamaBarang`, 0 as 'StokAwal' FROM `tbmbarang` WHERE 1
 UNION ALL
 SELECT `IdBarang`, null as 'NamaBarang', `Jumlah` as 'StokAwal' FROM `tbpermintaanstok` WHERE `Tanggal` < $P{TglAwal}
 UNION ALL
-SELECT `IdObat`, null as 'NamaBarang', `Jumlah`*-1 as 'StokAwal' FROM `tbbillingobat`a JOIN `tbbilling`b ON a.`NoBilling`=b.`NoBilling` WHERE `Tanggal` < $P{TglAwal}
+SELECT `IdObat` as 'IdBarang', null as 'NamaBarang', `Jumlah`*-1 as 'StokAwal' FROM `tbbillingobat`a JOIN `tbbilling`b ON a.`NoBilling`=b.`NoBilling` WHERE `Tanggal` < $P{TglAwal}
 UNION ALL
-SELECT `IdBarang`, null as 'NamaBarang', `Jumlah`*-1 as 'StokAwal' FROM `tbpenjualandetail`a JOIN `tbpenjualan`b ON a.`NoTransaksi`=b.`NoTransaksi` WHERE `Tanggal` < $P{TglAwal}
+SELECT `IdObat`, null as 'NamaBarang', `Jumlah`*-1 as 'StokAwal' FROM `tbbillingobat`a JOIN `tbbilling`b ON a.`NoBilling`=b.`NoBilling` WHERE `Tanggal` < $P{TglAwal}
 UNION ALL
 SELECT `IdBarang`, null as 'NamaBarang', `Jumlah`*-1 as 'StokAwal' FROM `tbpenyesuaianstok` WHERE `Tanggal` < $P{TglAwal}
 ) t1 GROUP BY `IdBarang`) f
@@ -54,7 +54,7 @@ SELECT `IdBarang`, null as 'NamaBarang', `Jumlah` as 'StokAkhir' FROM `tbpermint
 UNION ALL
 SELECT `IdObat`, null as 'NamaBarang', `Jumlah`*-1 as 'StokAkhir' FROM `tbbillingobat`a JOIN `tbbilling`b ON a.`NoBilling`=b.`NoBilling` WHERE `Tanggal` <= $P{TglAkhir}
 UNION ALL
-SELECT `IdBarang`, null as 'NamaBarang', `Jumlah`*-1 as 'StokAkhir' FROM `tbpenjualandetail`a JOIN `tbpenjualan`b ON a.`NoTransaksi`=b.`NoTransaksi` WHERE `Tanggal` <= $P{TglAkhir}
+SELECT `IdObat` as 'IdBarang', null as 'NamaBarang', `Jumlah`*-1 as 'StokAkhir' FROM `tbbillingobat`a JOIN `tbbilling`b ON a.`NoBilling`=b.`NoBilling` WHERE `Tanggal` <= $P{TglAkhir}
 UNION ALL
 SELECT `IdBarang`, null as 'NamaBarang', `Jumlah`*-1 as 'StokAkhir' FROM `tbpenyesuaianstok` WHERE `Tanggal` <= $P{TglAkhir}
 ) t1 GROUP BY `IdBarang`) g

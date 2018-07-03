@@ -95,7 +95,11 @@ public class JPlaceHolder extends JTextField {
 
         final Graphics2D g = (Graphics2D) pG;
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        g.setColor(Color.GRAY);
+        if (this.isEnabled()) {
+            g.setColor(new Color(0, 200, 0));
+        } else {
+            g.setColor(Color.BLUE);
+        }
         g.drawString(placeholder, getWidth() - pG.getFontMetrics().stringWidth(placeholder) - 3, pG.getFontMetrics().getMaxAscent() + 2);
     }
 

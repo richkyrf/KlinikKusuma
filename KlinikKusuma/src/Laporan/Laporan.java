@@ -16,6 +16,7 @@ import java.sql.SQLException;
 import java.util.Calendar;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 import net.sf.dynamicreports.jasper.builder.JasperReportBuilder;
 import net.sf.dynamicreports.report.builder.DynamicReports;
@@ -52,6 +53,69 @@ public class Laporan extends javax.swing.JFrame {
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setResizable(false);
         tampilkan();
+        jtableF1.requestFocus();
+    }
+
+    void setTunai() {
+        int tunai = 0;
+        for (int i = 0; i < jtableF1.getRowCount() - 1; i++) {
+            if (jtableF1.getValueAt(i, jtableF1.getColumnCount() - 1).equals("Tunai")) {
+                tunai += Integer.valueOf(jtableF1.getValueAt(i, jtableF1.getColumnCount() - 2).toString());
+            }
+        }
+        JTTunai.setText(String.valueOf(tunai));
+    }
+
+    void setDebit() {
+        int debit = 0;
+        for (int i = 0; i < jtableF1.getRowCount() - 1; i++) {
+            if (jtableF1.getValueAt(i, jtableF1.getColumnCount() - 1).equals("Debit")) {
+                debit += Integer.valueOf(jtableF1.getValueAt(i, jtableF1.getColumnCount() - 2).toString());
+            }
+        }
+        JTDebit.setText(String.valueOf(debit));
+    }
+
+    void setBayar() {
+        int bayar = 0;
+        int total = 0;
+        for (int i = 0; i < jtableF1.getRowCount() - 1; i++) {
+            bayar += Integer.valueOf(jtableF1.getValueAt(i, jtableF1.getColumnCount() - 2).toString());
+            total += Integer.valueOf(jtableF1.getValueAt(i, jtableF1.getColumnCount() - 5).toString());
+        }
+        jtableF1.setValueAt(bayar, jtableF1.getRowCount() - 1, jtableF1.getColumnCount() - 2);
+        jtableF1.setValueAt(total, jtableF1.getRowCount() - 1, jtableF1.getColumnCount() - 5);
+    }
+
+    void setDiskon() {
+        int diskon = 0;
+        for (int i = 0; i < jtableF1.getRowCount() - 1; i++) {
+            diskon += Integer.valueOf(jtableF1.getValueAt(i, jtableF1.getColumnCount() - 4).toString());
+        }
+        jtableF1.setValueAt(diskon, jtableF1.getRowCount() - 1, jtableF1.getColumnCount() - 4);
+        JTDiskon.setText(String.valueOf(diskon));
+    }
+
+    void setPoin() {
+        int poin = 0;
+        for (int i = 0; i < jtableF1.getRowCount() - 1; i++) {
+            poin += Integer.valueOf(jtableF1.getValueAt(i, jtableF1.getColumnCount() - 3).toString());
+        }
+        jtableF1.setValueAt(poin, jtableF1.getRowCount() - 1, jtableF1.getColumnCount() - 3);
+        JTPoin.setText(String.valueOf(poin));
+    }
+
+    void setTotal() {
+        JTTotal.setInt(Integer.valueOf(jtableF1.getValueAt(jtableF1.getRowCount() - 1, jtableF1.getColumnCount() - 5).toString()));
+    }
+
+    void setSummary() {
+        setTunai();
+        setDebit();
+        setBayar();
+        setDiskon();
+        setPoin();
+        setTotal();
     }
 
     /**
@@ -70,6 +134,23 @@ public class Laporan extends javax.swing.JFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         jtableF1 = new KomponenGUI.JtableF();
         jbuttonF1 = new KomponenGUI.JbuttonF();
+        jbuttonF2 = new KomponenGUI.JbuttonF();
+        jlableF3 = new KomponenGUI.JlableF();
+        jlableF4 = new KomponenGUI.JlableF();
+        jlableF5 = new KomponenGUI.JlableF();
+        jlableF6 = new KomponenGUI.JlableF();
+        jlableF7 = new KomponenGUI.JlableF();
+        jlableF8 = new KomponenGUI.JlableF();
+        jlableF9 = new KomponenGUI.JlableF();
+        jlableF10 = new KomponenGUI.JlableF();
+        jlableF11 = new KomponenGUI.JlableF();
+        jlableF12 = new KomponenGUI.JlableF();
+        jSeparator1 = new javax.swing.JSeparator();
+        JTTunai = new KomponenGUI.JRibuanTextField();
+        JTDebit = new KomponenGUI.JRibuanTextField();
+        JTDiskon = new KomponenGUI.JRibuanTextField();
+        JTPoin = new KomponenGUI.JRibuanTextField();
+        JTTotal = new KomponenGUI.JRibuanTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
@@ -135,6 +216,43 @@ public class Laporan extends javax.swing.JFrame {
             }
         });
 
+        jbuttonF2.setText("Kembali");
+        jbuttonF2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jbuttonF2ActionPerformed(evt);
+            }
+        });
+
+        jlableF3.setText(":");
+
+        jlableF4.setText("Tunai");
+
+        jlableF5.setText(":");
+
+        jlableF6.setText("Debit");
+
+        jlableF7.setText(":");
+
+        jlableF8.setText("Diskon");
+
+        jlableF9.setText(":");
+
+        jlableF10.setText("Poin");
+
+        jlableF11.setText(":");
+
+        jlableF12.setText("Total");
+
+        JTTunai.setEnabled(false);
+
+        JTDebit.setEnabled(false);
+
+        JTDiskon.setEnabled(false);
+
+        JTPoin.setEnabled(false);
+
+        JTTotal.setEnabled(false);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -153,23 +271,89 @@ public class Laporan extends javax.swing.JFrame {
                         .addComponent(JDTanggal1, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(jbuttonF2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jSeparator1)
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                    .addComponent(jlableF4, javax.swing.GroupLayout.PREFERRED_SIZE, 68, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                    .addComponent(jlableF3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                    .addComponent(JTTunai, javax.swing.GroupLayout.PREFERRED_SIZE, 139, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGroup(layout.createSequentialGroup()
+                                    .addComponent(jlableF6, javax.swing.GroupLayout.PREFERRED_SIZE, 68, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                    .addComponent(jlableF5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                    .addComponent(JTDebit, javax.swing.GroupLayout.PREFERRED_SIZE, 139, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                    .addComponent(jlableF8, javax.swing.GroupLayout.PREFERRED_SIZE, 68, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                    .addComponent(jlableF7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                    .addComponent(JTDiskon, javax.swing.GroupLayout.PREFERRED_SIZE, 139, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                    .addComponent(jlableF10, javax.swing.GroupLayout.PREFERRED_SIZE, 68, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                    .addComponent(jlableF9, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                    .addComponent(JTPoin, javax.swing.GroupLayout.PREFERRED_SIZE, 139, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                    .addComponent(jlableF12, javax.swing.GroupLayout.PREFERRED_SIZE, 68, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                    .addComponent(jlableF11, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                    .addComponent(JTTotal, javax.swing.GroupLayout.PREFERRED_SIZE, 139, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                        .addGap(90, 90, 90)
                         .addComponent(jbuttonF1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(17, 17, 17)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(JDTanggal1, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jlableF2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(JDTanggal, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jlableF1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 500, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 35, Short.MAX_VALUE)
-                .addComponent(jbuttonF1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(414, 414, 414)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jlableF3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jlableF4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(JTTunai, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jlableF5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jlableF6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(JTDebit, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jlableF7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jlableF8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(JTDiskon, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jlableF9, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jlableF10, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(JTPoin, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(JDTanggal1, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jlableF2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(JDTanggal, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jlableF1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 369, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jSeparator1)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jlableF11, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jlableF12, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jbuttonF1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(JTTotal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jbuttonF2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap())
         );
 
@@ -181,8 +365,8 @@ public class Laporan extends javax.swing.JFrame {
             laporanTindakan = null;
         } else if (getTitle().equals("Laporan Facial")) {
             laporanFacial = null;
-        } else if (getTitle().equals("Laporan Harian")) {
-            laporanHarian = null;
+        } else if (getTitle().equals("Laporan Cream")) {
+            laporanCream = null;
         } else {
             JOptionPaneF.showMessageDialog(this, "Parameter Salah.");
         }
@@ -193,8 +377,8 @@ public class Laporan extends javax.swing.JFrame {
             build(jtableF1.getModel(), "Laporan Tindakan", Judul);
         } else if (getTitle().equals("Laporan Facial")) {
             build(jtableF1.getModel(), "Laporan Facial", Judul);
-        } else if (getTitle().equals("Laporan Harian")) {
-            build(jtableF1.getModel(), "Laporan Harian", Judul);
+        } else if (getTitle().equals("Laporan Cream")) {
+            build(jtableF1.getModel(), "Laporan Cream", Judul);
         } else {
             JOptionPaneF.showMessageDialog(this, "Parameter Salah.");
         }
@@ -207,6 +391,17 @@ public class Laporan extends javax.swing.JFrame {
     private void JDTanggal1PropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_JDTanggal1PropertyChange
         tampilkan();
     }//GEN-LAST:event_JDTanggal1PropertyChange
+
+    private void jbuttonF2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbuttonF2ActionPerformed
+        dispose();
+//        String query = "";
+//        for (int i = 1; i <= 31; i++) {
+//            query += ", SUM(IF(a.`Tanggal` = '" + i + "', `Jumlah`, 0)) as '" + i + "'";
+//        }
+//        System.out.println(query);
+//        System.out.println(jtableF1.getValueAt(0, jtableF1.getColumnCount() - 5));
+//        System.out.println(jtableF1.getValueAt(0, jtableF1.getColumnCount() - 2));
+    }//GEN-LAST:event_jbuttonF2ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -246,57 +441,80 @@ public class Laporan extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private static KomponenGUI.JdateCF JDTanggal;
     private static KomponenGUI.JdateCF JDTanggal1;
+    private KomponenGUI.JRibuanTextField JTDebit;
+    private KomponenGUI.JRibuanTextField JTDiskon;
+    private KomponenGUI.JRibuanTextField JTPoin;
+    private KomponenGUI.JRibuanTextField JTTotal;
+    private KomponenGUI.JRibuanTextField JTTunai;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JSeparator jSeparator1;
     private KomponenGUI.JbuttonF jbuttonF1;
+    private KomponenGUI.JbuttonF jbuttonF2;
     private KomponenGUI.JlableF jlableF1;
+    private KomponenGUI.JlableF jlableF10;
+    private KomponenGUI.JlableF jlableF11;
+    private KomponenGUI.JlableF jlableF12;
     private KomponenGUI.JlableF jlableF2;
+    private KomponenGUI.JlableF jlableF3;
+    private KomponenGUI.JlableF jlableF4;
+    private KomponenGUI.JlableF jlableF5;
+    private KomponenGUI.JlableF jlableF6;
+    private KomponenGUI.JlableF jlableF7;
+    private KomponenGUI.JlableF jlableF8;
+    private KomponenGUI.JlableF jlableF9;
     public KomponenGUI.JtableF jtableF1;
     // End of variables declaration//GEN-END:variables
 
     void tampilkan() {
         RunSelct runSelct = new RunSelct();
         if (getTitle().equals("Laporan Tindakan")) {
-            runSelct.setQuery("SELECT `IdTindakan`, `NamaTindakan` FROM `tbmtindakan` WHERE `IdTipeTindakan` = 1 ");
-        } else if (getTitle().equals("Laporan Facial")) {
             runSelct.setQuery("SELECT `IdTindakan`, `NamaTindakan` FROM `tbmtindakan` WHERE `IdTipeTindakan` = 2 ");
-        } else if (getTitle().equals("Laporan Harian")) {
-            runSelct.setQuery("SELECT `IdBarang`, `NamaBarang` FROM `tbmbarang` WHERE 1 ");
+        } else if (getTitle().equals("Laporan Facial")) {
+            runSelct.setQuery("SELECT `IdTindakan`, `NamaTindakan` FROM `tbmtindakan` WHERE `IdTipeTindakan` = 1 ");
+        } else if (getTitle().equals("Laporan Cream")) {
+            runSelct.setQuery("SELECT `IdBarang`, `NamaBarang` FROM `tbmbarang` WHERE `IdJenisBarang` = 1 ");
         }
         String sql;
         String dynamic = "";
         try {
             ResultSet rs = runSelct.excute();
             rs.last();
-            if (getTitle().equals("Laporan Harian")) {
-                Judul = new String[rs.getRow() + 6];
+            if (getTitle().equals("Laporan Cream")) {
+                Judul = new String[rs.getRow() + 8];
             } else {
-                Judul = new String[rs.getRow() + 4];
+                Judul = new String[rs.getRow() + 9];
             }
             rs.beforeFirst();
-            int row = 2;
+            int row = 3;
             Judul[0] = "Tanggal";
-            Judul[1] = "Pasien";
+            Judul[1] = "No. Nota";
+            Judul[2] = "Pasien";
             while (rs.next()) {
                 Judul[row] = rs.getString(2);
-                if (getTitle().equals("Laporan Harian")) {
-                    dynamic += ", SUM(IF(a.`IdBarang` = '" + rs.getString(1) + "', `Jumlah`, 0)) as '" + rs.getString(2) + "'";
+                if (getTitle().equals("Laporan Cream")) {
+                    dynamic += ", SUM(IF(a.`IdObat` = '" + rs.getString(1) + "', `Jumlah`, 0)) as '" + rs.getString(2) + "'";
                 } else {
                     dynamic += ", SUM(IF(a.`IdTindakan` = '" + rs.getString(1) + "', `Jumlah`, 0)) as '" + rs.getString(2) + "'";
                 }
                 row++;
             }
-            if (getTitle().equals("Laporan Harian")) {
-                Judul[row] = "Total Pembelanjaan";
+            if (getTitle().equals("Laporan Cream")) {
+                Judul[row] = "Total";
                 Judul[row + 1] = "Diskon";
-                Judul[row + 2] = "Pembayaran";
-                Judul[row + 3] = "Kasir";
+                Judul[row + 2] = "Poin";
+                Judul[row + 3] = "Bayar";
+                Judul[row + 4] = "Metode";
             } else {
-                Judul[row] = "Harga";
                 if (getTitle().equals("Laporan Tindakan")) {
-                    Judul[row + 1] = "Dokter";
+                    Judul[row] = "Dokter";
                 } else if (getTitle().equals("Laporan Facial")) {
-                    Judul[row + 1] = "Beautician";
+                    Judul[row] = "Beautician";
                 }
+                Judul[row + 1] = "Total";
+                Judul[row + 2] = "Diskon";
+                Judul[row + 3] = "Poin";
+                Judul[row + 4] = "Bayar";
+                Judul[row + 5] = "Metode";
             }
         } catch (SQLException e) {
             System.out.println("E6" + e);
@@ -306,29 +524,41 @@ public class Laporan extends javax.swing.JFrame {
         }
         sql = null;
         if (getTitle().equals("Laporan Tindakan")) {
-            sql = "SELECT DATE_FORMAT(b.`Tanggal`,'%d-%m-%Y') as 'Tanggal', `NamaPasien` as 'Pasien' " + dynamic + ", a.`Harga`, `NamaDokter` as 'Dokter'  FROM `tbbillingtindakan`a JOIN `tbbilling`b ON a.`NoBilling`=b.`NoBilling` JOIN `tbperawatan`c ON b.`NoInvoice`=c.`NoInvoice` JOIN `tbantrian`d ON c.`NoAntrian`=d.`NoAntrian` AND c.`Tanggal`=d.`Tanggal` JOIN `tbmpasien`e ON d.`IdPasien`=e.`IdPasien` JOIN `tbmdokter`f ON c.`IdDokter`=f.`IdDokter` JOIN `tbmtindakan`g ON a.`IdTindakan`=g.`IdTindakan` WHERE `IdTipeTindakan` = 1 AND b.`Tanggal` BETWEEN '" + FDateF.datetostr(JDTanggal.getDate(), "yyyy-MM-dd") + "' AND '" + FDateF.datetostr(JDTanggal1.getDate(), "yyyy-MM-dd") + "' GROUP BY a.`NoBilling` ORDER BY a.`NoBilling` ASC ";
+            jtableF1.setQuery("SELECT DATE_FORMAT(b.`Tanggal`,'%d-%m-%Y') as 'Tanggal', a.`NoBilling` as 'No. Nota', `NamaPasien` as 'Pasien' " + dynamic + ", IFNULL(`NamaDokter`,'-') as 'Dokter', SUM(a.`Jumlah`*a.`Harga`) as 'Total', ROUND(SUM(IF(`DiskonTindakan`>100,`DiskonTindakan`,a.`Jumlah`*a.`Harga`*`DiskonTindakan`/100)),0) as 'Diskon', SUM(`PoinTindakan`*1000) as 'Poin', ROUND(SUM(a.`Jumlah`*a.`Harga`) - SUM(IF(`DiskonTindakan`>100,`DiskonTindakan`,a.`Jumlah`*a.`Harga`*`DiskonTindakan`/100)) - SUM(`PoinTindakan`*1000),0) as 'Bayar', `MetodePembayaran` as 'Metode' FROM `tbbillingtindakan`a JOIN `tbbilling`b ON a.`NoBilling`=b.`NoBilling` JOIN `tbantrian`c ON b.`IdAntrian`=c.`IdAntrian` JOIN `tbmpasien`d ON c.`IdPasien`=d.`IdPasien` LEFT JOIN `tbmdokter`e ON b.`IdDokter`=e.`IdDokter` JOIN `tbmtindakan`f ON a.`IdTindakan`=f.`IdTindakan` WHERE 1 AND `IdTipeTindakan` = 2 AND b.`Tanggal` BETWEEN '" + FDateF.datetostr(JDTanggal.getDate(), "yyyy-MM-dd") + "' AND '" + FDateF.datetostr(JDTanggal1.getDate(), "yyyy-MM-dd") + "' GROUP BY a.`NoBilling` ASC WITH ROLLUP");
+            jtableF1.tampilkan();
+            jtableF1.setValueAt("", jtableF1.getRowCount() - 1, 0);
+            jtableF1.setValueAt("", jtableF1.getRowCount() - 1, 1);
+            jtableF1.setValueAt("", jtableF1.getRowCount() - 1, 2);
+            jtableF1.setValueAt("", jtableF1.getRowCount() - 1, jtableF1.getColumnCount() - 1);
+            jtableF1.setValueAt("", jtableF1.getRowCount() - 1, jtableF1.getColumnCount() - 6);
         } else if (getTitle().equals("Laporan Facial")) {
-            sql = "SELECT DATE_FORMAT(b.`Tanggal`,'%d-%m-%Y') as 'Tanggal', `NamaPasien` as 'Pasien' " + dynamic + ", a.`Harga`, IFNULL(`NamaBeautician`,'-') as 'Beautician'  FROM `tbbillingtindakan`a JOIN `tbbilling`b ON a.`NoBilling`=b.`NoBilling` JOIN `tbperawatan`c ON b.`NoInvoice`=c.`NoInvoice` JOIN `tbantrian`d ON c.`NoAntrian`=d.`NoAntrian` AND c.`Tanggal`=d.`Tanggal` JOIN `tbmpasien`e ON d.`IdPasien`=e.`IdPasien` LEFT JOIN `tbmbeautician`f ON c.`IdBeautician`=f.`IdBeautician` JOIN `tbmtindakan`g ON a.`IdTindakan`=g.`IdTindakan` WHERE `IdTipeTindakan` = 2 AND b.`Tanggal` BETWEEN '" + FDateF.datetostr(JDTanggal.getDate(), "yyyy-MM-dd") + "' AND '" + FDateF.datetostr(JDTanggal1.getDate(), "yyyy-MM-dd") + "' GROUP BY a.`NoBilling` ORDER BY a.`NoBilling` ASC ";
-        } else if (getTitle().equals("Laporan Harian")) {
-            sql = "SELECT DATE_FORMAT(`Tanggal`,'%d-%m-%Y') as 'Tanggal', `NamaPasien` as 'Pasien' " + dynamic + ", SUM(`Jumlah`*`Harga`) as 'Total Pembelanjaan', `Diskon` as 'Diskon', `Bayar` as 'Pembayaran',`Kasir` as 'Kasir' FROM `tbpenjualandetail`a JOIN `tbpenjualan`b ON a.`NoTransaksi`=b.`Notransaksi` LEFT JOIN `tbmpasien`c ON b.`IdPasien`=c.`IdPasien` WHERE 1 AND `Tanggal` BETWEEN '" + FDateF.datetostr(JDTanggal.getDate(), "yyyy-MM-dd") + "' AND '" + FDateF.datetostr(JDTanggal1.getDate(), "yyyy-MM-dd") + "' GROUP BY a.`NoTransaksi` ORDER BY a.`NoTransaksi` ASC ";
+            jtableF1.setQuery("SELECT DATE_FORMAT(b.`Tanggal`,'%d-%m-%Y') as 'Tanggal', a.`NoBilling` as 'No. Nota', `NamaPasien` as 'Pasien' " + dynamic + ", IFNULL(`NamaBeautician`,'-') as 'Beautician', SUM(a.`Jumlah`*a.`Harga`) as 'Total', ROUND(SUM(IF(`DiskonTindakan`>100,`DiskonTindakan`,a.`Jumlah`*a.`Harga`*`DiskonTindakan`/100)),0) as 'Diskon', SUM(`PoinTindakan`*1000) as 'Poin', ROUND(SUM(a.`Jumlah`*a.`Harga`) - SUM(IF(`DiskonTindakan`>100,`DiskonTindakan`,a.`Jumlah`*a.`Harga`*`DiskonTindakan`/100)) - SUM(`PoinTindakan`*1000),0) as 'Bayar', `MetodePembayaran` as 'Metode' FROM `tbbillingtindakan`a JOIN `tbbilling`b ON a.`NoBilling`=b.`NoBilling` JOIN `tbantrian`c ON b.`IdAntrian`=c.`IdAntrian` JOIN `tbmpasien`d ON c.`IdPasien`=d.`IdPasien` LEFT JOIN `tbmbeautician`e ON b.`IdBeautician`=e.`IdBeautician` JOIN `tbmtindakan`f ON a.`IdTindakan`=f.`IdTindakan` WHERE 1 AND `IdTipeTindakan` = 1 AND b.`Tanggal` BETWEEN '" + FDateF.datetostr(JDTanggal.getDate(), "yyyy-MM-dd") + "' AND '" + FDateF.datetostr(JDTanggal1.getDate(), "yyyy-MM-dd") + "' GROUP BY a.`NoBilling` ASC WITH ROLLUP");
+            jtableF1.tampilkan();
+            jtableF1.setValueAt("", jtableF1.getRowCount() - 1, 0);
+            jtableF1.setValueAt("", jtableF1.getRowCount() - 1, 1);
+            jtableF1.setValueAt("", jtableF1.getRowCount() - 1, 2);
+            jtableF1.setValueAt("", jtableF1.getRowCount() - 1, jtableF1.getColumnCount() - 1);
+            jtableF1.setValueAt("", jtableF1.getRowCount() - 1, jtableF1.getColumnCount() - 6);
+        } else if (getTitle().equals("Laporan Cream")) {
+            jtableF1.setQuery("SELECT DATE_FORMAT(b.`Tanggal`,'%d-%m-%Y') as 'Tanggal', b.`NoBilling` as 'No. Nota', `NamaPasien` as 'Pasien' " + dynamic + ", (`Jumlah`*a.`Harga`) as 'Total', ROUND(IF(`DiskonObat`>100,`DiskonObat`,a.`Jumlah`*a.`Harga`*`DiskonObat`/100),0) as 'Diskon', `PoinObat`*1000 as 'Poin', ROUND((`Jumlah`*a.`Harga`) - IF(`DiskonObat`>100,`DiskonObat`,a.`Jumlah`*a.`Harga`*`DiskonObat`/100) - (`PoinObat`*1000),0) as 'Bayar', `MetodePembayaran` as 'Metode' FROM `tbbillingobat`a JOIN `tbbilling`b ON a.`NoBilling`=b.`NoBilling` LEFT JOIN `tbantrian`c ON b.`IdAntrian`=c.`IdAntrian` LEFT JOIN `tbmpasien`d ON c.`IdPasien`=d.`IdPasien` JOIN `tbmbarang`e ON a.`IdObat`=e.`IdBarang` WHERE 1 AND `IdJenisBarang` = 1 AND b.`Tanggal` BETWEEN '" + FDateF.datetostr(JDTanggal.getDate(), "yyyy-MM-dd") + "' AND '" + FDateF.datetostr(JDTanggal1.getDate(), "yyyy-MM-dd") + "' GROUP BY b.`NoBilling` ASC WITH ROLLUP");
+            jtableF1.tampilkan();
+            jtableF1.setValueAt("", jtableF1.getRowCount() - 1, 0);
+            jtableF1.setValueAt("", jtableF1.getRowCount() - 1, 1);
+            jtableF1.setValueAt("", jtableF1.getRowCount() - 1, 2);
+            jtableF1.setValueAt("", jtableF1.getRowCount() - 1, jtableF1.getColumnCount() - 1);
         }
-        jtableF1.setQuery(sql);
-        jtableF1.tampilkan();
         for (int i = 0; i < jtableF1.getColumnCount(); i++) {
-            if (getTitle().equals("Laporan Harian")) {
-                if (i == jtableF1.getColumnCount() - 2 || i == jtableF1.getColumnCount() - 3 || i == jtableF1.getColumnCount() - 4) {
-                    jtableF1.setrender(new int[]{i}, new String[]{"Number"});
-                } else if (i != jtableF1.getColumnCount() - 1 && i > 1) {
-                    jtableF1.setrender(new int[]{i}, new String[]{"CenteredNumber"});
-                }
-            } else {
-                if (i == jtableF1.getColumnCount() - 2) {
-                    jtableF1.setrender(new int[]{i}, new String[]{"Number"});
-                } else if (i != jtableF1.getColumnCount() - 1 && i > 1) {
-                    jtableF1.setrender(new int[]{i}, new String[]{"CenteredNumber"});
-                }
+            if (i == 0) {
+                jtableF1.setrender(new int[]{i}, new String[]{"Date"});
+            } else if (i == 1) {
+                jtableF1.setrender(new int[]{i}, new String[]{"Center"});
+            } else if (i == jtableF1.getColumnCount() - 5 || i == jtableF1.getColumnCount() - 4 || i == jtableF1.getColumnCount() - 3 || i == jtableF1.getColumnCount() - 2) {
+                jtableF1.setrender(new int[]{i}, new String[]{"Number"});
+            } else if (i != jtableF1.getColumnCount() - 1 && i > 2 && (i != jtableF1.getColumnCount() - 6 || getTitle().equals("Laporan Cream"))) {
+                jtableF1.setrender(new int[]{i}, new String[]{"CenteredNumber"});
             }
         }
+        setSummary();
     }
 
     void build(TableModel model, String judul, String[] JudulKolom) {
@@ -342,15 +572,21 @@ public class Laporan extends javax.swing.JFrame {
                 if (i == 0) {
                     report.columns(col.column(JudulKolom[i], JudulKolom[i], type.stringType()).setStyle(colStyle).setHorizontalTextAlignment(HorizontalTextAlignment.CENTER).setWidth(120));
                 } else if (i == 1) {
+                    report.columns(col.column(JudulKolom[i], JudulKolom[i], type.stringType()).setStyle(colStyle).setHorizontalTextAlignment(HorizontalTextAlignment.CENTER).setWidth(100));
+                } else if (i == 2) {
                     report.columns(col.column(JudulKolom[i], JudulKolom[i], type.stringType()).setStyle(colStyle).setHorizontalTextAlignment(HorizontalTextAlignment.LEFT).setWidth(200));
-                } else if (i == JudulKolom.length - 4 && getTitle().equals("Laporan Harian")) {
+                } else if (i == JudulKolom.length - 6 && !getTitle().equals("Laporan Cream")) {
+                    report.columns(col.column(JudulKolom[i], JudulKolom[i], type.stringType()).setStyle(colStyle).setHorizontalTextAlignment(HorizontalTextAlignment.LEFT).setWidth(200));
+                } else if (i == JudulKolom.length - 5) {
                     report.columns(col.column(JudulKolom[i], JudulKolom[i], type.integerType()).setStyle(colStyle).setHorizontalTextAlignment(HorizontalTextAlignment.RIGHT).setWidth(100));
-                } else if (i == JudulKolom.length - 3 && getTitle().equals("Laporan Harian")) {
+                } else if (i == JudulKolom.length - 4) {
+                    report.columns(col.column(JudulKolom[i], JudulKolom[i], type.integerType()).setStyle(colStyle).setHorizontalTextAlignment(HorizontalTextAlignment.RIGHT).setWidth(100));
+                } else if (i == JudulKolom.length - 3) {
                     report.columns(col.column(JudulKolom[i], JudulKolom[i], type.integerType()).setStyle(colStyle).setHorizontalTextAlignment(HorizontalTextAlignment.RIGHT).setWidth(100));
                 } else if (i == JudulKolom.length - 2) {
                     report.columns(col.column(JudulKolom[i], JudulKolom[i], type.integerType()).setStyle(colStyle).setHorizontalTextAlignment(HorizontalTextAlignment.RIGHT).setWidth(100));
                 } else if (i == JudulKolom.length - 1) {
-                    report.columns(col.column(JudulKolom[i], JudulKolom[i], type.stringType()).setStyle(colStyle).setHorizontalTextAlignment(HorizontalTextAlignment.CENTER).setWidth(200));
+                    report.columns(col.column(JudulKolom[i], JudulKolom[i], type.stringType()).setStyle(colStyle).setHorizontalTextAlignment(HorizontalTextAlignment.LEFT).setWidth(100));
                 } else {
                     report.columns(col.column(JudulKolom[i], JudulKolom[i], type.integerType()).setStyle(colStyle).setHorizontalTextAlignment(HorizontalTextAlignment.CENTER).setWidth(60));
                 }
@@ -360,6 +596,7 @@ public class Laporan extends javax.swing.JFrame {
             report.pageFooter(cmp.text("Di Print Oleh " + GlobalVar.VarL.username + " Pada " + FDateF.datetostr(new Date(), "dd/MM/yyyy HH:mm")));
             report.ignorePagination();
             report.title(cmp.horizontalList().add(cmp.text(judul).setStyle(titleStyle)).newRow().add(cmp.filler().setFixedHeight(10)));
+            report.addProperty("net.sf.jasperreports.export.csv.field.delimiter", ";");
             report.setWhenNoDataType(WhenNoDataType.ALL_SECTIONS_NO_DETAIL);
             report.setDataSource(createDataSource(JudulKolom));
             report.show(false);
@@ -374,10 +611,12 @@ public class Laporan extends javax.swing.JFrame {
         for (int i = 0; i < jtableF1.getModel().getRowCount(); i++) {
             Object data[] = new Object[JudulKolom.length];
             for (int j = 0; j < JudulKolom.length; j++) {
-                if (j == 0 || j == 1 || j == JudulKolom.length - 1) {
+                if (j == 0 || j == 1 || j == 2 || j == JudulKolom.length - 1) {
+                    data[j] = jtableF1.getModel().getValueAt(i, j).toString();
+                } else if (j == JudulKolom.length - 6 && !getTitle().equals("Laporan Cream")) {
                     data[j] = jtableF1.getModel().getValueAt(i, j).toString();
                 } else {
-                    data[j] = new Integer(jtableF1.getModel().getValueAt(i, j).toString());
+                    data[j] = new Integer(jtableF1.getModel().getValueAt(i, j).toString().replace(".", ""));
                 }
             }
             dataSource.add(data);

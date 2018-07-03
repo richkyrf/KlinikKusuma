@@ -21,6 +21,7 @@ import java.util.logging.Logger;
 import FunctionGUI.JOptionPaneF;
 import Laporan.LaporanStok;
 import Laporan.Laporan;
+import Laporan.LaporanGudang;
 
 /**
  *
@@ -55,8 +56,8 @@ public class MenuUtama extends javax.swing.JFrame {
                 jMenuItem8.setVisible(false);
                 jMenuItem19.setVisible(false);
                 
-                jMenuItem13.setVisible(false);
-                jMenuItem14.setVisible(false);
+                jMenuItem9.setVisible(false);
+                jMenuItem20.setVisible(false);
                 break;
             case "Gudang":
                 jPanel1.setVisible(false);
@@ -134,8 +135,8 @@ public class MenuUtama extends javax.swing.JFrame {
         jMenuItem17 = new javax.swing.JMenuItem();
         jMenuItem16 = new javax.swing.JMenuItem();
         jMenuItem15 = new javax.swing.JMenuItem();
-        jMenuItem13 = new javax.swing.JMenuItem();
-        jMenuItem14 = new javax.swing.JMenuItem();
+        jMenuItem9 = new javax.swing.JMenuItem();
+        jMenuItem20 = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
@@ -489,7 +490,7 @@ public class MenuUtama extends javax.swing.JFrame {
 
         JMLaporan.setText("Laporan");
 
-        jMenuItem17.setText("Laporan Harian");
+        jMenuItem17.setText("Laporan Cream");
         jMenuItem17.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItem17ActionPerformed(evt);
@@ -513,21 +514,21 @@ public class MenuUtama extends javax.swing.JFrame {
         });
         JMLaporan.add(jMenuItem15);
 
-        jMenuItem13.setText("Laporan Stok Gudang Kecil");
-        jMenuItem13.addActionListener(new java.awt.event.ActionListener() {
+        jMenuItem9.setText("Laporan Gudang Kecil");
+        jMenuItem9.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem13ActionPerformed(evt);
+                jMenuItem9ActionPerformed(evt);
             }
         });
-        JMLaporan.add(jMenuItem13);
+        JMLaporan.add(jMenuItem9);
 
-        jMenuItem14.setText("Laporan Stok Gudang Besar");
-        jMenuItem14.addActionListener(new java.awt.event.ActionListener() {
+        jMenuItem20.setText("Laporan Gudang Besar");
+        jMenuItem20.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem14ActionPerformed(evt);
+                jMenuItem20ActionPerformed(evt);
             }
         });
-        JMLaporan.add(jMenuItem14);
+        JMLaporan.add(jMenuItem20);
 
         JMenuBar.add(JMLaporan);
 
@@ -761,27 +762,15 @@ public class MenuUtama extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_jMenuItem11ActionPerformed
 
-    private void jMenuItem13ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem13ActionPerformed
-        if (laporanStokGudangKecil == null) {
-            laporanStokGudangKecil = new LaporanStok(jMenuItem13.getText());
-        }
-    }//GEN-LAST:event_jMenuItem13ActionPerformed
-
-    private void jMenuItem14ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem14ActionPerformed
-        if (laporanStokGudangBesar == null) {
-            laporanStokGudangBesar = new LaporanStok(jMenuItem14.getText());
-        }
-    }//GEN-LAST:event_jMenuItem14ActionPerformed
-
     private void jbuttonF6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbuttonF6ActionPerformed
-        if (laporanStokGudangKecil == null) {
-            laporanStokGudangKecil = new LaporanStok(jMenuItem13.getText());
+        if (laporanGudangKecil == null) {
+            laporanGudangKecil = new LaporanGudang(jMenuItem9.getText());
         }
     }//GEN-LAST:event_jbuttonF6ActionPerformed
 
     private void jbuttonF7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbuttonF7ActionPerformed
-        if (laporanStokGudangBesar == null) {
-            laporanStokGudangBesar = new LaporanStok(jMenuItem14.getText());
+        if (laporanGudangBesar == null) {
+            laporanGudangBesar = new LaporanGudang(jMenuItem20.getText());
         }
     }//GEN-LAST:event_jbuttonF7ActionPerformed
 
@@ -798,8 +787,8 @@ public class MenuUtama extends javax.swing.JFrame {
     }//GEN-LAST:event_jMenuItem16ActionPerformed
 
     private void jMenuItem17ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem17ActionPerformed
-        if (laporanHarian == null) {
-            laporanHarian = new Laporan(jMenuItem17.getText());
+        if (laporanCream == null) {
+            laporanCream = new Laporan(jMenuItem17.getText());
         }
     }//GEN-LAST:event_jMenuItem17ActionPerformed
 
@@ -820,6 +809,18 @@ public class MenuUtama extends javax.swing.JFrame {
             listPenyesuaianStokGudangBesar.toFront();
         }
     }//GEN-LAST:event_jMenuItem19ActionPerformed
+
+    private void jMenuItem9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem9ActionPerformed
+        if (laporanGudangKecil == null) {
+            laporanGudangKecil = new LaporanGudang(jMenuItem9.getText());
+        }
+    }//GEN-LAST:event_jMenuItem9ActionPerformed
+
+    private void jMenuItem20ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem20ActionPerformed
+        if (laporanGudangBesar == null) {
+            laporanGudangBesar = new LaporanGudang(jMenuItem20.getText());
+        }
+    }//GEN-LAST:event_jMenuItem20ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -875,20 +876,20 @@ public class MenuUtama extends javax.swing.JFrame {
     private javax.swing.JMenuItem jMenuItem10;
     private javax.swing.JMenuItem jMenuItem11;
     private javax.swing.JMenuItem jMenuItem12;
-    private javax.swing.JMenuItem jMenuItem13;
-    private javax.swing.JMenuItem jMenuItem14;
     private javax.swing.JMenuItem jMenuItem15;
     private javax.swing.JMenuItem jMenuItem16;
     private javax.swing.JMenuItem jMenuItem17;
     private javax.swing.JMenuItem jMenuItem18;
     private javax.swing.JMenuItem jMenuItem19;
     private javax.swing.JMenuItem jMenuItem2;
+    private javax.swing.JMenuItem jMenuItem20;
     private javax.swing.JMenuItem jMenuItem3;
     private javax.swing.JMenuItem jMenuItem4;
     private javax.swing.JMenuItem jMenuItem5;
     private javax.swing.JMenuItem jMenuItem6;
     private javax.swing.JMenuItem jMenuItem7;
     private javax.swing.JMenuItem jMenuItem8;
+    private javax.swing.JMenuItem jMenuItem9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;

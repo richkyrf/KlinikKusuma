@@ -38,7 +38,7 @@ public class Koneksi {
         if (GlobalVar.VarL.koneksi == null) {
             try {
                 Class.forName("com.mysql.jdbc.Driver");
-                Con = DriverManager.getConnection(url + db, user, pass);
+                Con = DriverManager.getConnection(url + db + "?autoReconnect=true&useSSL=false", user, pass);
             } catch (ClassNotFoundException | SQLException ex) {
                 LogEror.SaveEror(ex);
                 JOptionPaneF.showMessageDialog(null, "Koneksi Ke Server Database Gagal !!!");

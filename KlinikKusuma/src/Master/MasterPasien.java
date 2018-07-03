@@ -88,8 +88,8 @@ public class MasterPasien extends javax.swing.JFrame {
         if (!JTNamaPasien.getText().equals("")) {
             DRunSelctOne dRunSelctOne = new DRunSelctOne();
             dRunSelctOne.seterorm("Gagal Select Kode Pasien");
-            //dRunSelctOne.setQuery("SELECT CONCAT(LEFT('" + JTNamaPasien.getText().toUpperCase() + "',1),' ',LPAD(COUNT('" + JTNamaPasien.getText() + "')+1,'4','0')) as 'Kode' FROM `tbmpasien` WHERE `NamaPasien` LIKE '" + JTNamaPasien.getText().substring(0, 1) + "%' ");
-            dRunSelctOne.setQuery("SELECT CONCAT(LEFT('" + JTNamaPasien.getText().toUpperCase() + "',1),' ',RIGHT(`KodePasien`,4)+1) FROM `tbmpasien` WHERE `KodePasien` LIKE CONCAT(LEFT('" + JTNamaPasien.getText().toUpperCase() + "',1),'%') ORDER BY `KodePasien` DESC");
+            dRunSelctOne.setQuery("SELECT CONCAT(LEFT('" + JTNamaPasien.getText().toUpperCase() + "',1),' ',LPAD(COUNT('" + JTNamaPasien.getText() + "')+1,'4','0')) as 'Kode' FROM `tbmpasien` WHERE `NamaPasien` LIKE '" + JTNamaPasien.getText().substring(0, 1) + "%' ");
+//            dRunSelctOne.setQuery("SELECT CONCAT(LEFT('" + JTNamaPasien.getText().toUpperCase() + "',1),' ',RIGHT(`KodePasien`,4)+1) FROM `tbmpasien` WHERE `KodePasien` LIKE CONCAT(LEFT('" + JTNamaPasien.getText().toUpperCase() + "',1),'%') ORDER BY `KodePasien` DESC");
             ArrayList<String> list = dRunSelctOne.excute();
             JTKodePasien.setText(list.get(0));
         }
