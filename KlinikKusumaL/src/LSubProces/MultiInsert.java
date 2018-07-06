@@ -129,6 +129,7 @@ public class MultiInsert {
     }
 
     public void closecon() {
+        setautocomit(true);
         try {
             if (con != null) {
 //                con.close();

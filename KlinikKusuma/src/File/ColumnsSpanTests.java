@@ -8,6 +8,7 @@ package File;
 import ar.com.fdvs.dj.domain.DynamicReport;
 import ar.com.fdvs.dj.domain.builders.FastReportBuilder;
 import ar.com.fdvs.dj.domain.constants.Border;
+import ar.com.fdvs.dj.test.BaseDjReportTest;
 import java.util.Date;
 import net.sf.jasperreports.view.JasperViewer;
 
@@ -15,15 +16,15 @@ import net.sf.jasperreports.view.JasperViewer;
  *
  * @author richk
  */
-public class ColumnsSpanTest extends BaseDjReportTest {
+public class ColumnsSpanTests extends BaseDjReportTest{
 
+    @Override
     public DynamicReport buildReport() throws Exception {
         FastReportBuilder frb = new FastReportBuilder();
         frb.addColumn("State", "state", String.class.getName(), 30)
                 .addColumn("Branch", "branch", String.class.getName(), 30)
                 .addColumn("Item", "item", String.class.getName(), 50)
                 .addColumn("Amount", "amount", Float.class.getName(), 60, true)
-                .addGroups(2)
                 .setTitle("November 2018 sales report")
                 .setSubtitle("This report was generated at " + new Date())
                 .setColumnsPerPage(1, 10)
@@ -35,7 +36,8 @@ public class ColumnsSpanTest extends BaseDjReportTest {
     }
 
     public static void main(String[] args) throws Exception {
-        ColumnsSpanTest test = new ColumnsSpanTest();
-//        JasperViewer.viewReport(test.);
+        ColumnsSpanTests test = new ColumnsSpanTests();
+        test.testReport();
+        JasperViewer.viewReport(test.jp);
     }
 }

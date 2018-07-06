@@ -6,6 +6,7 @@
 package Laporan;
 
 import File.ColumnGroup;
+import File.ColumnsSpanTests;
 import File.GroupableTableHeader;
 import File.SimpleReport;
 import FunctionGUI.JOptionPaneF;
@@ -13,9 +14,20 @@ import java.util.Date;
 import static GlobalVar.Var.*;
 import KomponenGUI.FDateF;
 import LSubProces.RunSelct;
+import ar.com.fdvs.dj.core.DynamicJasperHelper;
+import ar.com.fdvs.dj.core.layout.ClassicLayoutManager;
+import ar.com.fdvs.dj.domain.AutoText;
+import ar.com.fdvs.dj.domain.DJCalculation;
 import ar.com.fdvs.dj.domain.DynamicReport;
+import ar.com.fdvs.dj.domain.Style;
+import ar.com.fdvs.dj.domain.builders.ColumnBuilderException;
 import ar.com.fdvs.dj.domain.builders.FastReportBuilder;
 import ar.com.fdvs.dj.domain.constants.Border;
+import ar.com.fdvs.dj.domain.constants.Font;
+import ar.com.fdvs.dj.domain.constants.HorizontalAlign;
+import ar.com.fdvs.dj.domain.constants.Page;
+import ar.com.fdvs.dj.domain.constants.VerticalAlign;
+import ar.com.fdvs.dj.test.BaseDjReportTest;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Calendar;
@@ -40,6 +52,18 @@ import net.sf.dynamicreports.report.constant.VerticalTextAlignment;
 import net.sf.dynamicreports.report.constant.WhenNoDataType;
 import net.sf.dynamicreports.report.datasource.DRDataSource;
 import net.sf.jasperreports.engine.JRDataSource;
+import net.sf.jasperreports.view.JasperViewer;
+import ar.com.fdvs.dj.test.BaseDjReportTest;
+import ar.com.fdvs.dj.test.TestRepositoryProducts;
+import java.awt.Color;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 
 /**
  *
@@ -47,7 +71,7 @@ import net.sf.jasperreports.engine.JRDataSource;
  */
 public class LaporanGudang extends javax.swing.JFrame {
 
-    String[] Judul;
+    String[] JudulKolom;
     int[] masuk, keluar;
 
     /**
@@ -201,12 +225,23 @@ public class LaporanGudang extends javax.swing.JFrame {
     }//GEN-LAST:event_formWindowClosed
 
     private void jbuttonF1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbuttonF1ActionPerformed
-        if (getTitle().equals("Laporan Gudang Kecil")) {
-            build(jtableF1.getModel(), "Laporan Gudang Kecil", Judul);
-        } else if (getTitle().equals("Laporan Gudang Besar")) {
-            build(jtableF1.getModel(), "Laporan Gudang Besar", Judul);
-        } else {
-            JOptionPaneF.showMessageDialog(this, "Parameter Salah.");
+        try {
+//            if (getTitle().equals("Laporan Gudang Kecil")) {
+//                build(jtableF1.getModel(), "Laporan Gudang Kecil", Judul);
+//            } else if (getTitle().equals("Laporan Gudang Besar")) {
+//                build(jtableF1.getModel(), "Laporan Gudang Besar", Judul);
+//            } else {
+//                JOptionPaneF.showMessageDialog(this, "Parameter Salah.");
+//            }
+            if (getTitle().equals("Laporan Gudang Kecil")) {
+                print(jtableF1.getModel(), "Laporan Gudang Kecil", JudulKolom);
+            } else if (getTitle().equals("Laporan Gudang Besar")) {
+                print(jtableF1.getModel(), "Laporan Gudang Besar", JudulKolom);
+            } else {
+                JOptionPaneF.showMessageDialog(this, "Parameter Salah.");
+            }
+        } catch (Exception ex) {
+            Logger.getLogger(LaporanGudang.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_jbuttonF1ActionPerformed
 
@@ -278,8 +313,8 @@ public class LaporanGudang extends javax.swing.JFrame {
         if (getTitle().equals("Laporan Gudang Kecil")) {
             RunSelct runSelct = new RunSelct();
             RunSelct runSelct2 = new RunSelct();
-            runSelct.setQuery("SELECT `Tanggal`, DATE_FORMAT(`Tanggal`,'%d') FROM `tbpermintaanstok` WHERE `Tanggal` BETWEEN '" + FDateF.datetostr(JDTanggal.getDate(), "yyyy-MM-dd") + "' AND '" + FDateF.datetostr(JDTanggal1.getDate(), "yyyy-MM-dd") + "' GROUP BY `Tanggal`");
-            runSelct2.setQuery("SELECT `Tanggal`, DATE_FORMAT(`Tanggal`,'%d') FROM `tbbilling`a JOIN `tbbillingobat`b ON a.`NoBilling`=b.`NoBilling` WHERE `Tanggal` BETWEEN '" + FDateF.datetostr(JDTanggal.getDate(), "yyyy-MM-dd") + "' AND '" + FDateF.datetostr(JDTanggal1.getDate(), "yyyy-MM-dd") + "' GROUP BY `Tanggal`");
+            runSelct.setQuery("SELECT `Tanggal`, CONCAT('M',DATE_FORMAT(`Tanggal`,'%d')) FROM `tbpermintaanstok` WHERE `Tanggal` BETWEEN '" + FDateF.datetostr(JDTanggal.getDate(), "yyyy-MM-dd") + "' AND '" + FDateF.datetostr(JDTanggal1.getDate(), "yyyy-MM-dd") + "' GROUP BY `Tanggal`");
+            runSelct2.setQuery("SELECT `Tanggal`, CONCAT('K',DATE_FORMAT(`Tanggal`,'%d')) FROM `tbbilling`a JOIN `tbbillingobat`b ON a.`NoBilling`=b.`NoBilling` WHERE `Tanggal` BETWEEN '" + FDateF.datetostr(JDTanggal.getDate(), "yyyy-MM-dd") + "' AND '" + FDateF.datetostr(JDTanggal1.getDate(), "yyyy-MM-dd") + "' GROUP BY `Tanggal`");
             String dynamic1 = "";
             String dynamic2 = "";
             String colname1 = "";
@@ -291,31 +326,31 @@ public class LaporanGudang extends javax.swing.JFrame {
                 rs2.last();
                 masuk = new int[rs1.getRow()];
                 keluar = new int[rs2.getRow()];
-                Judul = new String[rs1.getRow() + rs2.getRow() + 3];
+                JudulKolom = new String[rs1.getRow() + rs2.getRow() + 3];
                 rs1.beforeFirst();
                 rs2.beforeFirst();
                 int row = 2;
                 int i = 0;
                 int j = 0;
-                Judul[0] = "Nama Item";
-                Judul[1] = "Stok Awal";
+                JudulKolom[0] = "Nama Item";
+                JudulKolom[1] = "Stok Awal";
                 while (rs1.next()) {
-                    Judul[row] = rs1.getString(2);
+                    JudulKolom[row] = rs1.getString(2);
                     dynamic1 += ", SUM(IF(a.`Tanggal` = '" + rs1.getString(1) + "', `Jumlah`, 0)) as '" + rs1.getString(2) + "'";
-                    colname1 += ", IFNULL(a.`" + rs1.getString(2) + "`,0) as '" + rs1.getString(2) + "'";
+                    colname1 += ", IFNULL(a.`" + rs1.getString(2) + "`,0) as '" + rs1.getString(2).replace("M", "") + "'";
                     masuk[i] = row;
                     i++;
                     row++;
                 }
                 while (rs2.next()) {
-                    Judul[row] = rs2.getString(2);
+                    JudulKolom[row] = rs2.getString(2);
                     dynamic2 += ", SUM(IF(a.`Tanggal` = '" + rs2.getString(1) + "', `Jumlah`*-1, 0)) as '" + rs2.getString(2) + "'";
-                    colname2 += ", IFNULL(b.`" + rs2.getString(2) + "`,0) as '" + rs2.getString(2) + "'";
+                    colname2 += ", IFNULL(b.`" + rs2.getString(2) + "`,0) as '" + rs2.getString(2).replace("K", "") + "'";
                     keluar[j] = row;
                     j++;
                     row++;
                 }
-                Judul[row] = "Stok Akhir";
+                JudulKolom[row] = "Stok Akhir";
             } catch (SQLException e) {
                 System.out.println("E6" + e);
                 JOptionPaneF.showMessageDialog(null, "Gagal Panggil Tampilkan Data");
@@ -356,8 +391,8 @@ public class LaporanGudang extends javax.swing.JFrame {
         } else if (getTitle().equals("Laporan Gudang Besar")) {
             RunSelct runSelct = new RunSelct();
             RunSelct runSelct2 = new RunSelct();
-            runSelct.setQuery("SELECT `Tanggal`, DATE_FORMAT(`Tanggal`,'%d') FROM `tbbarangmasuk`a JOIN `tbbarangmasukdetail`b ON a.`NoTransaksi`=b.`NoTransaksi` WHERE `Tanggal` BETWEEN '" + FDateF.datetostr(JDTanggal.getDate(), "yyyy-MM-dd") + "' AND '" + FDateF.datetostr(JDTanggal1.getDate(), "yyyy-MM-dd") + "' GROUP BY `Tanggal`");
-            runSelct2.setQuery("SELECT `Tanggal`, DATE_FORMAT(`Tanggal`,'%d') FROM `tbpermintaanstok` WHERE `Tanggal` BETWEEN '" + FDateF.datetostr(JDTanggal.getDate(), "yyyy-MM-dd") + "' AND '" + FDateF.datetostr(JDTanggal1.getDate(), "yyyy-MM-dd") + "' GROUP BY `Tanggal`");
+            runSelct.setQuery("SELECT `Tanggal`, CONCAT('M',DATE_FORMAT(`Tanggal`,'%d')) FROM `tbbarangmasuk`a JOIN `tbbarangmasukdetail`b ON a.`NoTransaksi`=b.`NoTransaksi` WHERE `Tanggal` BETWEEN '" + FDateF.datetostr(JDTanggal.getDate(), "yyyy-MM-dd") + "' AND '" + FDateF.datetostr(JDTanggal1.getDate(), "yyyy-MM-dd") + "' GROUP BY `Tanggal`");
+            runSelct2.setQuery("SELECT `Tanggal`, CONCAT('K',DATE_FORMAT(`Tanggal`,'%d')) FROM `tbpermintaanstok` WHERE `Tanggal` BETWEEN '" + FDateF.datetostr(JDTanggal.getDate(), "yyyy-MM-dd") + "' AND '" + FDateF.datetostr(JDTanggal1.getDate(), "yyyy-MM-dd") + "' GROUP BY `Tanggal`");
             String dynamic1 = "";
             String dynamic2 = "";
             String colname1 = "";
@@ -369,31 +404,31 @@ public class LaporanGudang extends javax.swing.JFrame {
                 rs2.last();
                 masuk = new int[rs1.getRow()];
                 keluar = new int[rs2.getRow()];
-                Judul = new String[rs1.getRow() + rs2.getRow() + 3];
+                JudulKolom = new String[rs1.getRow() + rs2.getRow() + 3];
                 rs1.beforeFirst();
                 rs2.beforeFirst();
                 int row = 2;
                 int i = 0;
                 int j = 0;
-                Judul[0] = "Nama Item";
-                Judul[1] = "Stok Awal";
+                JudulKolom[0] = "Nama Item";
+                JudulKolom[1] = "Stok Awal";
                 while (rs1.next()) {
-                    Judul[row] = rs1.getString(2);
+                    JudulKolom[row] = rs1.getString(2);
                     dynamic1 += ", SUM(IF(a.`Tanggal` = '" + rs1.getString(1) + "', `Jumlah`, 0)) as '" + rs1.getString(2) + "'";
-                    colname1 += ", IFNULL(a.`" + rs1.getString(2) + "`,0) as '" + rs1.getString(2) + "'";
+                    colname1 += ", IFNULL(a.`" + rs1.getString(2) + "`,0) as '" + rs1.getString(2).replace("M", "") + "'";
                     masuk[i] = row;
                     i++;
                     row++;
                 }
                 while (rs2.next()) {
-                    Judul[row] = rs2.getString(2);
+                    JudulKolom[row] = rs2.getString(2);
                     dynamic2 += ", SUM(IF(a.`Tanggal` = '" + rs2.getString(1) + "', `Jumlah`*-1, 0)) as '" + rs2.getString(2) + "'";
-                    colname2 += ", IFNULL(b.`" + rs2.getString(2) + "`,0) as '" + rs2.getString(2) + "'";
+                    colname2 += ", IFNULL(b.`" + rs2.getString(2) + "`,0) as '" + rs2.getString(2).replace("K", "") + "'";
                     keluar[j] = row;
                     j++;
                     row++;
                 }
-                Judul[row] = "Stok Akhir";
+                JudulKolom[row] = "Stok Akhir";
             } catch (SQLException e) {
                 System.out.println("E6" + e);
                 JOptionPaneF.showMessageDialog(null, "Gagal Panggil Tampilkan Data");
@@ -453,6 +488,57 @@ public class LaporanGudang extends javax.swing.JFrame {
         }
     }
 
+    void print(TableModel model, String judul, String[] JudulKolom) throws ColumnBuilderException, ClassNotFoundException, JRException {
+        
+        Style titleStyle = new Style();
+        titleStyle.setFont(new Font(14, Font._FONT_VERDANA, true));
+        titleStyle.setHorizontalAlign(HorizontalAlign.CENTER);
+        titleStyle.setVerticalAlign(VerticalAlign.TOP);
+        titleStyle.setPadding(5);
+
+//        Style columnTitleStyle = new Style();
+//        columnTitleStyle.setFont(new Font(10, Font._FONT_VERDANA, false));
+//        columnTitleStyle.setHorizontalAlign(HorizontalAlign.CENTER);
+//        columnTitleStyle.setVerticalAlign(VerticalAlign.MIDDLE);
+//        columnTitleStyle.setPadding(2);
+//        columnTitleStyle.setBorder(Border.THIN());
+        Style colStyle = new Style();
+        colStyle.setPadding(2);
+        colStyle.setBorder(Border.THIN());
+        colStyle.setHorizontalAlign(HorizontalAlign.CENTER);
+        colStyle.setVerticalAlign(VerticalAlign.MIDDLE);
+
+        FastReportBuilder frb = new FastReportBuilder();
+        frb.setTitleStyle(titleStyle);
+        frb.setTitle(judul);
+        for (int i = 0; i < JudulKolom.length; i++) {
+            if (i == 0) {
+                frb.addColumn(JudulKolom[i], JudulKolom[i], String.class.getName(), 120, colStyle);
+            } else {
+                frb.addColumn(JudulKolom[i], JudulKolom[i], Integer.class.getName(), 60, colStyle);
+            }
+        }
+//        frb.setColumnsPerPage(1, 10);
+        frb.setUseFullPageWidth(true);
+        frb.setColspan(2, masuk.length, "Masuk");
+        frb.setColspan(masuk.length + 2, keluar.length, "Keluar");
+        frb.setProperty("net.sf.jasperreports.export.csv.field.delimiter", ";");
+        frb.setPageSizeAndOrientation(new Page(900, (JudulKolom.length * 60) + 120, false));
+        frb.setMargins(20, 20, 20, 20);
+        frb.setIgnorePagination(true);
+        String a = "Di Print Oleh " + GlobalVar.VarL.username + " Pada " + FDateF.datetostr(new Date(), "dd/MM/yyyy HH:mm");
+        frb.addAutoText(a, AutoText.POSITION_FOOTER, AutoText.ALIGNMENT_LEFT, 500);
+        DynamicReport dr = frb.build();
+        dr.getOptions().getDefaultHeaderStyle().setBorder(Border.THIN());
+        dr.getOptions().getDefaultHeaderStyle().setBackgroundColor(Color.white);
+        Map parameters = new HashMap();
+        parameters.put("footer", "Di Print Oleh " + GlobalVar.VarL.username + " Pada " + FDateF.datetostr(new Date(), "dd/MM/yyyy HH:mm"));
+
+        JRDataSource ds = createDataSource(JudulKolom);
+        JasperPrint jp = DynamicJasperHelper.generateJasperPrint(dr, new ClassicLayoutManager(), ds, parameters);
+        JasperViewer.viewReport(jp, false);    //finally display the report report
+    }
+
     void build(TableModel model, String judul, String[] JudulKolom) {
         StyleBuilder titleStyle = stl.style().bold().setHorizontalTextAlignment(HorizontalTextAlignment.CENTER).setFontSize(14).setFontName("Verdana").setPadding(5).setBorder(stl.pen1Point().setLineWidth(1f));
         StyleBuilder columnTitleStyle = stl.style().bold().setTextAlignment(HorizontalTextAlignment.CENTER, VerticalTextAlignment.MIDDLE).setPadding(2).setBorder(stl.pen1Point().setLineWidth(0.5f));
@@ -490,7 +576,7 @@ public class LaporanGudang extends javax.swing.JFrame {
                 if (j == 0) {
                     data[j] = jtableF1.getModel().getValueAt(i, j).toString();
                 } else {
-                    data[j] = new Integer(jtableF1.getModel().getValueAt(i, j).toString());
+                    data[j] = new Integer(jtableF1.getModel().getValueAt(i, j).toString().replace(".", ""));
                 }
             }
             dataSource.add(data);

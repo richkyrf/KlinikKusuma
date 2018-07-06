@@ -9,6 +9,6 @@ package File;
  *
  * @author richk
  */
-public class BaseDjReportTest {
+public class MultiColspanTest {
     
 }

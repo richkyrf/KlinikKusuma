@@ -13,6 +13,7 @@ import KomponenGUI.FDateF;
 import LSubProces.RunSelct;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.Calendar;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -586,7 +587,7 @@ public class Laporan extends javax.swing.JFrame {
                 } else if (i == JudulKolom.length - 2) {
                     report.columns(col.column(JudulKolom[i], JudulKolom[i], type.integerType()).setStyle(colStyle).setHorizontalTextAlignment(HorizontalTextAlignment.RIGHT).setWidth(100));
                 } else if (i == JudulKolom.length - 1) {
-                    report.columns(col.column(JudulKolom[i], JudulKolom[i], type.stringType()).setStyle(colStyle).setHorizontalTextAlignment(HorizontalTextAlignment.LEFT).setWidth(100));
+                    report.columns(col.column(JudulKolom[i], JudulKolom[i], type.stringType()).setStyle(colStyle).setHorizontalTextAlignment(HorizontalTextAlignment.CENTER).setWidth(100));
                 } else {
                     report.columns(col.column(JudulKolom[i], JudulKolom[i], type.integerType()).setStyle(colStyle).setHorizontalTextAlignment(HorizontalTextAlignment.CENTER).setWidth(60));
                 }

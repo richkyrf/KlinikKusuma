@@ -33,6 +33,8 @@ import LSubProces.MultiInsert;
 public class PermintaanStok extends javax.swing.JFrame {
 
     public String IdEdit;
+    String barang;
+    int tambahan;
 
     /**
      * Creates new form PenyesuaianStok
@@ -72,6 +74,9 @@ public class PermintaanStok extends javax.swing.JFrame {
         JTNamaBarang.setText(list.get(2));
         JTJumlah.setText(list.get(3));
         JTAKeterangan.setText(list.get(4));
+        barang = list.get(2);
+        tambahan = Integer.valueOf(list.get(3));
+        setStok(tambahan);
     }
 
     boolean checkInput() {
@@ -415,7 +420,7 @@ public class PermintaanStok extends javax.swing.JFrame {
     }//GEN-LAST:event_JTJumlahKeyPressed
 
     private void JDTanggalPermintaanPropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_JDTanggalPermintaanPropertyChange
-        
+
     }//GEN-LAST:event_JDTanggalPermintaanPropertyChange
 
     private void jbuttonF3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbuttonF3ActionPerformed
@@ -423,7 +428,7 @@ public class PermintaanStok extends javax.swing.JFrame {
     }//GEN-LAST:event_jbuttonF3ActionPerformed
 
     private void JTNamaBarangFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_JTNamaBarangFocusLost
-        
+
     }//GEN-LAST:event_JTNamaBarangFocusLost
 
     private void JTNamaBarangKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_JTNamaBarangKeyPressed
@@ -441,7 +446,7 @@ public class PermintaanStok extends javax.swing.JFrame {
     }//GEN-LAST:event_JTNamaBarangKeyReleased
 
     private void JBSearchNamaBarangFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_JBSearchNamaBarangFocusLost
-        
+
     }//GEN-LAST:event_JBSearchNamaBarangFocusLost
 
     private void JBSearchNamaBarangActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBSearchNamaBarangActionPerformed
@@ -455,7 +460,7 @@ public class PermintaanStok extends javax.swing.JFrame {
     }//GEN-LAST:event_JBSearchNamaBarangKeyPressed
 
     private void JTStokKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_JTStokKeyPressed
-        
+
     }//GEN-LAST:event_JTStokKeyPressed
 
     private void jbuttonF4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbuttonF4ActionPerformed
@@ -463,7 +468,7 @@ public class PermintaanStok extends javax.swing.JFrame {
     }//GEN-LAST:event_jbuttonF4ActionPerformed
 
     private void JTJumlahFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_JTJumlahFocusGained
-        setStok();
+        setStok(tambahan);
     }//GEN-LAST:event_JTJumlahFocusGained
 
     /**
@@ -566,14 +571,18 @@ public class PermintaanStok extends javax.swing.JFrame {
         return NoPermintaan;
     }
 
-    void setStok() {
+    void setStok(int tambahan) {
         if (!JTNamaBarang.getText().replace(" ", "").equals("")) {
             DRunSelctOne dRunSelctOne = new DRunSelctOne();
             dRunSelctOne.seterorm("Gagal Menampilkan Data Stok Barang");
-            dRunSelctOne.setQuery("SELECT `IdBarang`, SUM(`Jumlah`) as 'Stok' FROM( SELECT `IdBarang`, 0 as 'Jumlah' FROm `tbmbarang` WHERE 1 UNION ALL SELECT `IdBarang`, `Jumlah` FROM `tbbarangmasukdetail` WHERE 1 UNION ALL SELECT `IdBarang`, `Jumlah`*-1 FROM `tbpermintaanstok` WHERE 1 UNION ALL SELECT `IdBarang`, `Jumlah` FROM `tbpenyesuaianstokgudangbesar` WHERE 1) t1 WHERE `IdBarang` = (SELECT `IdBarang` FROM `tbmbarang` WHERE `NamaBarang` = '" + JTNamaBarang.getText() + "') GROUP BY `IdBarang`");
+            dRunSelctOne.setQuery("SELECT `IdBarang`, SUM(`Jumlah`) as 'Stok' FROM( SELECT `IdBarang`, 0 as 'Jumlah' FROM `tbmbarang` WHERE 1 UNION ALL SELECT `IdBarang`, `Jumlah` FROM `tbbarangmasukdetail` WHERE 1 UNION ALL SELECT `IdBarang`, `Jumlah`*-1 FROM `tbpermintaanstok` WHERE 1 UNION ALL SELECT `IdBarang`, `Jumlah` FROM `tbpenyesuaianstokgudangbesar` WHERE 1) t1 WHERE `IdBarang` = (SELECT `IdBarang` FROM `tbmbarang` WHERE `NamaBarang` = '" + JTNamaBarang.getText() + "') GROUP BY `IdBarang`");
             ArrayList<String> list = dRunSelctOne.excute();
             String Stok = list.get(1);
-            JTStok.setText(Stok);
+            if (barang.equals(JTNamaBarang.getText())) {
+                JTStok.setText(String.valueOf(Integer.valueOf(Stok) + tambahan));
+            } else {
+                JTStok.setText(Stok);
+            }
         }
     }
 
